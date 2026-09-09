@@ -58,7 +58,14 @@ class PaperAccount:
         self.balance: float = starting_balance
         self.open_positions: Dict[str, Position] = {}
         self.history: List[Dict] = []
+        # Zaman kaynagi: canli modda gercek saat. Backtest bunu simule edilen
+        # mum zamaniyla degistirir, boylece islem zaman damgalari gercek saati
+        # degil test edilen tarihi gosterir.
+        self.now_fn = lambda: datetime.now(timezone.utc)
         self._load()
+
+    def _now_iso(self) -> str:
+        return self.now_fn().isoformat(timespec="seconds")
 
     # ---------------- persistence ----------------
     def _load(self):
@@ -123,7 +130,7 @@ class PaperAccount:
         if self.open_risk_total() + risk_amount > self.balance * (self.max_portfolio_risk_pct / 100):
             return None
 
-        open_time = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        open_time = self._now_iso()
         pos = Position(
             symbol=symbol, side=side, entry=entry, tp=tp, sl=sl,
             risk_amount=risk_amount, size=size, param_key=param_key,
@@ -149,7 +156,7 @@ class PaperAccount:
             pos.last_funding_time = pos.open_time
 
         last = datetime.fromisoformat(pos.last_funding_time)
-        now = datetime.now(timezone.utc)
+        now = self.now_fn()
         periods = int((now - last).total_seconds() // (FUNDING_INTERVAL_HOURS * 3600))
         if periods <= 0:
             return
@@ -218,7 +225,7 @@ class PaperAccount:
                 "entry": pos.entry, "exit": partial_event["price"],
                 "pnl": round(partial_event["pnl"], 4), "r_multiple": round(self.partial_tp_r, 3),
                 "param_key": pos.param_key, "leverage": pos.leverage, "funding_paid": 0.0,
-                "open_time": pos.open_time, "close_time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                "open_time": pos.open_time, "close_time": self._now_iso(),
                 "balance_after": round(self.balance, 4),
             }
             self.history.append(record)
@@ -269,7 +276,7 @@ class PaperAccount:
             "leverage": pos.leverage,
             "funding_paid": round(pos.funding_paid, 4),
             "open_time": pos.open_time,
-            "close_time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "close_time": self._now_iso(),
             "balance_after": round(self.balance, 4),
         }
         self.history.append(result)

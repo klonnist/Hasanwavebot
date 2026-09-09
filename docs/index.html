@@ -83,6 +83,19 @@
   }
   .badge.on { color: var(--accent); border-color: var(--accent); }
   .partial-row td { color: var(--muted); font-style: italic; }
+  .bt-open {
+    background: transparent; border: 1px solid var(--accent); color: var(--accent);
+    padding: 3px 10px; border-radius: 6px; font-size: 11px; cursor: pointer;
+  }
+  .bt-open:hover { background: var(--accent); color: #0b0f14; }
+  .bt-hint {
+    color: var(--muted); font-size: 12px; margin-bottom: 10px; line-height: 1.5;
+  }
+  .bt-hint a { color: var(--accent); }
+  .bt-config {
+    color: var(--muted); font-size: 11.5px; line-height: 1.7;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2px 16px;
+  }
 </style>
 </head>
 <body>
@@ -309,6 +322,209 @@ function renderLeaderboard(p, learner) {
   `;
 }
 
+// ---------------- backtest sekmesi ----------------
+function buildEquitySvg(points, startingBalance) {
+  if (!points || points.length < 2) {
+    return `<div class="empty">Grafik için yeterli veri yok.</div>`;
+  }
+  const W = 640, H = 180, padL = 62, padR = 14, padT = 14, padB = 24;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const balances = points.map(p => p.balance);
+  let min = Math.min(...balances, startingBalance);
+  let max = Math.max(...balances, startingBalance);
+  if (max === min) max = min + 1;
+  const pad = (max - min) * 0.08;
+  min -= pad; max += pad;
+
+  const x = i => padL + (i / (points.length - 1)) * plotW;
+  const y = v => padT + plotH - ((v - min) / (max - min)) * plotH;
+  const line = points.map((p, i) => `${x(i).toFixed(1)},${y(p.balance).toFixed(1)}`).join(" ");
+  const final = balances[balances.length - 1];
+  const color = final >= startingBalance ? "var(--green)" : "var(--red)";
+  const baseY = y(startingBalance);
+  const firstT = (points[0].t || "").slice(0, 10);
+  const lastT = (points[points.length - 1].t || "").slice(0, 10);
+
+  // Etiketler ust uste binmesin: baslangic cizgisine 12px'den yakin olan
+  // min/max etiketini cizme (baslangic seviyesi daha bilgilendirici).
+  const yMaxLabel = padT + 10, yMinLabel = padT + plotH;
+  const labels = [
+    { y: baseY + 3, text: fmt(startingBalance, 0) },
+    ...(Math.abs(yMaxLabel - baseY) > 12 ? [{ y: yMaxLabel, text: fmt(max, 0) }] : []),
+    ...(Math.abs(yMinLabel - baseY) > 12 ? [{ y: yMinLabel, text: fmt(min, 0) }] : []),
+  ];
+
+  return `
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Bakiye eğrisi">
+      <line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}"
+            stroke="var(--muted)" stroke-dasharray="4 4" stroke-width="1"/>
+      <polyline points="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>
+      ${labels.map(l => `<text x="${padL - 8}" y="${l.y.toFixed(1)}" text-anchor="end" fill="var(--muted)" font-size="10">${l.text}</text>`).join("")}
+      <text x="${padL}" y="${H - 7}" fill="var(--muted)" font-size="10">${firstT}</text>
+      <text x="${W - padR}" y="${H - 7}" text-anchor="end" fill="var(--muted)" font-size="10">${lastT}</text>
+    </svg>
+  `;
+}
+
+function renderBacktestList(runs) {
+  const el = document.getElementById("bt-list");
+  if (!runs || runs.length === 0) {
+    el.innerHTML = `<div class="empty">Henüz backtest çalıştırılmamış — yukarıdaki bağlantıdan başlatabilirsin.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Çalıştırma</th><th>Strateji</th><th>Periyot</th><th>Tarih Aralığı</th><th>Coin</th>
+        <th>İşlem</th><th>Kazanma</th><th>Toplam K/Z</th><th>Max Drawdown</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${runs.map(r => `
+          <tr>
+            <td>${fmtTime(r.created_at)}</td>
+            <td>${r.strategy}</td>
+            <td>${r.timeframe}</td>
+            <td>${r.date_from} → ${r.date_to}</td>
+            <td>${r.symbol_count}</td>
+            <td>${r.trades}</td>
+            <td>%${fmt(r.win_rate, 1)}</td>
+            <td class="${pnlClass(r.total_pnl)}">${r.total_pnl >= 0 ? "+" : ""}${fmt(r.total_pnl)} (${r.total_pnl_pct >= 0 ? "+" : ""}${fmt(r.total_pnl_pct, 1)}%)</td>
+            <td class="neg">%${fmt(r.max_drawdown_pct, 1)}</td>
+            <td><button class="bt-open" data-file="${r.file}">Detay</button></td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+  el.querySelectorAll(".bt-open").forEach(btn => {
+    btn.addEventListener("click", () => openBacktestDetail(btn.dataset.file));
+  });
+}
+
+function renderBacktestDetail(r) {
+  const el = document.getElementById("bt-detail");
+  const s = r.summary, c = r.config;
+  const firstColLabel = c.strategy === "vwap" ? "Bant×" : "ATR×";
+
+  const cards = [
+    { label: "Başlangıç", value: `${fmt(s.starting_balance)} USDT` },
+    { label: "Bitiş", value: `${fmt(s.final_balance)} USDT` },
+    { label: "Toplam K/Z", value: `${s.total_pnl >= 0 ? "+" : ""}${fmt(s.total_pnl)} USDT`, cls: pnlClass(s.total_pnl) },
+    { label: "Getiri", value: `${s.total_pnl_pct >= 0 ? "+" : ""}${fmt(s.total_pnl_pct, 1)}%`, cls: pnlClass(s.total_pnl_pct) },
+    { label: "İşlem", value: s.trades },
+    { label: "Kazanma Oranı", value: `%${fmt(s.win_rate, 1)}` },
+    { label: "Max Drawdown", value: `%${fmt(s.max_drawdown_pct, 1)}`, cls: "neg" },
+  ];
+
+  const lbRows = (r.leaderboard || []).map(row => `
+    <tr>
+      <td>${fmt(row.first, 1)}</td>
+      <td>${fmt(row.tp_mult, 3)}</td>
+      <td>${row.n}</td>
+      <td>%${fmt(row.win_rate, 1)}</td>
+      <td class="${pnlClass(row.avg_r)}">${fmt(row.avg_r, 2)}</td>
+    </tr>
+  `).join("");
+
+  const tradeRows = [...(r.trades || [])].reverse().map(t => {
+    const isPartial = t.result === "PARTIAL_TP";
+    const profitable = t.pnl >= 0;
+    let label, cls;
+    if (isPartial) { label = "KISMİ AL"; cls = ""; }
+    else if (t.result === "TP") { label = "KAZANÇ"; cls = "pos"; }
+    else { label = profitable ? "KAZANÇ (trailing)" : "KAYIP"; cls = profitable ? "pos" : "neg"; }
+    return `
+      <tr class="${isPartial ? "partial-row" : ""}">
+        <td>${t.symbol}</td>
+        <td class="side-${(t.side || "").toLowerCase()}">${t.side}</td>
+        <td class="${cls}">${label}</td>
+        <td>${fmt(t.entry, 4)}</td>
+        <td>${fmt(t.exit, 4)}</td>
+        <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}</td>
+        <td class="${pnlClass(t.r_multiple)}">${fmt(t.r_multiple, 2)}</td>
+        <td>${fmtTime(t.close_time)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="cards">
+      ${cards.map(x => `
+        <div class="card">
+          <div class="label">${x.label}</div>
+          <div class="value ${x.cls || ""}">${x.value}</div>
+        </div>
+      `).join("")}
+    </div>
+
+    <section>
+      <h2>Bakiye Eğrisi — ${c.strategy} · ${c.timeframe} · ${c.date_from} → ${c.date_to}</h2>
+      ${buildEquitySvg(r.equity, s.starting_balance)}
+    </section>
+
+    <section>
+      <h2>Bu Testte Öğrenilen En İyi Parametreler</h2>
+      <div class="table-wrap">
+        ${lbRows ? `<table>
+          <thead><tr><th>${firstColLabel}</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Ort. R</th></tr></thead>
+          <tbody>${lbRows}</tbody>
+        </table>` : `<div class="empty">Yeterli veri yok.</div>`}
+      </div>
+    </section>
+
+    <section>
+      <h2>İşlemler (son ${(r.trades || []).length})</h2>
+      <div class="table-wrap">
+        ${tradeRows ? `<table>
+          <thead><tr><th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>K/Z (USDT)</th><th>R</th><th>Kapanış</th></tr></thead>
+          <tbody>${tradeRows}</tbody>
+        </table>` : `<div class="empty">İşlem yok.</div>`}
+      </div>
+    </section>
+
+    <section>
+      <h2>Kullanılan Ayarlar</h2>
+      <div class="bt-config">
+        <div>Strateji: <b>${c.strategy}</b></div>
+        <div>Zaman dilimi: <b>${c.timeframe}</b></div>
+        <div>Pencere: <b>${c.window} mum</b></div>
+        <div>Kaldıraç: <b>${fmt(c.leverage, 0)}x</b></div>
+        <div>İşlem başına teminat: <b>${fmt(c.trade_margin)} USDT</b></div>
+        <div>Max eşzamanlı pozisyon: <b>${c.max_open}</b></div>
+        <div>Max portföy riski: <b>%${fmt(c.max_portfolio_risk_pct, 1)}</b></div>
+        <div>Başabaş / Kısmi: <b>${fmt(c.breakeven_r, 1)}R / ${fmt(c.partial_tp_r, 1)}R</b></div>
+        <div>Coin sayısı: <b>${(c.symbols || []).length}</b></div>
+      </div>
+    </section>
+  `;
+}
+
+async function openBacktestDetail(file) {
+  const el = document.getElementById("bt-detail");
+  el.innerHTML = `<div class="empty">Rapor yükleniyor…</div>`;
+  try {
+    const report = await fetchJson(`backtests/${file}`);
+    renderBacktestDetail(report);
+  } catch (e) {
+    el.innerHTML = `<div class="empty">Rapor yüklenemedi: ${e.message}</div>`;
+  }
+}
+
+async function loadBacktests() {
+  let index;
+  try {
+    index = await fetchJson("backtests/index.json");
+  } catch {
+    index = { runs: [] };
+  }
+  const runs = index.runs || [];
+  renderBacktestList(runs);
+  if (runs.length > 0 && !document.getElementById("bt-detail").dataset.loaded) {
+    document.getElementById("bt-detail").dataset.loaded = "1";
+    await openBacktestDetail(runs[0].file);  // en yeni calistirmayi otomatik ac
+  }
+}
+
 async function loadProfile(p) {
   const [account, learner] = await Promise.all([
     fetchJson(`${p.dir}/account_state.json`).catch(() => ({ balance: 10000, history: [], open_positions: {} })),
@@ -320,15 +536,31 @@ async function loadProfile(p) {
   renderLeaderboard(p, learner);
 }
 
+function buildBacktestSkeleton() {
+  return `
+    <section>
+      <h2>Geçmiş Backtest Çalışmaları</h2>
+      <div class="bt-hint">
+        Yeni bir backtest başlatmak için:
+        <a href="https://github.com/${OWNER}/${REPO}/actions/workflows/backtest.yml" target="_blank">Actions → "Backtest calistir" → Run workflow</a>
+        — strateji, zaman dilimi ve tarih aralığını girip çalıştır; sonuç birkaç dakika içinde burada listelenir.
+      </div>
+      <div class="table-wrap" id="bt-list"></div>
+    </section>
+    <div id="bt-detail"></div>
+  `;
+}
+
 function initTabs() {
   document.getElementById("tabs").innerHTML = PROFILES.map((p, i) => `
     <button class="tab-btn ${i === 0 ? "active" : ""}" data-key="${p.key}">${p.label}</button>
-  `).join("");
+  `).join("") + `<button class="tab-btn" data-key="backtest">📊 Backtest</button>`;
+
   document.getElementById("profiles").innerHTML = PROFILES.map((p, i) => `
     <div class="profile ${i === 0 ? "active" : ""}" id="profile-${p.key}">
       ${buildProfileSkeleton(p)}
     </div>
-  `).join("");
+  `).join("") + `<div class="profile" id="profile-backtest">${buildBacktestSkeleton()}</div>`;
 
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -343,7 +575,7 @@ function initTabs() {
 async function loadAll() {
   const status = document.getElementById("status");
   try {
-    await Promise.all(PROFILES.map(loadProfile));
+    await Promise.all([...PROFILES.map(loadProfile), loadBacktests()]);
     status.textContent = `Son güncelleme: ${new Date().toLocaleString("tr-TR")}`;
   } catch (e) {
     status.textContent = `Veri yüklenemedi: ${e.message}`;

@@ -39,6 +39,9 @@ on:
         required: false
         default: "500"
 
+permissions:
+  contents: write
+
 jobs:
   backtest:
     runs-on: ubuntu-latest
@@ -63,7 +66,7 @@ jobs:
           IN_LEVERAGE: ${{ inputs.leverage }}
           IN_MARGIN: ${{ inputs.trade_margin }}
         run: |
-          ARGS=(--strategy "$IN_STRATEGY" --timeframe "$IN_TIMEFRAME" --from "$IN_FROM" --window "$IN_WINDOW" --leverage "$IN_LEVERAGE" --trade-margin "$IN_MARGIN")
+          ARGS=(--strategy "$IN_STRATEGY" --timeframe "$IN_TIMEFRAME" --from "$IN_FROM" --window "$IN_WINDOW" --leverage "$IN_LEVERAGE" --trade-margin "$IN_MARGIN" --report-dir ./data/backtests)
           if [ -n "$IN_SYMBOLS" ]; then
             ARGS+=(--symbols "$IN_SYMBOLS")
           fi
@@ -72,6 +75,24 @@ jobs:
           fi
           echo "python backtest.py ${ARGS[*]}"
           python backtest.py "${ARGS[@]}" | tee backtest_output.txt
+
+      - name: Raporu panele commit et
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/backtests/
+          if git diff --cached --quiet; then
+            echo "Yeni rapor yok, commit atlaniyor."
+            exit 0
+          fi
+          git commit -m "Backtest raporu: $IN_STRATEGY $IN_TIMEFRAME $IN_FROM [skip ci]"
+          # Bot taramasi ayni anda push etmis olabilir -- once uzerine rebase et
+          git pull --rebase --autostash origin main
+          git push
+        env:
+          IN_STRATEGY: ${{ inputs.strategy }}
+          IN_TIMEFRAME: ${{ inputs.timeframe }}
+          IN_FROM: ${{ inputs.date_from }}
 
       - name: Sonucu ozet olarak yayinla
         if: always()

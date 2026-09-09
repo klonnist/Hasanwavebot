@@ -193,8 +193,15 @@ bir özet basar.
 **Python kurmadan, GitHub üzerinden çalıştırmak:** Yerelde Python
 kurulu olmasa bile [Actions → "Backtest calistir" → "Run workflow"](../../actions/workflows/backtest.yml)
 üzerinden bir form doldurup (strateji, zaman dilimi, tarih aralığı...)
-tetikleyebilirsiniz; sonuç, çalışan işin özet (summary) sayfasında
-doğrudan görünür.
+tetikleyebilirsiniz.
+
+**Sonuçları panelde görmek:** Her çalıştırma, sonucu
+`data/backtests/<id>.json` olarak repoya kaydeder ve `index.json`'a
+ekler; [canlı panelin](https://klonnist.github.io/Hasanwavebot/)
+**Backtest** sekmesinde geçmiş tüm çalıştırmalar listelenir —
+"Detay" ile bakiye eğrisi, öğrenilen parametreler, işlem listesi ve
+kullanılan ayarlar görülebilir. (`--report-dir` bayrağı bunu yerelde
+de üretir.)
 
 **Sınırlamalar** (canlı bottan farkı):
 - Mum **kapanış fiyatına** göre karar verir — bir mum içinde fiyatın

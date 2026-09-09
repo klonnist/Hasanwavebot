@@ -30,6 +30,8 @@ ONEMLI SINIRLAMALAR
   acar (canli moddaki gibi).
 """
 import argparse
+import json
+import os
 import time
 from datetime import datetime, timezone
 
@@ -83,6 +85,11 @@ def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, win
         window_df = df_full.iloc[i - window:i + 1].reset_index(drop=True)
         bar_close = float(window_df["close"].iloc[-1])
 
+        # Hesabin "simdi"si, gercek saat degil o an oynatilan mumun zamani olsun --
+        # boylece islem zaman damgalari (ve bakiye egrisi) test edilen tarihi gosterir.
+        bar_ts = window_df["timestamp"].iloc[-1].to_pydatetime()
+        account.now_fn = lambda ts=bar_ts: ts
+
         if account.has_open_position(symbol):
             result = account.check_and_close(symbol, bar_close)
             if result and result["result"] in ("TP", "SL"):
@@ -133,6 +140,106 @@ def compute_max_drawdown(history, starting_balance) -> float:
     return max_dd * 100
 
 
+def build_leaderboard_rows(learner: Learner, top_n: int = 12):
+    """learner.leaderboard()'un yapisal (JSON'lanabilir) hali."""
+    rows = []
+    for p in learner.grid:
+        key = p.key()
+        s = learner.stats.get(key)
+        if not s or s["n"] == 0:
+            continue
+        rows.append({
+            "first": key[0],          # wave: ATR carpani, vwap: bant carpani
+            "tp_mult": key[1],
+            "n": s["n"],
+            "win_rate": round(100 * s["wins"] / s["n"], 1),
+            "avg_r": round(s["reward_sum"] / s["n"], 3),
+        })
+    rows.sort(key=lambda r: r["avg_r"], reverse=True)
+    return rows[:top_n]
+
+
+def build_equity_curve(history, starting_balance, max_points: int = 300):
+    """Kapanan her islemden sonraki bakiyeyi zaman sirasinda dizer.
+    Cok fazla nokta varsa dosya sismesin diye seyreltir."""
+    ordered = sorted(history, key=lambda t: t["close_time"])
+    points = [{"t": ordered[0]["open_time"] if ordered else None, "balance": round(starting_balance, 2)}]
+    for t in ordered:
+        points.append({"t": t["close_time"], "balance": round(t.get("balance_after", starting_balance), 2)})
+    if len(points) > max_points:
+        step = len(points) / max_points
+        thinned = [points[int(i * step)] for i in range(max_points - 1)]
+        thinned.append(points[-1])  # son nokta her zaman korunur
+        points = thinned
+    return points
+
+
+def write_report(report_dir, account: PaperAccount, learner: Learner, symbols, args,
+                  since_ms, until_ms, max_index_runs: int = 50):
+    """Backtest sonucunu panelin okuyabilecegi JSON olarak yazar ve index'i gunceller."""
+    os.makedirs(report_dir, exist_ok=True)
+    s = account.stats()
+    dd = compute_max_drawdown(account.history, account.starting_balance)
+    now = datetime.now(timezone.utc)
+    date_from = datetime.fromtimestamp(since_ms / 1000, tz=timezone.utc).date().isoformat()
+    date_to = datetime.fromtimestamp(until_ms / 1000, tz=timezone.utc).date().isoformat()
+    run_id = f"{now:%Y%m%d-%H%M%S}-{args.strategy}-{args.timeframe}"
+
+    summary = {
+        "starting_balance": round(account.starting_balance, 2),
+        "final_balance": s["balance"],
+        "total_pnl": s["total_pnl"],
+        "total_pnl_pct": round(100 * s["total_pnl"] / account.starting_balance, 2) if account.starting_balance else 0.0,
+        "trades": s["trades"],
+        "win_rate": s["win_rate"],
+        "max_drawdown_pct": round(dd, 2),
+        "open_at_end": s["open_positions"],
+    }
+
+    report = {
+        "id": run_id,
+        "created_at": now.isoformat(timespec="seconds"),
+        "config": {
+            "strategy": args.strategy, "timeframe": args.timeframe, "market": args.market,
+            "date_from": date_from, "date_to": date_to, "symbols": symbols,
+            "window": args.window, "starting_balance": args.balance,
+            "trade_margin": args.trade_margin, "leverage": args.leverage,
+            "max_open": args.max_open, "max_portfolio_risk_pct": args.max_portfolio_risk_pct,
+            "breakeven_r": args.breakeven_r, "partial_tp_r": args.partial_tp_r,
+            "partial_tp_fraction": args.partial_tp_fraction,
+            "trail_giveback_pct": args.trail_giveback_pct, "epsilon": args.epsilon,
+        },
+        "summary": summary,
+        "leaderboard": build_leaderboard_rows(learner),
+        "equity": build_equity_curve(account.history, account.starting_balance),
+        "trades": sorted(account.history, key=lambda t: t["close_time"])[-60:],
+    }
+
+    with open(os.path.join(report_dir, f"{run_id}.json"), "w") as f:
+        json.dump(report, f, indent=2, default=str)
+
+    index_path = os.path.join(report_dir, "index.json")
+    index = {"runs": []}
+    if os.path.exists(index_path):
+        try:
+            with open(index_path) as f:
+                index = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            index = {"runs": []}
+
+    index["runs"] = ([{
+        "id": run_id, "file": f"{run_id}.json", "created_at": report["created_at"],
+        "strategy": args.strategy, "timeframe": args.timeframe,
+        "date_from": date_from, "date_to": date_to, "symbol_count": len(symbols),
+        **summary,
+    }] + index.get("runs", []))[:max_index_runs]
+
+    with open(index_path, "w") as f:
+        json.dump(index, f, indent=2)
+
+    return run_id
+
+
 def print_summary(account: PaperAccount, learner: Learner, symbols, strategy, since_ms, until_ms):
     s = account.stats()
     dd = compute_max_drawdown(account.history, account.starting_balance)
@@ -174,6 +281,9 @@ def main():
     parser.add_argument("--trail-giveback-pct", type=float, default=0.5)
     parser.add_argument("--epsilon", type=float, default=0.25)
     parser.add_argument("--out-dir", default=None, help="Verilirse sonuc account/learner state buraya JSON olarak kaydedilir")
+    parser.add_argument("--report-dir", default=None,
+                         help="Verilirse panelin okudugu backtest raporu (ve index.json) buraya yazilir, "
+                              "orn: ./data/backtests")
     args = parser.parse_args()
 
     since_ms = int(pd.Timestamp(args.date_from, tz="UTC").timestamp() * 1000)
@@ -206,10 +316,13 @@ def main():
 
     print_summary(account, learner, symbols, args.strategy, since_ms, until_ms)
 
+    if args.report_dir:
+        run_id = write_report(args.report_dir, account, learner, symbols, args, since_ms, until_ms)
+        print(f"Panel raporu yazildi: {args.report_dir}/{run_id}.json (index.json guncellendi)")
+
     if args.out_dir:
-        print(f"Sonuc dosyalari kaydedildi: {args.out_dir}/")
+        print(f"Ham state dosyalari kaydedildi: {args.out_dir}/")
     else:
-        import os
         for p in (state_path, learner_path, learner_path.replace(".json", "_by_symbol.json")):
             if os.path.exists(p):
                 os.remove(p)

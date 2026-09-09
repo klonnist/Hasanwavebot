@@ -1,0 +1,40 @@
+{
+  "runs": [
+    {
+      "id": "20260909-101659-wave-1h",
+      "file": "20260909-101659-wave-1h.json",
+      "created_at": "2026-09-09T10:16:59+00:00",
+      "strategy": "wave",
+      "timeframe": "1h",
+      "date_from": "2026-06-01",
+      "date_to": "2026-09-01",
+      "symbol_count": 3,
+      "starting_balance": 10000.0,
+      "final_balance": 10826.52,
+      "total_pnl": 826.52,
+      "total_pnl_pct": 8.27,
+      "trades": 105,
+      "win_rate": 59.0,
+      "max_drawdown_pct": 10.32,
+      "open_at_end": 3
+    },
+    {
+      "id": "20260909-101546-vwap-1h",
+      "file": "20260909-101546-vwap-1h.json",
+      "created_at": "2026-09-09T10:15:46+00:00",
+      "strategy": "vwap",
+      "timeframe": "1h",
+      "date_from": "2026-07-15",
+      "date_to": "2026-09-01",
+      "symbol_count": 2,
+      "starting_balance": 10000.0,
+      "final_balance": 10712.37,
+      "total_pnl": 712.37,
+      "total_pnl_pct": 7.12,
+      "trades": 118,
+      "win_rate": 55.1,
+      "max_drawdown_pct": 4.45,
+      "open_at_end": 0
+    }
+  ]
+}
