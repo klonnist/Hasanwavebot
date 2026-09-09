@@ -1,5 +1,7 @@
 # Elliott Wave Dalga-3 Öğrenen Ajan (OKX, Çoklu-Coin)
 
+### 🔴 [Canlı Panel: klonnist.github.io/Hasanwavebot](https://klonnist.github.io/Hasanwavebot/)
+
 OKX'ten (varsayılan: **USDT-M Perpetual Futures / swap**) canlı veri okuyan,
 **birden fazla popüler coini aynı anda tarayan**, her birinde bir kurulum
 (Elliott Wave Dalga 1-2-3 veya VWAP'a dönüş — bkz. aşağı) arayan ve
