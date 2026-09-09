@@ -1,0 +1,78 @@
+{
+  "balance": 10000.0,
+  "history": [],
+  "open_positions": {
+    "SOL/USDT:USDT": {
+      "symbol": "SOL/USDT:USDT",
+      "side": "BUY",
+      "entry": 103.9,
+      "tp": 116.05,
+      "sl": 100.527,
+      "risk_amount": 200.0,
+      "size": 59.2943966795137,
+      "param_key": [
+        2.5,
+        2.0,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:36+00:00",
+      "leverage": 5.0,
+      "notional": 6160.6878150014745,
+      "margin": 1232.137563000295
+    },
+    "XRP/USDT:USDT": {
+      "symbol": "XRP/USDT:USDT",
+      "side": "BUY",
+      "entry": 1.4254,
+      "tp": 1.5962456,
+      "sl": 1.34768,
+      "risk_amount": 200.0,
+      "size": 2573.3401955738545,
+      "param_key": [
+        5.0,
+        1.272,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:36+00:00",
+      "leverage": 5.0,
+      "notional": 3668.0391147709724,
+      "margin": 733.6078229541945
+    },
+    "BNB/USDT:USDT": {
+      "symbol": "BNB/USDT:USDT",
+      "side": "SELL",
+      "entry": 751.0,
+      "tp": 719.0,
+      "sl": 760.7099999999999,
+      "risk_amount": 200.0,
+      "size": 20.597322348094913,
+      "param_key": [
+        1.5,
+        2.0,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:36+00:00",
+      "leverage": 5.0,
+      "notional": 15468.58908341928,
+      "margin": 3093.7178166838557
+    },
+    "ETHFI/USDT:USDT": {
+      "symbol": "ETHFI/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.6163,
+      "tp": 0.6717910000000001,
+      "sl": 0.584275,
+      "risk_amount": 200.0,
+      "size": 6245.120999219365,
+      "param_key": [
+        2.5,
+        1.618,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:37+00:00",
+      "leverage": 5.0,
+      "notional": 3848.868071818895,
+      "margin": 769.773614363779
+    }
+  }
+}

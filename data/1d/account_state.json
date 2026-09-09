@@ -1,0 +1,96 @@
+{
+  "balance": 10000.0,
+  "history": [],
+  "open_positions": {
+    "XRP/USDT:USDT": {
+      "symbol": "XRP/USDT:USDT",
+      "side": "BUY",
+      "entry": 1.4253,
+      "tp": 1.7235,
+      "sl": 1.34768,
+      "risk_amount": 200.0,
+      "size": 2576.655501159494,
+      "param_key": [
+        5.0,
+        2.0,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:41+00:00",
+      "leverage": 3.0,
+      "notional": 3672.507085802627,
+      "margin": 1224.1690286008757
+    },
+    "BNB/USDT:USDT": {
+      "symbol": "BNB/USDT:USDT",
+      "side": "SELL",
+      "entry": 751.0,
+      "tp": 681.0326,
+      "sl": 768.1949999999999,
+      "risk_amount": 200.0,
+      "size": 11.631288165164335,
+      "param_key": [
+        1.5,
+        1.618,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:41+00:00",
+      "leverage": 3.0,
+      "notional": 8735.097412038416,
+      "margin": 2911.6991373461387
+    },
+    "DOGE/USDT:USDT": {
+      "symbol": "DOGE/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.09004,
+      "tp": 0.09515335999999999,
+      "sl": 0.087162,
+      "risk_amount": 200.0,
+      "size": 69492.70326615726,
+      "param_key": [
+        2.5,
+        1.618,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:41+00:00",
+      "leverage": 3.0,
+      "notional": 6257.1230020848,
+      "margin": 2085.7076673615998
+    },
+    "AVAX/USDT:USDT": {
+      "symbol": "AVAX/USDT:USDT",
+      "side": "BUY",
+      "entry": 7.971,
+      "tp": 7.928696,
+      "sl": 7.15655,
+      "risk_amount": 200.0,
+      "size": 245.56449137454726,
+      "param_key": [
+        3.5,
+        1.272,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:42+00:00",
+      "leverage": 3.0,
+      "notional": 1957.3945607465162,
+      "margin": 652.464853582172
+    },
+    "LINK/USDT:USDT": {
+      "symbol": "LINK/USDT:USDT",
+      "side": "BUY",
+      "entry": 12.479,
+      "tp": 16.761624,
+      "sl": 11.867799999999999,
+      "risk_amount": 200.0,
+      "size": 327.22513089005224,
+      "param_key": [
+        2.5,
+        1.618,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:42+00:00",
+      "leverage": 3.0,
+      "notional": 4083.442408376962,
+      "margin": 1361.1474694589872
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "balance": 10000.0,
+  "history": [],
+  "open_positions": {
+    "SOL/USDT:USDT": {
+      "symbol": "SOL/USDT:USDT",
+      "side": "BUY",
+      "entry": 103.9,
+      "tp": 107.83906,
+      "sl": 102.2345,
+      "risk_amount": 200.0,
+      "size": 120.08405884118821,
+      "param_key": [
+        1.5,
+        1.618,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:31+00:00",
+      "leverage": 10.0,
+      "notional": 12476.733713599455,
+      "margin": 1247.6733713599456
+    },
+    "LINK/USDT:USDT": {
+      "symbol": "LINK/USDT:USDT",
+      "side": "BUY",
+      "entry": 12.482,
+      "tp": 13.205158,
+      "sl": 12.26635,
+      "risk_amount": 200.0,
+      "size": 927.4287039183857,
+      "param_key": [
+        1.5,
+        1.618,
+        0.15
+      ],
+      "open_time": "2026-09-09T05:53:32+00:00",
+      "leverage": 10.0,
+      "notional": 11576.16508230929,
+      "margin": 1157.616508230929
+    }
+  }
+}
