@@ -42,8 +42,30 @@ pozisyonu açmak için ne kadar teminat "bağlandığını" gösterir.
 Ajan her taramada listedeki **her coin için ayrı ayrı** kurulum arar; aynı
 anda birden fazla coinde pozisyon açık olabilir (varsayılan sınır: **5**,
 `--max-open` ile ayarlanır). Tüm pozisyonlar **tek ortak 10.000 USDT'lik
-sanal bakiyeden** risk alır — yani 5 pozisyon aynı anda açıksa, toplam risk
-yaklaşık `5 × risk-pct` kadar olur (varsayılan %2 risk ile ~%10).
+sanal bakiyeden** risk alır.
+
+**Portföy bazlı risk tavanı:** Kripto piyasasında çoğu coin birlikte hareket
+ettiği için (korelasyon), "5 pozisyon = %10 risk" varsayımı gerçekte
+yanıltıcı olabilir — piyasa geneli düşerken 5 pozisyon aynı anda vurabilir.
+Bunu sınırlamak için `--max-portfolio-risk-pct` (varsayılan **%8**) tüm açık
+pozisyonların **toplam** riskine üst sınır koyar; pozisyon sayısı sınırına
+ulaşılmasa bile bu tavan aşılacaksa yeni işlem açılmaz.
+
+**Teminat (margin) kontrolü:** Gerçek bir borsada olduğu gibi, açık
+pozisyonların toplam margin'i (`notional / kaldıraç`) mevcut bakiyeyi
+aşacaksa yeni işlem reddedilir — yani simülasyon, gerçekte imkansız
+olacak büyüklükte pozisyon açamaz.
+
+**Funding ücreti:** Perpetual futures'ta pozisyon her 8 saatte bir funding
+ücreti öder/alır. Ajan her taramada OKX'in güncel funding oranını çekip
+(`ccxt.fetch_funding_rate`) açık pozisyonlara oranlı olarak işler ve
+bakiyeden düşer/ekler — özellikle **1 Gün** profili gibi günlerce açık
+kalan pozisyonlarda bu maliyet artık gerçekçi şekilde hesaba katılıyor.
+
+**Anlık kâr/zarar (mark-to-market):** Bir pozisyon henüz TP/SL'e çarpmasa
+bile, her taramada güncel fiyata göre gerçekleşmemiş kâr/zararı hesaplanıp
+`account_state.json`'a kaydediliyor (`unrealized_pnl`, `unrealized_r`).
+Panelde açık pozisyonlar tablosunda ve kart özetinde canlı olarak görünür.
 
 ## ⚠️ Uyarı (Disclaimer)
 
@@ -66,8 +88,8 @@ yaklaşık `5 × risk-pct` kadar olur (varsayılan %2 risk ile ~%10).
 
 ## Nasıl öğreniyor?
 
-Ajan; zigzag hassasiyeti (`deviation_pct`) ve TP hedefi (`tp_mult`) için
-**12 farklı kombinasyon** (4 hassasiyet × 3 TP çarpanı) dener:
+Ajan; zigzag hassasiyeti (ATR çarpanı) ve TP hedefi (`tp_mult`) için
+**12 farklı kombinasyon** (4 ATR çarpanı × 3 TP çarpanı) dener:
 
 - Önce hiç denenmemiş kombinasyonları sırayla dener (keşif).
 - Sonra çoğunlukla (**%75 varsayılan**) şimdiye kadar en iyi ortalama getiri
@@ -79,9 +101,24 @@ Ajan; zigzag hassasiyeti (`deviation_pct`) ve TP hedefi (`tp_mult`) için
 - Bir kombinasyon sürekli **SL'e** çarpıyorsa ortalama ödülü düşer ve ajan
   onu gitgide daha az seçer — yani **hatalarından ders çıkarır**.
 
-Öğrenilen istatistikler ve işlem geçmişi `./data/` klasöründe
-`learner_state.json` ve `account_state.json` olarak saklanır; ajanı
-durdurup tekrar başlattığınızda hafızası kaybolmaz.
+**ATR bazlı (volatiliteye duyarlı) hassasiyet:** Zigzag hassasiyeti artık
+sabit bir yüzde değil, o coinin son 14 mumdaki ATR%'sinin bir katsayısı
+(`wave_detector.atr_pct`). Böylece aynı katsayı, BTC gibi düşük oynaklıklı
+bir coin için de PENGU gibi çok oynak bir coin için de o coinin kendi
+hareketine göre adil bir eşik üretir — sabit yüzdeyle BTC'de hiç sinyal
+üretmeyecek bir ayar, PENGU'da sadece gürültüden sinyal üretmiyor.
+
+**Coin bazlı öğrenme (global fallback'li):** Öğrenen ajan artık her sembol
+için ayrı istatistik tutuyor — BTC'de iyi çalışan kombinasyon PENGU'yu
+etkilemiyor. Bir sembol için yeterli veri (`MIN_SYMBOL_SAMPLES = 3`)
+birikene kadar, o kombinasyonun **tüm semboller genelindeki** ortalaması
+fallback olarak kullanılır, böylece 13 coin × 12 kombinasyon için ayrı ayrı
+sıfırdan keşif dönemi yaşanmaz.
+
+Öğrenilen istatistikler ve işlem geçmişi her zaman dilimi klasöründe
+(`data/<tf>/`) `learner_state.json` (genel), `learner_state_by_symbol.json`
+(coin bazlı) ve `account_state.json` olarak saklanır; ajanı durdurup
+tekrar başlattığınızda hafızası kaybolmaz.
 
 ## Kurulum
 
@@ -116,7 +153,9 @@ python main.py --symbols BTC/USDT,ETH/USDT --market spot --risk-pct 1.0 --epsilo
 | `--interval`       | Sürekli modda tam tarama sıklığı (saniye)                             | `60`                       |
 | `--balance`        | Başlangıç sanal bakiye (USDT, **tüm coinler için ortak**)             | `10000`                     |
 | `--risk-pct`       | İşlem başına riske edilecek bakiye yüzdesi                           | `2.0`                       |
+| `--leverage`       | Pozisyonlarda kullanılacak kaldıraç (yalnızca margin hesabını etkiler)  | `1.0`                       |
 | `--max-open`       | Aynı anda açık olabilecek en fazla pozisyon sayısı                     | `5`                         |
+| `--max-portfolio-risk-pct` | Tüm açık pozisyonların toplam riskinin bakiyeye oranı üst sınırı | `8.0`                 |
 | `--epsilon`        | Öğrenen ajanın keşif (explore) oranı                                   | `0.25`                     |
 | `--data-dir`       | Öğrenme/işlem geçmişi kayıt klasörü                                     | `./data`                     |
 | `--report-every`   | Kaç taramada bir özet rapor yazdırılsın                                 | `10`                         |
@@ -126,37 +165,39 @@ python main.py --symbols BTC/USDT,ETH/USDT --market spot --risk-pct 1.0 --epsilo
 
 ```
 [2026-09-08T05:00:00+00:00] >>> SANAL ISLEM ACILDI: BUY BTC/USDT:USDT | entry=64230.500000
-tp=65890.120000 sl=63510.800000 | param(dev%=2.5, tp_x=1.618) | dalga2 retrace=%54.2
-[2026-09-08T05:00:01+00:00] >>> SANAL ISLEM ACILDI: SELL SOL/USDT:USDT | entry=142.300000
-tp=131.800000 sl=145.900000 | param(dev%=3.5, tp_x=2.0) | dalga2 retrace=%61.8
-[2026-09-08T05:00:02+00:00] ETH/USDT:USDT 1h | dev%=1.5 tp_x=1.272 -> gecerli kurulum yok.
+tp=65890.120000 sl=63510.800000 | kaldirac=10.0x margin=4372.24 | param(atr_x=2.5, tp_x=1.618) | dalga2 retrace=%54.2
+[2026-09-08T05:00:01+00:00] SOL/USDT:USDT 15m | atr_x=1.8 (atr%=0.64 -> esik%=1.14) tp_x=2.0 -> gecerli kurulum yok.
+[2026-09-08T05:15:00+00:00] Pozisyon acik: BUY BTC/USDT:USDT | entry=64230.500000 guncel=64890.000000
+| anlik_kz=+412.50 USDT (R=2.06) | tp=65890.120000 sl=63510.800000
 
 [2026-09-08T06:00:00+00:00] <<< SANAL ISLEM KAPANDI: KAZANC (TP) | BUY BTC/USDT:USDT
-| pnl=324.0 USDT | R=1.62 | yeni bakiye=10324.0 USDT
+| pnl=324.0 USDT | funding=-1.2 USDT | R=1.62 | yeni bakiye=10322.8 USDT
 ----------------------------------------------------------------------
-SANAL HESAP OZETI  | izlenen_coin=10 acik_pozisyon=1 islem=14 kazanma_orani=%57.1
-toplam_pnl=1183.4 bakiye=11183.4 USDT
+SANAL HESAP OZETI  | izlenen_coin=13 acik_pozisyon=1 islem=14 kazanma_orani=%57.1
+toplam_pnl=1183.4 anlik_kz=45.2 funding_maliyeti=8.6 bakiye=11183.4 USDT
 Acik pozisyonlar: SOL/USDT:USDT(SELL)
 Ogrenilen en iyi parametre kombinasyonlari:
-  dev%   tp_x    n  winrate    avgR
-   2.5  1.618    9    77.8%    1.24
-   3.5  2.000    6    50.0%    0.31
-   1.5  1.272    4    25.0%   -0.42
+ atr_x   tp_x    n  winrate    avgR
+   1.8  1.618    9    77.8%    1.24
+   2.5  2.000    6    50.0%    0.31
+   0.8  1.272    4    25.0%   -0.42
 ----------------------------------------------------------------------
 ```
 
 ## Notlar / Geliştirme fikirleri
 
-- Öğrenen ajan (`learner.py`) şu an **tüm coinler için ortak** — hangi
-  parametre kombinasyonunun iyi çalıştığını coin bazında değil genel olarak
-  öğrenir. Coin başına ayrı öğrenme istenirse `Learner` nesnesini sembol
-  başına ayrı örnekleyip ayrı bir state dosyasına kaydetmek yeterli.
-- `--max-open` ile eşzamanlı pozisyon sayısını sınırlayarak toplam riski
-  kontrol altında tutabilirsiniz (örn. 10 coin izlerken `--max-open 3` daha
-  temkinli bir yaklaşımdır).
+- `--max-open` ve `--max-portfolio-risk-pct` ile eşzamanlı pozisyon
+  sayısını ve toplam riski sınırlayabilirsiniz (örn. 13 coin izlerken
+  `--max-open 3 --max-portfolio-risk-pct 5` daha temkinli bir yaklaşımdır).
 - Gerçek emir göndermeye geçmek isterseniz `paper_account.py`'yi referans
   alıp `ccxt`'in `create_order` fonksiyonunu kullanan ayrı bir "live"
   hesap sınıfı yazmanız gerekir — bu repo bilinçli olarak **sadece
   simülasyon** yapacak şekilde tasarlandı.
 - Bandit'in ödül fonksiyonu şu an sadece R multiple. İsterseniz Sharpe
-  oranı gibi risk-ayarlı bir metrik de eklenebilir.
+  oranı / maksimum drawdown gibi risk-ayarlı metrikler de eklenebilir.
+- Şu an TP/SL sabit; pozisyon kâra geçtikçe SL'i başabaşa (breakeven)
+  çekmek veya kademeli kâr almak (partial take-profit) istenirse
+  `paper_account.check_and_close` içine eklenebilir.
+- İşlem açılıp kapandığında Telegram/Discord bildirimi göndermek isterseniz
+  `main.py`'deki `log()` çağrılarının yanına bir webhook isteği eklemek
+  yeterli.

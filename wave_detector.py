@@ -20,6 +20,8 @@ class Pivot:
 
 @dataclass
 class WaveParams:
+    # deviation_pct burada dogrudan bir yuzde degil, ATR%%'nin katsayisidir
+    # (main.py bunu atr_pct(df) ile carpip zigzag_pivots'a gercek yuzdeyi verir).
     deviation_pct: float = 2.5
     retrace_min: float = 0.236
     retrace_max: float = 0.886
@@ -28,6 +30,28 @@ class WaveParams:
 
     def key(self):
         return (round(self.deviation_pct, 3), round(self.tp_mult, 3), round(self.sl_mult, 3))
+
+
+def atr_pct(df: pd.DataFrame, period: int = 14) -> float:
+    """Son kapanisa gore ATR'yi yuzde olarak dondurur (volatilite normalizasyonu icin).
+
+    Farkli coinlerin dogal oynakligi cok farkli oldugundan (orn. BTC ile bir
+    memecoin), sabit bir yuzdelik zigzag hassasiyeti coinden coine adaletsiz
+    calisir. ATR%%, o coinin kendi son hareketine gore olceklenmis bir
+    referans verir; zigzag hassasiyeti bunun bir katsayisi olarak kurulur.
+    """
+    high, low, close = df["high"], df["low"], df["close"]
+    prev_close = close.shift(1)
+    true_range = pd.concat([
+        high - low,
+        (high - prev_close).abs(),
+        (low - prev_close).abs(),
+    ], axis=1).max(axis=1)
+    atr = true_range.rolling(period).mean().iloc[-1]
+    last_close = float(close.iloc[-1])
+    if last_close <= 0 or pd.isna(atr):
+        return 0.0
+    return float(atr / last_close * 100)
 
 
 def zigzag_pivots(df: pd.DataFrame, deviation_pct: float = 2.5) -> List[Pivot]:

@@ -34,8 +34,8 @@ from datetime import datetime, timezone
 
 import ccxt
 
-from data_feed import build_exchange, fetch_ohlcv, fetch_last_price
-from wave_detector import zigzag_pivots, detect_wave3_setup, build_signal_levels, WaveParams
+from data_feed import build_exchange, fetch_ohlcv, fetch_last_price, fetch_funding_rate
+from wave_detector import zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams
 from paper_account import PaperAccount
 from learner import Learner
 
@@ -76,15 +76,17 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
     if account.has_open_position(symbol) or not account.can_open_new():
         return
 
-    params: WaveParams = learner.select()
+    params: WaveParams = learner.select(symbol)
 
     df = fetch_ohlcv(exchange, symbol, timeframe, limit=limit)
-    pivots = zigzag_pivots(df, deviation_pct=params.deviation_pct)
+    vol_pct = atr_pct(df)
+    effective_dev_pct = max(params.deviation_pct * vol_pct, 0.05)
+    pivots = zigzag_pivots(df, deviation_pct=effective_dev_pct)
     setup = detect_wave3_setup(pivots, params)
 
     if setup is None:
-        log(f"{symbol} {timeframe} | dev%={params.deviation_pct} tp_x={params.tp_mult} "
-            f"-> gecerli kurulum yok.")
+        log(f"{symbol} {timeframe} | atr_x={params.deviation_pct} (atr%={vol_pct:.2f} -> "
+            f"esik%={effective_dev_pct:.2f}) tp_x={params.tp_mult} -> gecerli kurulum yok.")
         return
 
     last_close = float(df["close"].iloc[-1])
@@ -97,30 +99,40 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
     if pos:
         log(f">>> SANAL ISLEM ACILDI: {setup['direction']} {symbol} | entry={entry:.6f} "
             f"tp={tp:.6f} sl={sl:.6f} | kaldirac={pos.leverage}x margin={pos.margin:.2f} "
-            f"| param(dev%={params.deviation_pct}, tp_x={params.tp_mult}) "
+            f"| param(atr_x={params.deviation_pct}, tp_x={params.tp_mult}) "
             f"| dalga2 retrace=%{setup['retrace_pct']:.1f}")
 
 
 def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount):
-    """Bu sembolde acik pozisyon varsa guncel fiyata gore TP/SL kontrolu yapar."""
+    """Bu sembolde acik pozisyon varsa funding'i isler, guncel fiyata gore
+    anlik kar/zarari (mark-to-market) gunceller ve TP/SL kontrolu yapar."""
     if not account.has_open_position(symbol):
         return
+
+    try:
+        funding_rate = fetch_funding_rate(exchange, symbol)
+        account.accrue_funding(symbol, funding_rate)
+    except Exception as e:
+        log(f"{symbol}: funding orani alinamadi (atlaniyor): {e}")
 
     last_price = fetch_last_price(exchange, symbol)
     result = account.check_and_close(symbol, last_price)
 
     if result is None:
         pos = account.open_positions[symbol]
+        sign = "+" if pos.unrealized_pnl >= 0 else ""
         log(f"Pozisyon acik: {pos.side} {symbol} | entry={pos.entry:.6f} "
-            f"guncel={last_price:.6f} | tp={pos.tp:.6f} sl={pos.sl:.6f}")
+            f"guncel={last_price:.6f} | anlik_kz={sign}{pos.unrealized_pnl:.2f} USDT (R={pos.unrealized_r:.2f}) "
+            f"| tp={pos.tp:.6f} sl={pos.sl:.6f}")
         return
 
     win = result["result"] == "TP"
-    learner.update(tuple(result["param_key"]), reward=result["r_multiple"], win=win)
+    learner.update(result["symbol"], tuple(result["param_key"]), reward=result["r_multiple"], win=win)
 
     sonuc_str = "KAZANC (TP)" if win else "KAYIP (SL)"
     log(f"<<< SANAL ISLEM KAPANDI: {sonuc_str} | {result['side']} {result['symbol']} "
-        f"| pnl={result['pnl']} USDT | R={result['r_multiple']} | yeni bakiye={result['balance_after']} USDT")
+        f"| pnl={result['pnl']} USDT | funding={result['funding_paid']} USDT | R={result['r_multiple']} "
+        f"| yeni bakiye={result['balance_after']} USDT")
 
 
 def print_report(account: PaperAccount, learner: Learner, symbols):
@@ -128,6 +140,7 @@ def print_report(account: PaperAccount, learner: Learner, symbols):
     print("-" * 70)
     print(f"SANAL HESAP OZETI  | izlenen_coin={len(symbols)} acik_pozisyon={s['open_positions']} "
           f"islem={s['trades']} kazanma_orani=%{s['win_rate']} toplam_pnl={s['total_pnl']} "
+          f"anlik_kz={s['unrealized_pnl']} funding_maliyeti={s['funding_total']} "
           f"bakiye={s['balance']} USDT")
     if account.open_positions:
         print("Acik pozisyonlar: " + ", ".join(
@@ -164,6 +177,9 @@ def main():
     parser.add_argument("--risk-pct", type=float, default=2.0, help="Islem basina riske edilecek bakiye yuzdesi")
     parser.add_argument("--leverage", type=float, default=1.0, help="Sanal pozisyonlarda kullanilacak kaldirac (orn. 10 = 10x)")
     parser.add_argument("--max-open", type=int, default=5, help="Ayni anda acik olabilecek en fazla pozisyon sayisi")
+    parser.add_argument("--max-portfolio-risk-pct", type=float, default=8.0,
+                         help="Tum acik pozisyonlarin TOPLAM riskinin bakiyeye orani ust siniri "
+                              "(korelasyonlu coinlerin ayni anda vurmasina karsi)")
     parser.add_argument("--epsilon", type=float, default=0.25, help="Ogrenen ajanin kesif (explore) orani")
     parser.add_argument("--data-dir", default="./data", help="Ogrenme/islem gecmisi kayit klasoru")
     parser.add_argument("--once", action="store_true", help="Tek tam tarama yap ve cik (debug icin)")
@@ -179,11 +195,13 @@ def main():
         risk_per_trade_pct=args.risk_pct,
         max_open_positions=args.max_open,
         leverage=args.leverage,
+        max_portfolio_risk_pct=args.max_portfolio_risk_pct,
     )
     learner = Learner(state_path=f"{args.data_dir}/learner_state.json", epsilon=args.epsilon)
 
     log(f"Ajan baslatildi | market={args.market} | {len(symbols)} coin izleniyor: {', '.join(symbols)}")
-    log(f"Sanal bakiye={account.balance} USDT | risk/islem=%{args.risk_pct} | kaldirac={args.leverage}x | max_ayni_anda_pozisyon={args.max_open}")
+    log(f"Sanal bakiye={account.balance} USDT | risk/islem=%{args.risk_pct} | kaldirac={args.leverage}x "
+        f"| max_ayni_anda_pozisyon={args.max_open} | max_portfoy_riski=%{args.max_portfolio_risk_pct}")
 
     if args.once:
         run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account)

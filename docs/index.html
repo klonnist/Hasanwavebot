@@ -119,17 +119,26 @@ async function fetchJson(path) {
 
 function computeStats(account) {
   const history = account.history || [];
-  const openCount = Object.keys(account.open_positions || {}).length;
+  const openPositions = Object.values(account.open_positions || {});
+  const startingBalance = account.starting_balance ?? 10000;
+  const unrealizedPnl = openPositions.reduce((s, p) => s + (p.unrealized_pnl || 0), 0);
+  const fundingTotal = history.reduce((s, t) => s + (t.funding_paid || 0), 0)
+    + openPositions.reduce((s, p) => s + (p.funding_paid || 0), 0);
+  const base = {
+    total_pnl: account.balance - startingBalance,  // gerceklesen net (funding dahil)
+    balance: account.balance,
+    open_positions: openPositions.length,
+    unrealized_pnl: unrealizedPnl,
+    funding_total: fundingTotal,
+  };
   if (history.length === 0) {
-    return { trades: 0, win_rate: 0, total_pnl: 0, balance: account.balance, open_positions: openCount };
+    return { trades: 0, win_rate: 0, ...base };
   }
   const wins = history.filter(t => t.result === "TP").length;
   return {
     trades: history.length,
     win_rate: 100 * wins / history.length,
-    total_pnl: history.reduce((s, t) => s + t.pnl, 0),
-    balance: account.balance,
-    open_positions: openCount,
+    ...base,
   };
 }
 
@@ -155,6 +164,8 @@ function renderCards(p, stats) {
   const cards = [
     { label: "Bakiye", value: `${fmt(stats.balance)} USDT` },
     { label: "Toplam K/Z", value: `${stats.total_pnl >= 0 ? "+" : ""}${fmt(stats.total_pnl)} USDT`, cls: pnlClass(stats.total_pnl) },
+    { label: "Anlık K/Z", value: `${stats.unrealized_pnl >= 0 ? "+" : ""}${fmt(stats.unrealized_pnl)} USDT`, cls: pnlClass(stats.unrealized_pnl) },
+    { label: "Funding Maliyeti", value: `${stats.funding_total >= 0 ? "-" : "+"}${fmt(Math.abs(stats.funding_total))} USDT`, cls: stats.funding_total > 0 ? "neg" : "pos" },
     { label: "Kazanma Oranı", value: `%${fmt(stats.win_rate, 1)}` },
     { label: "Toplam İşlem", value: stats.trades },
     { label: "Açık Pozisyon", value: stats.open_positions },
@@ -178,7 +189,8 @@ function renderOpenPositions(p, account) {
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th>Sembol</th><th>Yön</th><th>Giriş</th><th>TP</th><th>SL</th><th>Kaldıraç</th><th>Margin (USDT)</th><th>Risk (USDT)</th><th>Açılış</th>
+        <th>Sembol</th><th>Yön</th><th>Giriş</th><th>Anlık Fiyat</th><th>Anlık K/Z</th><th>Anlık R</th>
+        <th>TP</th><th>SL</th><th>Kaldıraç</th><th>Margin (USDT)</th><th>Risk (USDT)</th><th>Funding</th><th>Açılış</th>
       </tr></thead>
       <tbody>
         ${positions.map(pos => `
@@ -186,11 +198,15 @@ function renderOpenPositions(p, account) {
             <td>${pos.symbol}</td>
             <td class="side-${pos.side.toLowerCase()}">${pos.side}</td>
             <td>${fmt(pos.entry, 4)}</td>
+            <td>${fmt(pos.last_price, 4)}</td>
+            <td class="${pnlClass(pos.unrealized_pnl || 0)}">${(pos.unrealized_pnl || 0) >= 0 ? "+" : ""}${fmt(pos.unrealized_pnl || 0)}</td>
+            <td class="${pnlClass(pos.unrealized_r || 0)}">${fmt(pos.unrealized_r || 0, 2)}</td>
             <td>${fmt(pos.tp, 4)}</td>
             <td>${fmt(pos.sl, 4)}</td>
             <td>${fmt(pos.leverage, 0)}x</td>
             <td>${fmt(pos.margin)}</td>
             <td>${fmt(pos.risk_amount)}</td>
+            <td class="${pnlClass(-(pos.funding_paid || 0))}">${(pos.funding_paid || 0) > 0 ? "-" : "+"}${fmt(Math.abs(pos.funding_paid || 0))}</td>
             <td>${fmtTime(pos.open_time)}</td>
           </tr>
         `).join("")}
@@ -209,7 +225,7 @@ function renderHistory(p, account) {
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>Kaldıraç</th><th>K/Z (USDT)</th><th>R</th><th>Kapanış</th>
+        <th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>Kaldıraç</th><th>K/Z (USDT)</th><th>Funding</th><th>R</th><th>Kapanış</th>
       </tr></thead>
       <tbody>
         ${history.map(t => `
@@ -221,6 +237,7 @@ function renderHistory(p, account) {
             <td>${fmt(t.exit, 4)}</td>
             <td>${fmt(t.leverage, 0)}x</td>
             <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}</td>
+            <td class="${pnlClass(-(t.funding_paid || 0))}">${(t.funding_paid || 0) > 0 ? "-" : "+"}${fmt(Math.abs(t.funding_paid || 0))}</td>
             <td class="${pnlClass(t.r_multiple)}">${fmt(t.r_multiple, 2)}</td>
             <td>${fmtTime(t.close_time)}</td>
           </tr>
@@ -244,7 +261,7 @@ function renderLeaderboard(p, learner) {
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th>Dev %</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Ort. R</th>
+        <th>ATR×</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Ort. R</th>
       </tr></thead>
       <tbody>
         ${rows.map(r => `
