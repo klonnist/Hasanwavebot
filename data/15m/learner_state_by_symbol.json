@@ -70,5 +70,11 @@
     "reward_sum": 2.082,
     "wins": 1,
     "losses": 0
+  },
+  "[\"XRP/USDT:USDT\", 2.5, 1.272, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.193,
+    "wins": 1,
+    "losses": 0
   }
 }
