@@ -42,9 +42,9 @@
       "margin": 1224.1690286008757,
       "last_funding_time": "2026-09-09T05:53:41+00:00",
       "funding_paid": 0.0,
-      "last_price": 1.4316,
-      "unrealized_pnl": 16.2329,
-      "unrealized_r": 0.081
+      "last_price": 1.4368,
+      "unrealized_pnl": 29.6315,
+      "unrealized_r": 0.148
     },
     "BNB/USDT:USDT": {
       "symbol": "BNB/USDT:USDT",
@@ -65,9 +65,9 @@
       "margin": 2911.6991373461387,
       "last_funding_time": "2026-09-09T05:53:41+00:00",
       "funding_paid": 0.0,
-      "last_price": 752.6,
-      "unrealized_pnl": -18.6101,
-      "unrealized_r": -0.093
+      "last_price": 754.5,
+      "unrealized_pnl": -40.7095,
+      "unrealized_r": -0.204
     },
     "DOGE/USDT:USDT": {
       "symbol": "DOGE/USDT:USDT",
@@ -88,9 +88,9 @@
       "margin": 2085.7076673615998,
       "last_funding_time": "2026-09-09T05:53:41+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.09028,
-      "unrealized_pnl": 16.6782,
-      "unrealized_r": 0.083
+      "last_price": 0.09059,
+      "unrealized_pnl": 38.221,
+      "unrealized_r": 0.191
     },
     "LINK/USDT:USDT": {
       "symbol": "LINK/USDT:USDT",
@@ -111,9 +111,9 @@
       "margin": 1361.1474694589872,
       "last_funding_time": "2026-09-09T05:53:42+00:00",
       "funding_paid": 0.0,
-      "last_price": 12.531,
-      "unrealized_pnl": 17.0157,
-      "unrealized_r": 0.085
+      "last_price": 12.585,
+      "unrealized_pnl": 34.6859,
+      "unrealized_r": 0.173
     }
   }
 }
