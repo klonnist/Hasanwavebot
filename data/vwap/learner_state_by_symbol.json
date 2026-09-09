@@ -46,5 +46,11 @@
     "reward_sum": 1.372,
     "wins": 1,
     "losses": 0
+  },
+  "[\"BTC/USDT:USDT\", 1.5, 1.0, 0.5]": {
+    "n": 1,
+    "reward_sum": 1.767,
+    "wins": 1,
+    "losses": 0
   }
 }
