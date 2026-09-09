@@ -35,10 +35,10 @@ class Position:
 
 class PaperAccount:
     def __init__(self, state_path: str, starting_balance: float = 10000.0,
-                 risk_per_trade_pct: float = 2.0, max_open_positions: int = 5,
+                 trade_margin: float = 500.0, max_open_positions: int = 5,
                  leverage: float = 1.0, max_portfolio_risk_pct: float = 8.0):
         self.state_path = state_path
-        self.risk_per_trade_pct = risk_per_trade_pct
+        self.trade_margin = trade_margin
         self.max_open_positions = max_open_positions
         self.leverage = leverage
         self.max_portfolio_risk_pct = max_portfolio_risk_pct
@@ -87,23 +87,28 @@ class PaperAccount:
     def open_trade(self, symbol: str, side: str, entry: float, tp: float, sl: float, param_key: tuple):
         if symbol in self.open_positions or not self.can_open_new():
             return None
-        risk_amount = self.balance * (self.risk_per_trade_pct / 100)
         risk_per_unit = abs(entry - sl)
         if risk_per_unit <= 0:
+            return None
+
+        # Pozisyon buyuklugu artik bakiyenin yuzdesi degil, SABIT bir teminat
+        # (trade_margin) ile kaldiracin carpimindan geliyor -- her islem ayni
+        # miktarda "sermaye" kullanir, riske edilen tutar ise stop mesafesine
+        # gore degisir (asagida hesaplanan risk_amount, sadece bilgi/rapor
+        # ve portfoy risk tavani icin kullanilir).
+        margin = self.trade_margin
+        notional = margin * self.leverage
+        size = notional / entry
+        risk_amount = size * risk_per_unit
+
+        # Yetersiz teminat kontrolu: gercek bir borsada oldugu gibi, acik pozisyonlarin
+        # toplam margin'i mevcut bakiyeyi asamaz.
+        if self.used_margin() + margin > self.balance:
             return None
 
         # Portfoy bazli risk tavani: korelasyonlu (ayni anda birlikte hareket eden)
         # coinlerde bile toplam risk her zaman bakiyenin belirli bir yuzdesini asamaz.
         if self.open_risk_total() + risk_amount > self.balance * (self.max_portfolio_risk_pct / 100):
-            return None
-
-        size = risk_amount / risk_per_unit
-        notional = entry * size
-        margin = notional / self.leverage
-
-        # Yetersiz teminat kontrolu: gercek bir borsada oldugu gibi, acik pozisyonlarin
-        # toplam margin'i mevcut bakiyeyi asamaz.
-        if self.used_margin() + margin > self.balance:
             return None
 
         open_time = datetime.now(timezone.utc).isoformat(timespec="seconds")

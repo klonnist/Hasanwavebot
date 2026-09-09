@@ -26,14 +26,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Scan 15m (scalp, 10x kaldirac)
-        run: python main.py --timeframe 15m --leverage 10 --data-dir ./data/15m --once
+      - name: Scan 15m (scalp, 10x kaldirac, islem basina 500 USDT teminat)
+        run: python main.py --timeframe 15m --leverage 10 --trade-margin 500 --data-dir ./data/15m --once
 
-      - name: Scan 4h (swing, 5x kaldirac)
-        run: python main.py --timeframe 4h --leverage 5 --data-dir ./data/4h --once
+      - name: Scan 4h (swing, 5x kaldirac, islem basina 500 USDT teminat)
+        run: python main.py --timeframe 4h --leverage 5 --trade-margin 500 --data-dir ./data/4h --once
 
-      - name: Scan 1d (pozisyon, 3x kaldirac)
-        run: python main.py --timeframe 1d --leverage 3 --data-dir ./data/1d --once
+      - name: Scan 1d (pozisyon, 3x kaldirac, islem basina 500 USDT teminat)
+        run: python main.py --timeframe 1d --leverage 3 --trade-margin 500 --data-dir ./data/1d --once
 
       - name: Commit updated state
         run: |

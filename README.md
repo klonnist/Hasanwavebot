@@ -33,11 +33,15 @@ sahiptir, böylece sonuçları birbirinden bağımsız karşılaştırabilirsini
 Sonuçlar [klonnist.github.io/Hasanwavebot](https://klonnist.github.io/Hasanwavebot/)
 adresindeki panelde sekmeler halinde canlı gösterilir.
 
-**Kaldıraç hakkında:** Kaldıraç yalnızca margin/teminat hesabını
-etkiler (`margin = notional / leverage`), pozisyon büyüklüğü ve risk
-her zaman `--risk-pct` ile belirlenen sabit yüzdeye göre hesaplanır —
-yani kaldıraç, işlem başına riske edilen tutarı değiştirmez, sadece o
-pozisyonu açmak için ne kadar teminat "bağlandığını" gösterir.
+**Pozisyon büyüklüğü — sabit teminat × kaldıraç:** Her işlem, bakiyenin
+yüzdesi yerine **sabit `--trade-margin` (varsayılan 500 USDT)** teminat
+kullanır; pozisyon büyüklüğü (`notional`) bu teminat çarpı kaldıraçtır
+(`notional = trade_margin × leverage`, `size = notional / entry`). Yani
+15m profilinde her işlem 500 USDT × 10x = 5.000 USDT'lik pozisyon açar,
+1d profilinde 500 USDT × 3x = 1.500 USDT'lik. Riske edilen tutar
+(`risk_amount`) artık sabit değil, stop mesafesine göre değişir — bu da
+R multiple (kazanç/risk) hesaplamasında ve öğrenen ajanın ödül
+fonksiyonunda kullanılıyor.
 
 Ajan her taramada listedeki **her coin için ayrı ayrı** kurulum arar; aynı
 anda birden fazla coinde pozisyon açık olabilir (varsayılan sınır: **5**,
@@ -138,8 +142,8 @@ python main.py --symbols BTC/USDT,ETH/USDT,SOL/USDT
 # Tek tarama (debug / test icin)
 python main.py --once
 
-# Spot piyasa, farkli risk ve kesif orani, daha az coin
-python main.py --symbols BTC/USDT,ETH/USDT --market spot --risk-pct 1.0 --epsilon 0.15
+# Spot piyasa, farkli islem basina teminat ve kesif orani, daha az coin
+python main.py --symbols BTC/USDT,ETH/USDT --market spot --trade-margin 250 --epsilon 0.15
 ```
 
 ### Parametreler
@@ -152,8 +156,8 @@ python main.py --symbols BTC/USDT,ETH/USDT --market spot --risk-pct 1.0 --epsilo
 | `--limit`          | Çekilecek mum sayısı                                                  | `300`                       |
 | `--interval`       | Sürekli modda tam tarama sıklığı (saniye)                             | `60`                       |
 | `--balance`        | Başlangıç sanal bakiye (USDT, **tüm coinler için ortak**)             | `10000`                     |
-| `--risk-pct`       | İşlem başına riske edilecek bakiye yüzdesi                           | `2.0`                       |
-| `--leverage`       | Pozisyonlarda kullanılacak kaldıraç (yalnızca margin hesabını etkiler)  | `1.0`                       |
+| `--trade-margin`   | İşlem başına kullanılacak SABİT teminat (USDT); `notional = bu × kaldıraç` | `500.0`                 |
+| `--leverage`       | Pozisyonlarda kullanılacak kaldıraç                                    | `1.0`                       |
 | `--max-open`       | Aynı anda açık olabilecek en fazla pozisyon sayısı                     | `5`                         |
 | `--max-portfolio-risk-pct` | Tüm açık pozisyonların toplam riskinin bakiyeye oranı üst sınırı | `8.0`                 |
 | `--epsilon`        | Öğrenen ajanın keşif (explore) oranı                                   | `0.25`                     |
@@ -165,7 +169,7 @@ python main.py --symbols BTC/USDT,ETH/USDT --market spot --risk-pct 1.0 --epsilo
 
 ```
 [2026-09-08T05:00:00+00:00] >>> SANAL ISLEM ACILDI: BUY BTC/USDT:USDT | entry=64230.500000
-tp=65890.120000 sl=63510.800000 | kaldirac=10.0x margin=4372.24 | param(atr_x=2.5, tp_x=1.618) | dalga2 retrace=%54.2
+tp=65890.120000 sl=63510.800000 | kaldirac=10.0x margin=500.00 | param(atr_x=2.5, tp_x=1.618) | dalga2 retrace=%54.2
 [2026-09-08T05:00:01+00:00] SOL/USDT:USDT 15m | atr_x=1.8 (atr%=0.64 -> esik%=1.14) tp_x=2.0 -> gecerli kurulum yok.
 [2026-09-08T05:15:00+00:00] Pozisyon acik: BUY BTC/USDT:USDT | entry=64230.500000 guncel=64890.000000
 | anlik_kz=+412.50 USDT (R=2.06) | tp=65890.120000 sl=63510.800000

@@ -186,7 +186,9 @@ def main():
     parser.add_argument("--limit", type=int, default=300)
     parser.add_argument("--interval", type=int, default=60, help="Her tam tarama arasi bekleme (saniye)")
     parser.add_argument("--balance", type=float, default=10000.0, help="Baslangic sanal bakiye (USDT, TUM coinler icin ORTAK)")
-    parser.add_argument("--risk-pct", type=float, default=2.0, help="Islem basina riske edilecek bakiye yuzdesi")
+    parser.add_argument("--trade-margin", type=float, default=500.0,
+                         help="Her islemde kullanilacak SABIT teminat (USDT); pozisyon buyuklugu "
+                              "bu tutar x kaldirac olarak hesaplanir (bakiye yuzdesi degil)")
     parser.add_argument("--leverage", type=float, default=1.0, help="Sanal pozisyonlarda kullanilacak kaldirac (orn. 10 = 10x)")
     parser.add_argument("--max-open", type=int, default=5, help="Ayni anda acik olabilecek en fazla pozisyon sayisi")
     parser.add_argument("--max-portfolio-risk-pct", type=float, default=8.0,
@@ -204,7 +206,7 @@ def main():
     account = PaperAccount(
         state_path=f"{args.data_dir}/account_state.json",
         starting_balance=args.balance,
-        risk_per_trade_pct=args.risk_pct,
+        trade_margin=args.trade_margin,
         max_open_positions=args.max_open,
         leverage=args.leverage,
         max_portfolio_risk_pct=args.max_portfolio_risk_pct,
@@ -212,7 +214,7 @@ def main():
     learner = Learner(state_path=f"{args.data_dir}/learner_state.json", epsilon=args.epsilon)
 
     log(f"Ajan baslatildi | market={args.market} | {len(symbols)} coin izleniyor: {', '.join(symbols)}")
-    log(f"Sanal bakiye={account.balance} USDT | risk/islem=%{args.risk_pct} | kaldirac={args.leverage}x "
+    log(f"Sanal bakiye={account.balance} USDT | islem_basina_teminat={args.trade_margin} USDT | kaldirac={args.leverage}x "
         f"| max_ayni_anda_pozisyon={args.max_open} | max_portfoy_riski=%{args.max_portfolio_risk_pct}")
 
     if args.once:
