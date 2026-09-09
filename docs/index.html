@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elliott Wave Bot — Panel</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0b0f14;
+    --panel: #121821;
+    --panel-border: #212a37;
+    --text: #e6edf3;
+    --muted: #8b98a5;
+    --green: #3fb950;
+    --red: #f85149;
+    --accent: #58a6ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 24px;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  .sub a { color: var(--accent); }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .card .value { font-size: 24px; font-weight: 600; margin-top: 6px; }
+  .pos { color: var(--green); }
+  .neg { color: var(--red); }
+  section {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  section h2 { font-size: 15px; margin: 0 0 12px; color: var(--text); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--panel-border); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; }
+  tr:last-child td { border-bottom: none; }
+  .empty { color: var(--muted); font-size: 13px; padding: 8px 0; }
+  .side-buy { color: var(--green); font-weight: 600; }
+  .side-sell { color: var(--red); font-weight: 600; }
+  .table-wrap { overflow-x: auto; }
+  #status { color: var(--muted); font-size: 12px; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+
+<h1>Elliott Wave Öğrenen Ajan — Sanal Hesap Paneli</h1>
+<div class="sub">
+  Veriler GitHub Actions tarafından her taramada güncellenir · repo:
+  <a href="https://github.com/klonnist/Hasanwavebot" target="_blank">klonnist/Hasanwavebot</a>
+</div>
+<div id="status">Yükleniyor…</div>
+
+<div class="cards" id="cards"></div>
+
+<section>
+  <h2>Açık Pozisyonlar</h2>
+  <div class="table-wrap" id="open-positions"></div>
+</section>
+
+<section>
+  <h2>Son İşlemler</h2>
+  <div class="table-wrap" id="history"></div>
+</section>
+
+<section>
+  <h2>Öğrenilen En İyi Parametre Kombinasyonları</h2>
+  <div class="table-wrap" id="leaderboard"></div>
+</section>
+
+<script>
+const OWNER = "klonnist";
+const REPO = "Hasanwavebot";
+const BRANCH = "main";
+const RAW = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/data`;
+
+function fmt(n, digits = 2) {
+  if (n === undefined || n === null || isNaN(n)) return "-";
+  return Number(n).toLocaleString("tr-TR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+}
+
+function pnlClass(n) { return n >= 0 ? "pos" : "neg"; }
+
+async function fetchJson(path) {
+  const res = await fetch(`${RAW}/${path}?t=${Date.now()}`, { cache: "no-store" });
+  if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
+  return res.json();
+}
+
+function renderCards(account) {
+  const stats = account._stats;
+  const cards = [
+    { label: "Bakiye", value: `${fmt(stats.balance)} USDT` },
+    { label: "Toplam K/Z", value: `${stats.total_pnl >= 0 ? "+" : ""}${fmt(stats.total_pnl)} USDT`, cls: pnlClass(stats.total_pnl) },
+    { label: "Kazanma Oranı", value: `%${fmt(stats.win_rate, 1)}` },
+    { label: "Toplam İşlem", value: stats.trades },
+    { label: "Açık Pozisyon", value: stats.open_positions },
+  ];
+  document.getElementById("cards").innerHTML = cards.map(c => `
+    <div class="card">
+      <div class="label">${c.label}</div>
+      <div class="value ${c.cls || ""}">${c.value}</div>
+    </div>
+  `).join("");
+}
+
+function computeStats(account) {
+  const history = account.history || [];
+  if (history.length === 0) {
+    return { trades: 0, win_rate: 0, total_pnl: 0, balance: account.balance, open_positions: Object.keys(account.open_positions || {}).length };
+  }
+  const wins = history.filter(t => t.result === "TP").length;
+  return {
+    trades: history.length,
+    win_rate: 100 * wins / history.length,
+    total_pnl: history.reduce((s, t) => s + t.pnl, 0),
+    balance: account.balance,
+    open_positions: Object.keys(account.open_positions || {}).length,
+  };
+}
+
+function renderOpenPositions(account) {
+  const positions = Object.values(account.open_positions || {});
+  const el = document.getElementById("open-positions");
+  if (positions.length === 0) {
+    el.innerHTML = `<div class="empty">Şu anda açık pozisyon yok.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Sembol</th><th>Yön</th><th>Giriş</th><th>TP</th><th>SL</th><th>Risk (USDT)</th><th>Açılış</th>
+      </tr></thead>
+      <tbody>
+        ${positions.map(p => `
+          <tr>
+            <td>${p.symbol}</td>
+            <td class="side-${p.side.toLowerCase()}">${p.side}</td>
+            <td>${fmt(p.entry, 4)}</td>
+            <td>${fmt(p.tp, 4)}</td>
+            <td>${fmt(p.sl, 4)}</td>
+            <td>${fmt(p.risk_amount)}</td>
+            <td>${p.open_time.replace("T", " ").replace("+00:00", " UTC")}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderHistory(account) {
+  const history = [...(account.history || [])].reverse().slice(0, 30);
+  const el = document.getElementById("history");
+  if (history.length === 0) {
+    el.innerHTML = `<div class="empty">Henüz kapanmış işlem yok.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>K/Z (USDT)</th><th>R</th><th>Kapanış</th>
+      </tr></thead>
+      <tbody>
+        ${history.map(t => `
+          <tr>
+            <td>${t.symbol}</td>
+            <td class="side-${t.side.toLowerCase()}">${t.side}</td>
+            <td class="${t.result === "TP" ? "pos" : "neg"}">${t.result === "TP" ? "KAZANÇ" : "KAYIP"}</td>
+            <td>${fmt(t.entry, 4)}</td>
+            <td>${fmt(t.exit, 4)}</td>
+            <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}</td>
+            <td class="${pnlClass(t.r_multiple)}">${fmt(t.r_multiple, 2)}</td>
+            <td>${t.close_time.replace("T", " ").replace("+00:00", " UTC")}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderLeaderboard(learner) {
+  const rows = Object.entries(learner || {}).map(([key, s]) => {
+    const [dev, tp, sl] = JSON.parse(key);
+    return { dev, tp, sl, n: s.n, winRate: s.n ? 100 * s.wins / s.n : 0, avgR: s.n ? s.reward_sum / s.n : 0 };
+  }).filter(r => r.n > 0).sort((a, b) => b.avgR - a.avgR);
+
+  const el = document.getElementById("leaderboard");
+  if (rows.length === 0) {
+    el.innerHTML = `<div class="empty">Henüz yeterli veri yok.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Dev %</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Ort. R</th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td>${fmt(r.dev, 1)}</td>
+            <td>${fmt(r.tp, 3)}</td>
+            <td>${r.n}</td>
+            <td>%${fmt(r.winRate, 1)}</td>
+            <td class="${pnlClass(r.avgR)}">${fmt(r.avgR, 2)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+async function load() {
+  const status = document.getElementById("status");
+  try {
+    const [account, learner] = await Promise.all([
+      fetchJson("account_state.json").catch(() => ({ balance: 10000, history: [], open_positions: {} })),
+      fetchJson("learner_state.json").catch(() => ({})),
+    ]);
+    account._stats = computeStats(account);
+    renderCards(account);
+    renderOpenPositions(account);
+    renderHistory(account);
+    renderLeaderboard(learner);
+    status.textContent = `Son güncelleme: ${new Date().toLocaleString("tr-TR")}`;
+  } catch (e) {
+    status.textContent = `Veri yüklenemedi: ${e.message}`;
+  }
+}
+
+load();
+setInterval(load, 60000);
+</script>
+
+</body>
+</html>
