@@ -1,5 +1,5 @@
 {
-  "balance": 10038.55154274209,
+  "balance": 10060.916539489,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -506,37 +506,30 @@
       "open_time": "2026-09-09T15:10:39+00:00",
       "close_time": "2026-09-09T15:28:45+00:00",
       "balance_after": 10038.5515
-    }
-  ],
-  "open_positions": {
-    "ETHFI/USDT:USDT": {
+    },
+    {
       "symbol": "ETHFI/USDT:USDT",
       "side": "SELL",
       "entry": 0.6148,
-      "tp": 0.6001964945784696,
-      "sl": 0.6093,
-      "risk_amount": 16.900252160893917,
-      "size": 4066.363044892648,
+      "exit": 0.6093,
+      "result": "SL",
+      "pnl": 67.095,
+      "final_leg_pnl": 22.365,
+      "partial_taken": true,
+      "r_multiple": 1.985,
       "param_key": [
         1.5,
         0.75,
         0.5
       ],
-      "open_time": "2026-09-09T15:10:39+00:00",
       "leverage": 10.0,
-      "notional": 2500.0,
-      "margin": 250.0,
-      "last_funding_time": "2026-09-09T15:10:39+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.6148,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 0.618956110011407,
-      "initial_risk_amount": 33.800504321787834,
-      "breakeven_done": true,
-      "partial_tp_done": true,
-      "partial_pnl_realized": 44.729993493819165
-    },
+      "open_time": "2026-09-09T15:10:39+00:00",
+      "close_time": "2026-09-09T15:46:07+00:00",
+      "balance_after": 10060.9165
+    }
+  ],
+  "open_positions": {
     "NEAR/USDT:USDT": {
       "symbol": "NEAR/USDT:USDT",
       "side": "SELL",
@@ -556,9 +549,9 @@
       "margin": 250.0,
       "last_funding_time": "2026-09-09T15:10:39+00:00",
       "funding_paid": 0.0,
-      "last_price": 2.605,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 2.567,
+      "unrealized_pnl": 36.4683,
+      "unrealized_r": 1.711,
       "initial_sl": 2.6272046622054277,
       "initial_risk_amount": 42.61931325417988,
       "breakeven_done": true,
