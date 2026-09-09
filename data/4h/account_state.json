@@ -22,9 +22,9 @@
       "margin": 1232.137563000295,
       "last_funding_time": "2026-09-09T05:53:36+00:00",
       "funding_paid": 0.0,
-      "last_price": 104.71,
-      "unrealized_pnl": 48.0285,
-      "unrealized_r": 0.24
+      "last_price": 104.44,
+      "unrealized_pnl": 32.019,
+      "unrealized_r": 0.16
     },
     "XRP/USDT:USDT": {
       "symbol": "XRP/USDT:USDT",
@@ -45,9 +45,9 @@
       "margin": 733.6078229541945,
       "last_funding_time": "2026-09-09T05:53:36+00:00",
       "funding_paid": 0.0,
-      "last_price": 1.4382,
-      "unrealized_pnl": 32.9388,
-      "unrealized_r": 0.165
+      "last_price": 1.4317,
+      "unrealized_pnl": 16.212,
+      "unrealized_r": 0.081
     },
     "BNB/USDT:USDT": {
       "symbol": "BNB/USDT:USDT",
@@ -68,9 +68,9 @@
       "margin": 3093.7178166838557,
       "last_funding_time": "2026-09-09T05:53:36+00:00",
       "funding_paid": 0.0,
-      "last_price": 755.2,
-      "unrealized_pnl": -86.5088,
-      "unrealized_r": -0.433
+      "last_price": 756.2,
+      "unrealized_pnl": -107.1061,
+      "unrealized_r": -0.536
     },
     "ETHFI/USDT:USDT": {
       "symbol": "ETHFI/USDT:USDT",
@@ -91,9 +91,9 @@
       "margin": 769.773614363779,
       "last_funding_time": "2026-09-09T05:53:37+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.6365,
-      "unrealized_pnl": 126.1514,
-      "unrealized_r": 0.631
+      "last_price": 0.6318,
+      "unrealized_pnl": 96.7994,
+      "unrealized_r": 0.484
     }
   }
 }
