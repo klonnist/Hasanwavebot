@@ -1,5 +1,6 @@
 {
   "balance": 10000.0,
+  "starting_balance": 10000.0,
   "history": [],
   "open_positions": {
     "SOL/USDT:USDT": {
@@ -18,7 +19,12 @@
       "open_time": "2026-09-09T05:53:31+00:00",
       "leverage": 10.0,
       "notional": 12476.733713599455,
-      "margin": 1247.6733713599456
+      "margin": 1247.6733713599456,
+      "last_funding_time": "2026-09-09T05:53:31+00:00",
+      "funding_paid": 0.0,
+      "last_price": 104.24,
+      "unrealized_pnl": 40.8286,
+      "unrealized_r": 0.204
     },
     "LINK/USDT:USDT": {
       "symbol": "LINK/USDT:USDT",
@@ -36,7 +42,58 @@
       "open_time": "2026-09-09T05:53:32+00:00",
       "leverage": 10.0,
       "notional": 11576.16508230929,
-      "margin": 1157.616508230929
+      "margin": 1157.616508230929,
+      "last_funding_time": "2026-09-09T05:53:32+00:00",
+      "funding_paid": 0.0,
+      "last_price": 12.532,
+      "unrealized_pnl": 46.3714,
+      "unrealized_r": 0.232
+    },
+    "BTC/USDT:USDT": {
+      "symbol": "BTC/USDT:USDT",
+      "side": "BUY",
+      "entry": 79064.1,
+      "tp": 79902.4816,
+      "sl": 78675.58,
+      "risk_amount": 200.0,
+      "size": 0.5147740142077574,
+      "param_key": [
+        1.2,
+        1.272,
+        0.15
+      ],
+      "open_time": "2026-09-09T06:13:56+00:00",
+      "leverage": 10.0,
+      "notional": 40700.14413672355,
+      "margin": 4070.014413672355,
+      "last_funding_time": "2026-09-09T06:13:56+00:00",
+      "funding_paid": 0.0,
+      "last_price": 79064.1,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0
+    },
+    "DOGE/USDT:USDT": {
+      "symbol": "DOGE/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.09027,
+      "tp": 0.08814265999999998,
+      "sl": 0.0910245,
+      "risk_amount": 200.0,
+      "size": 265076.2094102085,
+      "param_key": [
+        1.8,
+        1.618,
+        0.15
+      ],
+      "open_time": "2026-09-09T06:13:57+00:00",
+      "leverage": 10.0,
+      "notional": 23928.42942345952,
+      "margin": 2392.842942345952,
+      "last_funding_time": "2026-09-09T06:13:57+00:00",
+      "funding_paid": 0.0,
+      "last_price": 0.09027,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0
     }
   }
 }

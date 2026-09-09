@@ -1,5 +1,6 @@
 {
   "balance": 10000.0,
+  "starting_balance": 10000.0,
   "history": [],
   "open_positions": {
     "SOL/USDT:USDT": {
@@ -18,7 +19,12 @@
       "open_time": "2026-09-09T05:53:36+00:00",
       "leverage": 5.0,
       "notional": 6160.6878150014745,
-      "margin": 1232.137563000295
+      "margin": 1232.137563000295,
+      "last_funding_time": "2026-09-09T05:53:36+00:00",
+      "funding_paid": 0.0,
+      "last_price": 104.24,
+      "unrealized_pnl": 20.1601,
+      "unrealized_r": 0.101
     },
     "XRP/USDT:USDT": {
       "symbol": "XRP/USDT:USDT",
@@ -36,7 +42,12 @@
       "open_time": "2026-09-09T05:53:36+00:00",
       "leverage": 5.0,
       "notional": 3668.0391147709724,
-      "margin": 733.6078229541945
+      "margin": 733.6078229541945,
+      "last_funding_time": "2026-09-09T05:53:36+00:00",
+      "funding_paid": 0.0,
+      "last_price": 1.4316,
+      "unrealized_pnl": 15.9547,
+      "unrealized_r": 0.08
     },
     "BNB/USDT:USDT": {
       "symbol": "BNB/USDT:USDT",
@@ -54,7 +65,12 @@
       "open_time": "2026-09-09T05:53:36+00:00",
       "leverage": 5.0,
       "notional": 15468.58908341928,
-      "margin": 3093.7178166838557
+      "margin": 3093.7178166838557,
+      "last_funding_time": "2026-09-09T05:53:36+00:00",
+      "funding_paid": 0.0,
+      "last_price": 752.6,
+      "unrealized_pnl": -32.9557,
+      "unrealized_r": -0.165
     },
     "ETHFI/USDT:USDT": {
       "symbol": "ETHFI/USDT:USDT",
@@ -72,7 +88,12 @@
       "open_time": "2026-09-09T05:53:37+00:00",
       "leverage": 5.0,
       "notional": 3848.868071818895,
-      "margin": 769.773614363779
+      "margin": 769.773614363779,
+      "last_funding_time": "2026-09-09T05:53:37+00:00",
+      "funding_paid": 0.0,
+      "last_price": 0.6199,
+      "unrealized_pnl": 22.4824,
+      "unrealized_r": 0.112
     }
   }
 }
