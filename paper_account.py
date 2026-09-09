@@ -21,14 +21,19 @@ class Position:
     size: float          # pozisyon buyuklugu (birim)
     param_key: tuple      # ogrenen ajanin hangi parametreyi kullandigi
     open_time: str
+    leverage: float = 1.0    # bu hesabin kullandigi kaldirac
+    notional: float = 0.0    # pozisyonun kaldiracli toplam degeri (entry * size)
+    margin: float = 0.0      # kaldirac sonrasi baglanan sanal teminat (notional / leverage)
 
 
 class PaperAccount:
     def __init__(self, state_path: str, starting_balance: float = 10000.0,
-                 risk_per_trade_pct: float = 2.0, max_open_positions: int = 5):
+                 risk_per_trade_pct: float = 2.0, max_open_positions: int = 5,
+                 leverage: float = 1.0):
         self.state_path = state_path
         self.risk_per_trade_pct = risk_per_trade_pct
         self.max_open_positions = max_open_positions
+        self.leverage = leverage
         self.balance: float = starting_balance
         self.open_positions: Dict[str, Position] = {}
         self.history: List[Dict] = []
@@ -69,10 +74,12 @@ class PaperAccount:
         if risk_per_unit <= 0:
             return None
         size = risk_amount / risk_per_unit
+        notional = entry * size
         pos = Position(
             symbol=symbol, side=side, entry=entry, tp=tp, sl=sl,
             risk_amount=risk_amount, size=size, param_key=param_key,
             open_time=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            leverage=self.leverage, notional=notional, margin=notional / self.leverage,
         )
         self.open_positions[symbol] = pos
         self._save()
@@ -107,6 +114,7 @@ class PaperAccount:
             "pnl": round(pnl, 4),
             "r_multiple": round(r_multiple, 3),
             "param_key": pos.param_key,
+            "leverage": pos.leverage,
             "open_time": pos.open_time,
             "close_time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "balance_after": round(self.balance, 4),

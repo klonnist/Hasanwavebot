@@ -25,32 +25,50 @@
     padding: 24px;
   }
   h1 { font-size: 20px; margin: 0 0 4px; }
-  .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
   .sub a { color: var(--accent); }
+  #status { color: var(--muted); font-size: 12px; margin-bottom: 24px; }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab-btn {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .tab-btn.active { border-color: var(--accent); color: var(--accent); }
+
+  .profile { display: none; }
+  .profile.active { display: block; }
+
   .cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 12px;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
   }
   .card {
     background: var(--panel);
     border: 1px solid var(--panel-border);
     border-radius: 10px;
-    padding: 16px;
+    padding: 14px 16px;
   }
-  .card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-  .card .value { font-size: 24px; font-weight: 600; margin-top: 6px; }
+  .card .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+  .card .value { font-size: 21px; font-weight: 600; margin-top: 6px; }
   .pos { color: var(--green); }
   .neg { color: var(--red); }
+
   section {
     background: var(--panel);
     border: 1px solid var(--panel-border);
     border-radius: 10px;
     padding: 16px 20px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
-  section h2 { font-size: 15px; margin: 0 0 12px; color: var(--text); }
+  section h2 { font-size: 14px; margin: 0 0 12px; color: var(--text); }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--panel-border); white-space: nowrap; }
   th { color: var(--muted); font-weight: 500; }
@@ -59,34 +77,20 @@
   .side-buy { color: var(--green); font-weight: 600; }
   .side-sell { color: var(--red); font-weight: 600; }
   .table-wrap { overflow-x: auto; }
-  #status { color: var(--muted); font-size: 12px; margin-bottom: 20px; }
 </style>
 </head>
 <body>
 
 <h1>Elliott Wave Öğrenen Ajan — Sanal Hesap Paneli</h1>
 <div class="sub">
-  Veriler GitHub Actions tarafından her taramada güncellenir · repo:
+  Veriler GitHub Actions tarafından her 15 dakikada bir güncellenir · repo:
   <a href="https://github.com/klonnist/Hasanwavebot" target="_blank">klonnist/Hasanwavebot</a>
+  · her zaman dilimi kendi ayrı sanal 10.000 USDT hesabıyla çalışır
 </div>
 <div id="status">Yükleniyor…</div>
 
-<div class="cards" id="cards"></div>
-
-<section>
-  <h2>Açık Pozisyonlar</h2>
-  <div class="table-wrap" id="open-positions"></div>
-</section>
-
-<section>
-  <h2>Son İşlemler</h2>
-  <div class="table-wrap" id="history"></div>
-</section>
-
-<section>
-  <h2>Öğrenilen En İyi Parametre Kombinasyonları</h2>
-  <div class="table-wrap" id="leaderboard"></div>
-</section>
+<div class="tabs" id="tabs"></div>
+<div id="profiles"></div>
 
 <script>
 const OWNER = "klonnist";
@@ -94,40 +98,30 @@ const REPO = "Hasanwavebot";
 const BRANCH = "main";
 const RAW = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/data`;
 
+const PROFILES = [
+  { key: "15m", dir: "15m", label: "15 Dakika · Scalp", leverage: "10x" },
+  { key: "4h",  dir: "4h",  label: "4 Saat · Swing",    leverage: "5x" },
+  { key: "1d",  dir: "1d",  label: "1 Gün · Pozisyon",  leverage: "3x" },
+];
+
 function fmt(n, digits = 2) {
   if (n === undefined || n === null || isNaN(n)) return "-";
   return Number(n).toLocaleString("tr-TR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
-
 function pnlClass(n) { return n >= 0 ? "pos" : "neg"; }
+function fmtTime(t) { return (t || "").replace("T", " ").replace("+00:00", " UTC"); }
 
 async function fetchJson(path) {
   const res = await fetch(`${RAW}/${path}?t=${Date.now()}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
-}
-
-function renderCards(account) {
-  const stats = account._stats;
-  const cards = [
-    { label: "Bakiye", value: `${fmt(stats.balance)} USDT` },
-    { label: "Toplam K/Z", value: `${stats.total_pnl >= 0 ? "+" : ""}${fmt(stats.total_pnl)} USDT`, cls: pnlClass(stats.total_pnl) },
-    { label: "Kazanma Oranı", value: `%${fmt(stats.win_rate, 1)}` },
-    { label: "Toplam İşlem", value: stats.trades },
-    { label: "Açık Pozisyon", value: stats.open_positions },
-  ];
-  document.getElementById("cards").innerHTML = cards.map(c => `
-    <div class="card">
-      <div class="label">${c.label}</div>
-      <div class="value ${c.cls || ""}">${c.value}</div>
-    </div>
-  `).join("");
 }
 
 function computeStats(account) {
   const history = account.history || [];
+  const openCount = Object.keys(account.open_positions || {}).length;
   if (history.length === 0) {
-    return { trades: 0, win_rate: 0, total_pnl: 0, balance: account.balance, open_positions: Object.keys(account.open_positions || {}).length };
+    return { trades: 0, win_rate: 0, total_pnl: 0, balance: account.balance, open_positions: openCount };
   }
   const wins = history.filter(t => t.result === "TP").length;
   return {
@@ -135,13 +129,48 @@ function computeStats(account) {
     win_rate: 100 * wins / history.length,
     total_pnl: history.reduce((s, t) => s + t.pnl, 0),
     balance: account.balance,
-    open_positions: Object.keys(account.open_positions || {}).length,
+    open_positions: openCount,
   };
 }
 
-function renderOpenPositions(account) {
+function buildProfileSkeleton(p) {
+  return `
+    <div class="cards" id="cards-${p.key}"></div>
+    <section>
+      <h2>Açık Pozisyonlar</h2>
+      <div class="table-wrap" id="open-${p.key}"></div>
+    </section>
+    <section>
+      <h2>Son İşlemler</h2>
+      <div class="table-wrap" id="hist-${p.key}"></div>
+    </section>
+    <section>
+      <h2>Öğrenilen En İyi Parametre Kombinasyonları</h2>
+      <div class="table-wrap" id="lb-${p.key}"></div>
+    </section>
+  `;
+}
+
+function renderCards(p, stats) {
+  const cards = [
+    { label: "Bakiye", value: `${fmt(stats.balance)} USDT` },
+    { label: "Toplam K/Z", value: `${stats.total_pnl >= 0 ? "+" : ""}${fmt(stats.total_pnl)} USDT`, cls: pnlClass(stats.total_pnl) },
+    { label: "Kazanma Oranı", value: `%${fmt(stats.win_rate, 1)}` },
+    { label: "Toplam İşlem", value: stats.trades },
+    { label: "Açık Pozisyon", value: stats.open_positions },
+    { label: "Kaldıraç", value: p.leverage },
+  ];
+  document.getElementById(`cards-${p.key}`).innerHTML = cards.map(c => `
+    <div class="card">
+      <div class="label">${c.label}</div>
+      <div class="value ${c.cls || ""}">${c.value}</div>
+    </div>
+  `).join("");
+}
+
+function renderOpenPositions(p, account) {
   const positions = Object.values(account.open_positions || {});
-  const el = document.getElementById("open-positions");
+  const el = document.getElementById(`open-${p.key}`);
   if (positions.length === 0) {
     el.innerHTML = `<div class="empty">Şu anda açık pozisyon yok.</div>`;
     return;
@@ -149,18 +178,20 @@ function renderOpenPositions(account) {
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th>Sembol</th><th>Yön</th><th>Giriş</th><th>TP</th><th>SL</th><th>Risk (USDT)</th><th>Açılış</th>
+        <th>Sembol</th><th>Yön</th><th>Giriş</th><th>TP</th><th>SL</th><th>Kaldıraç</th><th>Margin (USDT)</th><th>Risk (USDT)</th><th>Açılış</th>
       </tr></thead>
       <tbody>
-        ${positions.map(p => `
+        ${positions.map(pos => `
           <tr>
-            <td>${p.symbol}</td>
-            <td class="side-${p.side.toLowerCase()}">${p.side}</td>
-            <td>${fmt(p.entry, 4)}</td>
-            <td>${fmt(p.tp, 4)}</td>
-            <td>${fmt(p.sl, 4)}</td>
-            <td>${fmt(p.risk_amount)}</td>
-            <td>${p.open_time.replace("T", " ").replace("+00:00", " UTC")}</td>
+            <td>${pos.symbol}</td>
+            <td class="side-${pos.side.toLowerCase()}">${pos.side}</td>
+            <td>${fmt(pos.entry, 4)}</td>
+            <td>${fmt(pos.tp, 4)}</td>
+            <td>${fmt(pos.sl, 4)}</td>
+            <td>${fmt(pos.leverage, 0)}x</td>
+            <td>${fmt(pos.margin)}</td>
+            <td>${fmt(pos.risk_amount)}</td>
+            <td>${fmtTime(pos.open_time)}</td>
           </tr>
         `).join("")}
       </tbody>
@@ -168,9 +199,9 @@ function renderOpenPositions(account) {
   `;
 }
 
-function renderHistory(account) {
+function renderHistory(p, account) {
   const history = [...(account.history || [])].reverse().slice(0, 30);
-  const el = document.getElementById("history");
+  const el = document.getElementById(`hist-${p.key}`);
   if (history.length === 0) {
     el.innerHTML = `<div class="empty">Henüz kapanmış işlem yok.</div>`;
     return;
@@ -178,7 +209,7 @@ function renderHistory(account) {
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>K/Z (USDT)</th><th>R</th><th>Kapanış</th>
+        <th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>Kaldıraç</th><th>K/Z (USDT)</th><th>R</th><th>Kapanış</th>
       </tr></thead>
       <tbody>
         ${history.map(t => `
@@ -188,9 +219,10 @@ function renderHistory(account) {
             <td class="${t.result === "TP" ? "pos" : "neg"}">${t.result === "TP" ? "KAZANÇ" : "KAYIP"}</td>
             <td>${fmt(t.entry, 4)}</td>
             <td>${fmt(t.exit, 4)}</td>
+            <td>${fmt(t.leverage, 0)}x</td>
             <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}</td>
             <td class="${pnlClass(t.r_multiple)}">${fmt(t.r_multiple, 2)}</td>
-            <td>${t.close_time.replace("T", " ").replace("+00:00", " UTC")}</td>
+            <td>${fmtTime(t.close_time)}</td>
           </tr>
         `).join("")}
       </tbody>
@@ -198,13 +230,13 @@ function renderHistory(account) {
   `;
 }
 
-function renderLeaderboard(learner) {
+function renderLeaderboard(p, learner) {
   const rows = Object.entries(learner || {}).map(([key, s]) => {
     const [dev, tp, sl] = JSON.parse(key);
     return { dev, tp, sl, n: s.n, winRate: s.n ? 100 * s.wins / s.n : 0, avgR: s.n ? s.reward_sum / s.n : 0 };
   }).filter(r => r.n > 0).sort((a, b) => b.avgR - a.avgR);
 
-  const el = document.getElementById("leaderboard");
+  const el = document.getElementById(`lb-${p.key}`);
   if (rows.length === 0) {
     el.innerHTML = `<div class="empty">Henüz yeterli veri yok.</div>`;
     return;
@@ -229,26 +261,50 @@ function renderLeaderboard(learner) {
   `;
 }
 
-async function load() {
+async function loadProfile(p) {
+  const [account, learner] = await Promise.all([
+    fetchJson(`${p.dir}/account_state.json`).catch(() => ({ balance: 10000, history: [], open_positions: {} })),
+    fetchJson(`${p.dir}/learner_state.json`).catch(() => ({})),
+  ]);
+  renderCards(p, computeStats(account));
+  renderOpenPositions(p, account);
+  renderHistory(p, account);
+  renderLeaderboard(p, learner);
+}
+
+function initTabs() {
+  document.getElementById("tabs").innerHTML = PROFILES.map((p, i) => `
+    <button class="tab-btn ${i === 0 ? "active" : ""}" data-key="${p.key}">${p.label}</button>
+  `).join("");
+  document.getElementById("profiles").innerHTML = PROFILES.map((p, i) => `
+    <div class="profile ${i === 0 ? "active" : ""}" id="profile-${p.key}">
+      ${buildProfileSkeleton(p)}
+    </div>
+  `).join("");
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".profile").forEach(s => s.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById(`profile-${btn.dataset.key}`).classList.add("active");
+    });
+  });
+}
+
+async function loadAll() {
   const status = document.getElementById("status");
   try {
-    const [account, learner] = await Promise.all([
-      fetchJson("account_state.json").catch(() => ({ balance: 10000, history: [], open_positions: {} })),
-      fetchJson("learner_state.json").catch(() => ({})),
-    ]);
-    account._stats = computeStats(account);
-    renderCards(account);
-    renderOpenPositions(account);
-    renderHistory(account);
-    renderLeaderboard(learner);
+    await Promise.all(PROFILES.map(loadProfile));
     status.textContent = `Son güncelleme: ${new Date().toLocaleString("tr-TR")}`;
   } catch (e) {
     status.textContent = `Veri yüklenemedi: ${e.message}`;
   }
 }
 
-load();
-setInterval(load, 60000);
+initTabs();
+loadAll();
+setInterval(loadAll, 60000);
 </script>
 
 </body>

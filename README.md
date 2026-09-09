@@ -10,8 +10,34 @@ sık, kaybettirenleri daha az kullanır.
 
 ## Varsayılan izlenen coinler
 
-BTC, ETH, SOL, XRP, BNB, DOGE, ADA, AVAX, LINK, TON (`main.py` içinde
-`POPULAR_COINS` listesi, `--symbols` ile değiştirilebilir).
+BTC, ETH, SOL, XRP, BNB, DOGE, ADA, AVAX, LINK, TON, ETHFI, PENGU, NEAR
+(`main.py` içinde `POPULAR_COINS` listesi, `--symbols` ile değiştirilebilir).
+
+> Not: XAUT/USDT (Tether Gold) OKX'te sadece spot piyasada işlem görüyor,
+> USDT-M perpetual futures (swap) karşılığı yok — bu yüzden listeye
+> eklenmedi.
+
+## GitHub Actions ile 7/24 çoklu zaman dilimi taraması
+
+[`.github/workflows/run-bot.yml`](.github/workflows/run-bot.yml) her 15
+dakikada bir **üç ayrı zaman dilimini birbirinden bağımsız** tarar; her
+biri kendi ayrı sanal 10.000 USDT hesabına ve kendi öğrenen ajanına
+sahiptir, böylece sonuçları birbirinden bağımsız karşılaştırabilirsiniz:
+
+| Zaman dilimi | Klasör       | Kaldıraç | Profil            |
+|--------------|--------------|----------|--------------------|
+| `15m`        | `data/15m/`  | 10x      | Scalp               |
+| `4h`         | `data/4h/`   | 5x       | Swing                |
+| `1d`         | `data/1d/`   | 3x       | Pozisyon             |
+
+Sonuçlar [klonnist.github.io/Hasanwavebot](https://klonnist.github.io/Hasanwavebot/)
+adresindeki panelde sekmeler halinde canlı gösterilir.
+
+**Kaldıraç hakkında:** Kaldıraç yalnızca margin/teminat hesabını
+etkiler (`margin = notional / leverage`), pozisyon büyüklüğü ve risk
+her zaman `--risk-pct` ile belirlenen sabit yüzdeye göre hesaplanır —
+yani kaldıraç, işlem başına riske edilen tutarı değiştirmez, sadece o
+pozisyonu açmak için ne kadar teminat "bağlandığını" gösterir.
 
 Ajan her taramada listedeki **her coin için ayrı ayrı** kurulum arar; aynı
 anda birden fazla coinde pozisyon açık olabilir (varsayılan sınır: **5**,

@@ -52,6 +52,9 @@ POPULAR_COINS = [
     "AVAX/USDT",
     "LINK/USDT",
     "TON/USDT",
+    "ETHFI/USDT",
+    "PENGU/USDT",
+    "NEAR/USDT",
 ]
 
 
@@ -93,7 +96,8 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
     )
     if pos:
         log(f">>> SANAL ISLEM ACILDI: {setup['direction']} {symbol} | entry={entry:.6f} "
-            f"tp={tp:.6f} sl={sl:.6f} | param(dev%={params.deviation_pct}, tp_x={params.tp_mult}) "
+            f"tp={tp:.6f} sl={sl:.6f} | kaldirac={pos.leverage}x margin={pos.margin:.2f} "
+            f"| param(dev%={params.deviation_pct}, tp_x={params.tp_mult}) "
             f"| dalga2 retrace=%{setup['retrace_pct']:.1f}")
 
 
@@ -158,6 +162,7 @@ def main():
     parser.add_argument("--interval", type=int, default=60, help="Her tam tarama arasi bekleme (saniye)")
     parser.add_argument("--balance", type=float, default=10000.0, help="Baslangic sanal bakiye (USDT, TUM coinler icin ORTAK)")
     parser.add_argument("--risk-pct", type=float, default=2.0, help="Islem basina riske edilecek bakiye yuzdesi")
+    parser.add_argument("--leverage", type=float, default=1.0, help="Sanal pozisyonlarda kullanilacak kaldirac (orn. 10 = 10x)")
     parser.add_argument("--max-open", type=int, default=5, help="Ayni anda acik olabilecek en fazla pozisyon sayisi")
     parser.add_argument("--epsilon", type=float, default=0.25, help="Ogrenen ajanin kesif (explore) orani")
     parser.add_argument("--data-dir", default="./data", help="Ogrenme/islem gecmisi kayit klasoru")
@@ -173,11 +178,12 @@ def main():
         starting_balance=args.balance,
         risk_per_trade_pct=args.risk_pct,
         max_open_positions=args.max_open,
+        leverage=args.leverage,
     )
     learner = Learner(state_path=f"{args.data_dir}/learner_state.json", epsilon=args.epsilon)
 
     log(f"Ajan baslatildi | market={args.market} | {len(symbols)} coin izleniyor: {', '.join(symbols)}")
-    log(f"Sanal bakiye={account.balance} USDT | risk/islem=%{args.risk_pct} | max_ayni_anda_pozisyon={args.max_open}")
+    log(f"Sanal bakiye={account.balance} USDT | risk/islem=%{args.risk_pct} | kaldirac={args.leverage}x | max_ayni_anda_pozisyon={args.max_open}")
 
     if args.once:
         run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account)
