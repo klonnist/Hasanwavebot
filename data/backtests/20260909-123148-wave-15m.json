@@ -1,0 +1,43 @@
+{
+  "id": "20260909-123148-wave-15m",
+  "created_at": "2026-09-09T12:31:48+00:00",
+  "config": {
+    "strategy": "wave",
+    "timeframe": "15m",
+    "market": "swap",
+    "date_from": "2026-09-01",
+    "date_to": "2026-09-09",
+    "symbols": [
+      "Btcusdt:Btcusdt"
+    ],
+    "window": 150,
+    "starting_balance": 10000.0,
+    "trade_margin": 500.0,
+    "leverage": 10.0,
+    "max_open": 5,
+    "max_portfolio_risk_pct": 8.0,
+    "breakeven_r": 1.0,
+    "partial_tp_r": 1.5,
+    "partial_tp_fraction": 0.5,
+    "trail_giveback_pct": 0.5,
+    "epsilon": 0.25
+  },
+  "summary": {
+    "starting_balance": 10000.0,
+    "final_balance": 10000.0,
+    "total_pnl": 0.0,
+    "total_pnl_pct": 0.0,
+    "trades": 0,
+    "win_rate": 0.0,
+    "max_drawdown_pct": 0.0,
+    "open_at_end": 0
+  },
+  "leaderboard": [],
+  "equity": [
+    {
+      "t": null,
+      "balance": 10000.0
+    }
+  ],
+  "trades": []
+}
