@@ -71,6 +71,26 @@ bile, her taramada güncel fiyata göre gerçekleşmemiş kâr/zararı hesaplan�
 `account_state.json`'a kaydediliyor (`unrealized_pnl`, `unrealized_r`).
 Panelde açık pozisyonlar tablosunda ve kart özetinde canlı olarak görünür.
 
+**Kademeli kâr alma + trailing stop:** Sabit tek bir TP hedefi yerine,
+pozisyon kâra geçtikçe üç aşamalı bir yönetim uygulanır:
+
+1. **Başabaş (breakeven)** — `--breakeven-r` R'a ulaşınca (varsayılan **1R**)
+   SL, giriş fiyatına çekilir. Pozisyon artık en kötü ihtimalle nötr kapanır.
+2. **Kısmi kâr alma** — `--partial-tp-r` R'a ulaşınca (varsayılan **1.5R**)
+   pozisyonun `--partial-tp-fraction` kadarı (varsayılan **%50**) hemen
+   nakde çevrilir; kalan kısım açık kalmaya devam eder.
+3. **Trailing stop** — kısmi alındıktan sonra SL, fiyat ilerledikçe
+   kazancın en fazla `--trail-giveback-pct` kadarını (varsayılan **%50**)
+   geri verecek şekilde takip eder — orijinal TP seviyesini asla aşmaz
+   (bir tavan/çatı olarak kalır).
+
+Böylece bir pozisyon "SL'e çarptı" görünse bile, trailing stop kâr
+durumundayken tetiklenmişse **gerçekte kazançlı** kapanmış olabilir —
+panelde bu durum "KAZANÇ (trailing)" olarak, kazanma oranı da gerçek
+kâr/zarar işaretine göre (sadece TP/SL etiketine göre değil) hesaplanır.
+Kısmi kâr alma anları, işlem geçmişinde ayrı "KISMİ AL" satırı olarak
+görünür (istatistiklere dahil edilmez, tamamlanmış bir işlem sayılmaz).
+
 ## ⚠️ Uyarı (Disclaimer)
 
 - **Bu ajan gerçek para kullanmaz, hiçbir gerçek emir göndermez.** Tamamen
@@ -160,6 +180,10 @@ python main.py --symbols BTC/USDT,ETH/USDT --market spot --trade-margin 250 --ep
 | `--leverage`       | Pozisyonlarda kullanılacak kaldıraç                                    | `1.0`                       |
 | `--max-open`       | Aynı anda açık olabilecek en fazla pozisyon sayısı                     | `5`                         |
 | `--max-portfolio-risk-pct` | Tüm açık pozisyonların toplam riskinin bakiyeye oranı üst sınırı | `8.0`                 |
+| `--breakeven-r`    | Bu R'a ulaşınca SL başabaşa (giriş fiyatına) çekilir                    | `1.0`                       |
+| `--partial-tp-r`   | Bu R'a ulaşınca pozisyonun bir kısmı kapatılır (kısmi kâr alma)          | `1.5`                       |
+| `--partial-tp-fraction` | Kısmi kâr alırken kapatılacak oran (0.5 = pozisyonun yarısı)        | `0.5`                       |
+| `--trail-giveback-pct` | Kısmi sonrası SL'in kazancın en fazla ne kadarını geri vereceği       | `0.5`                       |
 | `--epsilon`        | Öğrenen ajanın keşif (explore) oranı                                   | `0.25`                     |
 | `--data-dir`       | Öğrenme/işlem geçmişi kayıt klasörü                                     | `./data`                     |
 | `--report-every`   | Kaç taramada bir özet rapor yazdırılsın                                 | `10`                         |
@@ -199,9 +223,6 @@ Ogrenilen en iyi parametre kombinasyonlari:
   simülasyon** yapacak şekilde tasarlandı.
 - Bandit'in ödül fonksiyonu şu an sadece R multiple. İsterseniz Sharpe
   oranı / maksimum drawdown gibi risk-ayarlı metrikler de eklenebilir.
-- Şu an TP/SL sabit; pozisyon kâra geçtikçe SL'i başabaşa (breakeven)
-  çekmek veya kademeli kâr almak (partial take-profit) istenirse
-  `paper_account.check_and_close` içine eklenebilir.
 - İşlem açılıp kapandığında Telegram/Discord bildirimi göndermek isterseniz
   `main.py`'deki `log()` çağrılarının yanına bir webhook isteği eklemek
   yeterli.

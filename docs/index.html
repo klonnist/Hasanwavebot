@@ -77,6 +77,12 @@
   .side-buy { color: var(--green); font-weight: 600; }
   .side-sell { color: var(--red); font-weight: 600; }
   .table-wrap { overflow-x: auto; }
+  .badge {
+    display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 4px;
+    margin-right: 4px; border: 1px solid var(--panel-border); color: var(--muted);
+  }
+  .badge.on { color: var(--accent); border-color: var(--accent); }
+  .partial-row td { color: var(--muted); font-style: italic; }
 </style>
 </head>
 <body>
@@ -131,13 +137,18 @@ function computeStats(account) {
     unrealized_pnl: unrealizedPnl,
     funding_total: fundingTotal,
   };
-  if (history.length === 0) {
+  // PARTIAL_TP kayitlari tamamlanmis bir islem degil (pozisyon hala acik,
+  // trailing stop ile devam ediyor) -- islem sayisi/kazanma oranindan haric.
+  const completed = history.filter(t => t.result === "TP" || t.result === "SL");
+  if (completed.length === 0) {
     return { trades: 0, win_rate: 0, ...base };
   }
-  const wins = history.filter(t => t.result === "TP").length;
+  // Kazanma/kayip GERCEK pnl isaretine gore: trailing stop kar durumundayken
+  // tetiklenirse (result "SL" olsa bile) bu hala bir kazanctir.
+  const wins = completed.filter(t => t.pnl >= 0).length;
   return {
-    trades: history.length,
-    win_rate: 100 * wins / history.length,
+    trades: completed.length,
+    win_rate: 100 * wins / completed.length,
     ...base,
   };
 }
@@ -151,6 +162,10 @@ function buildProfileSkeleton(p) {
     </section>
     <section>
       <h2>Son İşlemler</h2>
+      <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
+        "KISMİ AL" satırları pozisyon henüz kapanmadan alınan kısmi kârı gösterir (istatistiklere dahil edilmez) ·
+        K/Z yanındaki * işareti, o işlemde kısmi kâr alınıp kalanının trailing stop ile devam ettiğini belirtir
+      </div>
       <div class="table-wrap" id="hist-${p.key}"></div>
     </section>
     <section>
@@ -190,7 +205,7 @@ function renderOpenPositions(p, account) {
     <table>
       <thead><tr>
         <th>Sembol</th><th>Yön</th><th>Giriş</th><th>Anlık Fiyat</th><th>Anlık K/Z</th><th>Anlık R</th>
-        <th>TP</th><th>SL</th><th>Kaldıraç</th><th>Margin (USDT)</th><th>Risk (USDT)</th><th>Funding</th><th>Açılış</th>
+        <th>TP</th><th>SL</th><th>Durum</th><th>Kaldıraç</th><th>Margin (USDT)</th><th>Risk (USDT)</th><th>Funding</th><th>Açılış</th>
       </tr></thead>
       <tbody>
         ${positions.map(pos => `
@@ -203,6 +218,10 @@ function renderOpenPositions(p, account) {
             <td class="${pnlClass(pos.unrealized_r || 0)}">${fmt(pos.unrealized_r || 0, 2)}</td>
             <td>${fmt(pos.tp, 4)}</td>
             <td>${fmt(pos.sl, 4)}</td>
+            <td>
+              <span class="badge ${pos.breakeven_done ? "on" : ""}">başabaş</span>
+              <span class="badge ${pos.partial_tp_done ? "on" : ""}">kısmi+trail</span>
+            </td>
             <td>${fmt(pos.leverage, 0)}x</td>
             <td>${fmt(pos.margin)}</td>
             <td>${fmt(pos.risk_amount)}</td>
@@ -228,20 +247,30 @@ function renderHistory(p, account) {
         <th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>Kaldıraç</th><th>K/Z (USDT)</th><th>Funding</th><th>R</th><th>Kapanış</th>
       </tr></thead>
       <tbody>
-        ${history.map(t => `
-          <tr>
+        ${history.map(t => {
+          const isPartial = t.result === "PARTIAL_TP";
+          // Kazanma/kayip GERCEK pnl isaretine gore: trailing stop kar durumundayken
+          // tetiklenirse (result "SL" olsa bile) bu hala bir kazanctir.
+          const profitable = t.pnl >= 0;
+          let sonucLabel, sonucCls;
+          if (isPartial) { sonucLabel = "KISMİ AL"; sonucCls = ""; }
+          else if (t.result === "TP") { sonucLabel = "KAZANÇ"; sonucCls = "pos"; }
+          else { sonucLabel = profitable ? "KAZANÇ (trailing)" : "KAYIP"; sonucCls = profitable ? "pos" : "neg"; }
+          return `
+          <tr class="${isPartial ? "partial-row" : ""}">
             <td>${t.symbol}</td>
             <td class="side-${t.side.toLowerCase()}">${t.side}</td>
-            <td class="${t.result === "TP" ? "pos" : "neg"}">${t.result === "TP" ? "KAZANÇ" : "KAYIP"}</td>
+            <td class="${sonucCls}">${sonucLabel}</td>
             <td>${fmt(t.entry, 4)}</td>
             <td>${fmt(t.exit, 4)}</td>
             <td>${fmt(t.leverage, 0)}x</td>
-            <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}</td>
+            <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}${t.partial_taken ? " *" : ""}</td>
             <td class="${pnlClass(-(t.funding_paid || 0))}">${(t.funding_paid || 0) > 0 ? "-" : "+"}${fmt(Math.abs(t.funding_paid || 0))}</td>
             <td class="${pnlClass(t.r_multiple)}">${fmt(t.r_multiple, 2)}</td>
             <td>${fmtTime(t.close_time)}</td>
           </tr>
-        `).join("")}
+        `;
+        }).join("")}
       </tbody>
     </table>
   `;

@@ -31,17 +31,29 @@ class Position:
     last_price: float = 0.0      # en son gorulen anlik fiyat (mark-to-market)
     unrealized_pnl: float = 0.0  # anlik gerceklesmemis kar/zarar (USDT)
     unrealized_r: float = 0.0    # anlik gerceklesmemis R multiple
+    initial_sl: float = 0.0            # acilistaki ORIJINAL stop (R hesaplari icin sabit referans)
+    initial_risk_amount: float = 0.0   # acilistaki ORIJINAL risk tutari (blended R icin sabit referans)
+    breakeven_done: bool = False       # SL basabasa cekildi mi
+    partial_tp_done: bool = False      # kismi kar alindi mi
+    partial_pnl_realized: float = 0.0  # kismi kar alimindan simdiye kadar gerceklesen toplam USDT
 
 
 class PaperAccount:
     def __init__(self, state_path: str, starting_balance: float = 10000.0,
                  trade_margin: float = 500.0, max_open_positions: int = 5,
-                 leverage: float = 1.0, max_portfolio_risk_pct: float = 8.0):
+                 leverage: float = 1.0, max_portfolio_risk_pct: float = 8.0,
+                 breakeven_r: float = 1.0, partial_tp_r: float = 1.5,
+                 partial_tp_fraction: float = 0.5, trail_giveback_pct: float = 0.5):
         self.state_path = state_path
         self.trade_margin = trade_margin
         self.max_open_positions = max_open_positions
         self.leverage = leverage
         self.max_portfolio_risk_pct = max_portfolio_risk_pct
+        # Kademeli kar alma / trailing stop ayarlari:
+        self.breakeven_r = breakeven_r            # bu R'a ulasinca SL basabasa cekilir
+        self.partial_tp_r = partial_tp_r           # bu R'a ulasinca pozisyonun bir kismi kapatilir
+        self.partial_tp_fraction = partial_tp_fraction  # kapatilacak kisim (0.5 = yarisi)
+        self.trail_giveback_pct = trail_giveback_pct     # kismi sonrasi, gelecek kazancin en fazla bu oranini SL'e "geri verir"
         self.starting_balance = starting_balance
         self.balance: float = starting_balance
         self.open_positions: Dict[str, Position] = {}
@@ -117,6 +129,7 @@ class PaperAccount:
             risk_amount=risk_amount, size=size, param_key=param_key,
             open_time=open_time, leverage=self.leverage, notional=notional, margin=margin,
             last_funding_time=open_time, last_price=entry,
+            initial_sl=sl, initial_risk_amount=risk_amount,
         )
         self.open_positions[symbol] = pos
         self._save()
@@ -147,12 +160,73 @@ class PaperAccount:
         pos.funding_paid += funding_cost
         pos.last_funding_time = (last + timedelta(hours=FUNDING_INTERVAL_HOURS * periods)).isoformat(timespec="seconds")
 
+    def _manage_position(self, pos: Position, last_price: float) -> Optional[dict]:
+        """Basabasa cekme, kismi kar alma ve trailing stop -- pozisyon acikken
+        her taramada calisir, pos.sl/size'i yerinde gunceller. Kismi kar
+        alindiysa bilgi dondurur (check_and_close bunu history'e ekler)."""
+        initial_sl = pos.initial_sl if pos.initial_sl else pos.sl
+        initial_risk = pos.initial_risk_amount if pos.initial_risk_amount else pos.risk_amount
+        risk_per_unit = abs(pos.entry - initial_sl)
+        if risk_per_unit <= 0 or initial_risk <= 0:
+            return None
+
+        r = ((last_price - pos.entry) if pos.side == "BUY" else (pos.entry - last_price)) / risk_per_unit
+
+        # 1) Basabasa (breakeven): belirli bir R'a ulasinca SL'i giris fiyatina cek --
+        # boylece pozisyon en kotu ihtimalle "notr" kapanir, tekrar zarara donmez.
+        if not pos.breakeven_done and r >= self.breakeven_r:
+            pos.sl = max(pos.sl, pos.entry) if pos.side == "BUY" else min(pos.sl, pos.entry)
+            pos.breakeven_done = True
+
+        partial_event = None
+        # 2) Kismi kar alma: belirli bir R'a ulasinca pozisyonun bir kismini
+        # hemen nakde cevir, kalanini kosturmaya devam et.
+        if not pos.partial_tp_done and r >= self.partial_tp_r:
+            partial_size = pos.size * self.partial_tp_fraction
+            partial_pnl = ((last_price - pos.entry) if pos.side == "BUY" else (pos.entry - last_price)) * partial_size
+            self.balance += partial_pnl
+            pos.partial_pnl_realized += partial_pnl
+            pos.size -= partial_size
+            pos.risk_amount = pos.size * risk_per_unit
+            pos.notional = pos.entry * pos.size
+            pos.margin = pos.notional / pos.leverage if pos.leverage else pos.notional
+            pos.partial_tp_done = True
+            partial_event = {"price": last_price, "pnl": partial_pnl}
+
+        # 3) Trailing stop: kismi alindiktan sonra, fiyat ilerledikce SL'i
+        # kazancin en fazla trail_giveback_pct kadarini geri verecek sekilde
+        # yukari (BUY) / asagi (SELL) cek -- orijinal TP'yi hic asmaz (sinir/cati).
+        if pos.partial_tp_done:
+            if pos.side == "BUY":
+                candidate = min(pos.entry + (last_price - pos.entry) * (1 - self.trail_giveback_pct), pos.tp)
+                pos.sl = max(pos.sl, candidate)
+            else:
+                candidate = max(pos.entry - (pos.entry - last_price) * (1 - self.trail_giveback_pct), pos.tp)
+                pos.sl = min(pos.sl, candidate)
+
+        return partial_event
+
     def check_and_close(self, symbol: str, last_price: float) -> Optional[dict]:
         pos = self.open_positions.get(symbol)
         if pos is None:
             return None
 
-        # Mark-to-market: pozisyon kapanmasa bile anlik kar/zarari her taramada guncelle.
+        partial_event = self._manage_position(pos, last_price)
+        if partial_event:
+            record = {
+                "symbol": pos.symbol, "side": pos.side, "result": "PARTIAL_TP",
+                "entry": pos.entry, "exit": partial_event["price"],
+                "pnl": round(partial_event["pnl"], 4), "r_multiple": round(self.partial_tp_r, 3),
+                "param_key": pos.param_key, "leverage": pos.leverage, "funding_paid": 0.0,
+                "open_time": pos.open_time, "close_time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                "balance_after": round(self.balance, 4),
+            }
+            self.history.append(record)
+            self._save()
+            return record  # bu tur sadece kismi kar alindi -- TP/SL kontrolu bir sonraki taramada
+
+        # Mark-to-market: pozisyon kapanmasa bile anlik kar/zarari her taramada guncelle
+        # (kismi alindiysa KALAN boyut uzerinden).
         if pos.side == "BUY":
             upnl = (last_price - pos.entry) * pos.size
         else:
@@ -170,12 +244,16 @@ class PaperAccount:
 
         exit_price = pos.tp if hit_tp else pos.sl
         if pos.side == "BUY":
-            pnl = (exit_price - pos.entry) * pos.size
+            final_leg_pnl = (exit_price - pos.entry) * pos.size
         else:
-            pnl = (pos.entry - exit_price) * pos.size
+            final_leg_pnl = (pos.entry - exit_price) * pos.size
 
-        r_multiple = pnl / pos.risk_amount if pos.risk_amount > 0 else 0.0
-        self.balance += pnl
+        self.balance += final_leg_pnl
+        # pnl/r_multiple, kismi kar alimi + son bacagi birlikte yansitir --
+        # "bu islem toplamda ne kazandirdi" sorusunun cevabi budur.
+        total_pnl = pos.partial_pnl_realized + final_leg_pnl
+        initial_risk = pos.initial_risk_amount if pos.initial_risk_amount else pos.risk_amount
+        total_r = total_pnl / initial_risk if initial_risk > 0 else 0.0
 
         result = {
             "symbol": pos.symbol,
@@ -183,8 +261,10 @@ class PaperAccount:
             "entry": pos.entry,
             "exit": exit_price,
             "result": "TP" if hit_tp else "SL",
-            "pnl": round(pnl, 4),
-            "r_multiple": round(r_multiple, 3),
+            "pnl": round(total_pnl, 4),
+            "final_leg_pnl": round(final_leg_pnl, 4),
+            "partial_taken": pos.partial_tp_done,
+            "r_multiple": round(total_r, 3),
             "param_key": pos.param_key,
             "leverage": pos.leverage,
             "funding_paid": round(pos.funding_paid, 4),
@@ -204,16 +284,22 @@ class PaperAccount:
             + sum(p.funding_paid for p in self.open_positions.values()), 2
         )
         realized_pnl = round(self.balance - self.starting_balance, 2)
-        if not self.history:
+        # PARTIAL_TP kayitlari tamamlanmis bir islem degil (pozisyon hala acik),
+        # bu yuzden islem sayisi / kazanma oranindan haric tutuluyor.
+        completed = [t for t in self.history if t["result"] in ("TP", "SL")]
+        if not completed:
             return {
                 "trades": 0, "win_rate": 0.0, "total_pnl": realized_pnl,
                 "balance": round(self.balance, 2), "open_positions": len(self.open_positions),
                 "unrealized_pnl": unrealized_pnl, "funding_total": funding_total,
             }
-        wins = sum(1 for t in self.history if t["result"] == "TP")
+        # Kazanma/kayip GERCEK pnl isaretine gore belirlenir -- trailing stop
+        # kar durumundayken tetiklenirse (sonuc alani "SL" olsa bile) bu hala
+        # bir kazancdir, "SL" etiketi sadece hangi fiyat seviyesine carptigini gosterir.
+        wins = sum(1 for t in completed if t["pnl"] >= 0)
         return {
-            "trades": len(self.history),
-            "win_rate": round(100 * wins / len(self.history), 1),
+            "trades": len(completed),
+            "win_rate": round(100 * wins / len(completed), 1),
             "total_pnl": realized_pnl,
             "balance": round(self.balance, 2),
             "open_positions": len(self.open_positions),

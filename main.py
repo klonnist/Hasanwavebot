@@ -133,17 +133,33 @@ def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount
     if result is None:
         pos = account.open_positions[symbol]
         sign = "+" if pos.unrealized_pnl >= 0 else ""
+        durum = []
+        if pos.breakeven_done:
+            durum.append("basabas")
+        if pos.partial_tp_done:
+            durum.append("kismi-alindi+trailing")
+        durum_str = f" [{', '.join(durum)}]" if durum else ""
         log(f"Pozisyon acik: {pos.side} {symbol} | entry={pos.entry:.6f} "
             f"guncel={last_price:.6f} | anlik_kz={sign}{pos.unrealized_pnl:.2f} USDT (R={pos.unrealized_r:.2f}) "
-            f"| tp={pos.tp:.6f} sl={pos.sl:.6f}")
+            f"| tp={pos.tp:.6f} sl={pos.sl:.6f}{durum_str}")
         return
 
-    win = result["result"] == "TP"
+    if result["result"] == "PARTIAL_TP":
+        log(f"~~~ KISMI KAR ALINDI: {result['side']} {symbol} | fiyat={result['exit']:.6f} "
+            f"| kismi_pnl={result['pnl']} USDT | yeni bakiye={result['balance_after']} USDT "
+            f"| kalan pozisyon trailing stop ile devam ediyor")
+        return
+
+    # Kazanma/kayip GERCEK pnl isaretine gore: trailing stop kar durumundayken
+    # tetiklenirse (result=="SL" olsa bile) bu hala bir kazanctir.
+    win = result["pnl"] >= 0
     learner.update(result["symbol"], tuple(result["param_key"]), reward=result["r_multiple"], win=win)
 
-    sonuc_str = "KAZANC (TP)" if win else "KAYIP (SL)"
-    log(f"<<< SANAL ISLEM KAPANDI: {sonuc_str} | {result['side']} {result['symbol']} "
-        f"| pnl={result['pnl']} USDT | funding={result['funding_paid']} USDT | R={result['r_multiple']} "
+    sonuc_str = "KAZANC" if win else "KAYIP"
+    sonuc_str += f" ({result['result']})"
+    partial_str = " (kismi kar alinmisti)" if result.get("partial_taken") else ""
+    log(f"<<< SANAL ISLEM KAPANDI: {sonuc_str}{partial_str} | {result['side']} {result['symbol']} "
+        f"| toplam_pnl={result['pnl']} USDT | funding={result['funding_paid']} USDT | R={result['r_multiple']} "
         f"| yeni bakiye={result['balance_after']} USDT")
 
 
@@ -194,6 +210,14 @@ def main():
     parser.add_argument("--max-portfolio-risk-pct", type=float, default=8.0,
                          help="Tum acik pozisyonlarin TOPLAM riskinin bakiyeye orani ust siniri "
                               "(korelasyonlu coinlerin ayni anda vurmasina karsi)")
+    parser.add_argument("--breakeven-r", type=float, default=1.0,
+                         help="Bu R'a ulasinca SL basabasa (giris fiyatina) cekilir")
+    parser.add_argument("--partial-tp-r", type=float, default=1.5,
+                         help="Bu R'a ulasinca pozisyonun bir kismi kapatilir (kismi kar alma)")
+    parser.add_argument("--partial-tp-fraction", type=float, default=0.5,
+                         help="Kismi kar alirken kapatilacak oran (0.5 = pozisyonun yarisi)")
+    parser.add_argument("--trail-giveback-pct", type=float, default=0.5,
+                         help="Kismi alindiktan sonra, SL kazancin en fazla bu oranini geri verecek sekilde takip eder")
     parser.add_argument("--epsilon", type=float, default=0.25, help="Ogrenen ajanin kesif (explore) orani")
     parser.add_argument("--data-dir", default="./data", help="Ogrenme/islem gecmisi kayit klasoru")
     parser.add_argument("--once", action="store_true", help="Tek tam tarama yap ve cik (debug icin)")
@@ -210,6 +234,10 @@ def main():
         max_open_positions=args.max_open,
         leverage=args.leverage,
         max_portfolio_risk_pct=args.max_portfolio_risk_pct,
+        breakeven_r=args.breakeven_r,
+        partial_tp_r=args.partial_tp_r,
+        partial_tp_fraction=args.partial_tp_fraction,
+        trail_giveback_pct=args.trail_giveback_pct,
     )
     learner = Learner(state_path=f"{args.data_dir}/learner_state.json", epsilon=args.epsilon)
 
