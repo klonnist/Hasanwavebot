@@ -92,6 +92,18 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
     last_close = float(df["close"].iloc[-1])
     entry, tp, sl = build_signal_levels(setup, params, last_close)
 
+    # TP/SL seviyeleri pivot noktasina (p2) gore hesaplaniyor ama entry, o anki
+    # (daha guncel) son kapanis fiyati -- fiyat pivot'tan bu yana TP seviyesini
+    # zaten gecmis/asmissa entry, TP'nin "yanlis" tarafinda kalabilir (orn. BUY'da
+    # tp < entry). Boyle bir kurulumu acarsak, fiyat bir tik bile hareket etmeden
+    # "TP'ye carpti" diye kapanir ama gercekte zararla kapanir (entry > tp).
+    # Bu tutarsiz TP/zarar etiketlemesini onlemek icin gecersiz kurulumlari eliyoruz.
+    valid = (sl < entry < tp) if setup["direction"] == "BUY" else (tp < entry < sl)
+    if not valid:
+        log(f"{symbol} {timeframe} | gecersiz kurulum (entry TP/SL disinda: "
+            f"entry={entry:.6f} tp={tp:.6f} sl={sl:.6f}) -> atlaniyor.")
+        return
+
     pos = account.open_trade(
         symbol=symbol, side=setup["direction"], entry=entry, tp=tp, sl=sl,
         param_key=params.key(),

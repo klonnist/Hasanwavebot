@@ -7,7 +7,7 @@
       "side": "BUY",
       "entry": 7.971,
       "exit": 7.928696,
-      "result": "TP",
+      "result": "SL",
       "pnl": -10.3884,
       "r_multiple": -0.052,
       "param_key": [
