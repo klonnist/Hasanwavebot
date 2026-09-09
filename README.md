@@ -188,6 +188,12 @@ python backtest.py --strategy vwap --timeframe 1h \
 öğrenen ajanın hangi parametre kombinasyonunu en iyi bulduğunu gösteren
 bir özet basar.
 
+**Python kurmadan, GitHub üzerinden çalıştırmak:** Yerelde Python
+kurulu olmasa bile [Actions → "Backtest calistir" → "Run workflow"](../../actions/workflows/backtest.yml)
+üzerinden bir form doldurup (strateji, zaman dilimi, tarih aralığı...)
+tetikleyebilirsiniz; sonuç, çalışan işin özet (summary) sayfasında
+doğrudan görünür.
+
 **Sınırlamalar** (canlı bottan farkı):
 - Mum **kapanış fiyatına** göre karar verir — bir mum içinde fiyatın
   TP/SL'e değip geri dönmesi (intrabar iğne) yakalanmaz. Bu, canlı

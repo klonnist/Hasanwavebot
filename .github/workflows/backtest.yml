@@ -1,0 +1,92 @@
+name: Backtest calistir
+
+on:
+  workflow_dispatch:
+    inputs:
+      symbols:
+        description: "Virgulle ayrilmis coin listesi (bos = varsayilan 13 coin)"
+        required: false
+        default: ""
+      strategy:
+        description: "Strateji"
+        required: true
+        default: "wave"
+        type: choice
+        options:
+          - wave
+          - vwap
+      timeframe:
+        description: "Mum araligi (15m, 1h, 4h, 1d ...)"
+        required: true
+        default: "4h"
+      date_from:
+        description: "Baslangic tarihi (YYYY-MM-DD, UTC)"
+        required: true
+      date_to:
+        description: "Bitis tarihi (YYYY-MM-DD, UTC) -- bos = bugun"
+        required: false
+        default: ""
+      window:
+        description: "Her karar aninda kullanilacak mum penceresi"
+        required: false
+        default: "150"
+      leverage:
+        description: "Kaldirac"
+        required: false
+        default: "1"
+      trade_margin:
+        description: "Islem basina sabit teminat (USDT)"
+        required: false
+        default: "500"
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run backtest
+        env:
+          IN_SYMBOLS: ${{ inputs.symbols }}
+          IN_STRATEGY: ${{ inputs.strategy }}
+          IN_TIMEFRAME: ${{ inputs.timeframe }}
+          IN_FROM: ${{ inputs.date_from }}
+          IN_TO: ${{ inputs.date_to }}
+          IN_WINDOW: ${{ inputs.window }}
+          IN_LEVERAGE: ${{ inputs.leverage }}
+          IN_MARGIN: ${{ inputs.trade_margin }}
+        run: |
+          ARGS=(--strategy "$IN_STRATEGY" --timeframe "$IN_TIMEFRAME" --from "$IN_FROM" --window "$IN_WINDOW" --leverage "$IN_LEVERAGE" --trade-margin "$IN_MARGIN")
+          if [ -n "$IN_SYMBOLS" ]; then
+            ARGS+=(--symbols "$IN_SYMBOLS")
+          fi
+          if [ -n "$IN_TO" ]; then
+            ARGS+=(--to "$IN_TO")
+          fi
+          echo "python backtest.py ${ARGS[*]}"
+          python backtest.py "${ARGS[@]}" | tee backtest_output.txt
+
+      - name: Sonucu ozet olarak yayinla
+        if: always()
+        env:
+          IN_STRATEGY: ${{ inputs.strategy }}
+          IN_TIMEFRAME: ${{ inputs.timeframe }}
+          IN_FROM: ${{ inputs.date_from }}
+          IN_TO: ${{ inputs.date_to }}
+        run: |
+          {
+            echo "## Backtest sonucu"
+            echo ""
+            echo "**Strateji:** $IN_STRATEGY · **Zaman dilimi:** $IN_TIMEFRAME · **Tarih:** $IN_FROM -> ${IN_TO:-bugun}"
+            echo ""
+            echo '```'
+            cat backtest_output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
