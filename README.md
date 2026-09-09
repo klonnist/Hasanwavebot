@@ -130,7 +130,8 @@ görünür (istatistiklere dahil edilmez, tamamlanmış bir işlem sayılmaz).
 | `vwap_detector.py`   | VWAP hesabı + ortalamaya dönüş kurulum tespiti (strateji: `vwap`)  |
 | `paper_account.py`   | Sanal bakiye, pozisyon açma/kapama, kademeli kâr alma, işlem geçmişi (JSON'a kaydeder) |
 | `learner.py`         | Parametre kombinasyonlarını deneyen öğrenen ajan (bandit)          |
-| `main.py`            | Tüm parçaları birleştiren ana döngü                                 |
+| `main.py`            | Canlı tarama: tüm parçaları birleştiren ana döngü                   |
+| `backtest.py`        | Geçmiş veride "bu strateji ne kazandırırdı?" testi                  |
 
 ## Nasıl öğreniyor?
 
@@ -165,6 +166,36 @@ sıfırdan keşif dönemi yaşanmaz.
 (`data/<tf>/`) `learner_state.json` (genel), `learner_state_by_symbol.json`
 (coin bazlı) ve `account_state.json` olarak saklanır; ajanı durdurup
 tekrar başlattığınızda hafızası kaybolmaz.
+
+## Backtest -- "bu tarih aralığında ne kazandırırdı?"
+
+[`backtest.py`](backtest.py) aynı tespit mantığını, aynı sanal hesabı
+(margin/portföy risk kontrolleri, kademeli kâr alma/trailing stop dahil)
+ve aynı öğrenen ajanı kullanarak **geçmiş veride** çalıştırır:
+
+```bash
+# BTC ve ETH'de, Elliott Wave stratejisiyle, 4 saatlik mumlarla,
+# 2026-05-01 ile 2026-09-01 arasinda ne kazandirirdi?
+python backtest.py --symbols BTC/USDT,ETH/USDT --strategy wave \
+    --timeframe 4h --from 2026-05-01 --to 2026-09-01
+
+# VWAP stratejisiyle, sonuclari bir klasore de kaydet
+python backtest.py --strategy vwap --timeframe 1h \
+    --from 2026-06-01 --to 2026-09-01 --out-dir ./backtest_out
+```
+
+Çıktı olarak toplam kâr/zarar, kazanma oranı, **maksimum drawdown** ve
+öğrenen ajanın hangi parametre kombinasyonunu en iyi bulduğunu gösteren
+bir özet basar.
+
+**Sınırlamalar** (canlı bottan farkı):
+- Mum **kapanış fiyatına** göre karar verir — bir mum içinde fiyatın
+  TP/SL'e değip geri dönmesi (intrabar iğne) yakalanmaz. Bu, canlı
+  botun zaten periyodik (15 dakikada bir) kontrol etme davranışına
+  yakındır, ama gerçek sonuçlar biraz farklı olabilir.
+- **Funding ücreti simüle edilmez** (sadece fiyat bazlı kâr/zarar).
+- `--window` (varsayılan 150 mum), her karar anında dedektöre verilen
+  pencere boyutudur — canlı moddaki `--limit` ile aynı role sahiptir.
 
 ## Kurulum
 
