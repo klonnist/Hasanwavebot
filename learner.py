@@ -20,31 +20,41 @@ import random
 from typing import List
 
 from wave_detector import WaveParams
+from vwap_detector import VwapParams
 
 # Denenecek parametre kombinasyonlari (grid).
-# DEVIATIONS artik ATR carpanidir (mutlak yuzde degil) -- bkz. wave_detector.atr_pct
+# WAVE_DEVIATIONS artik ATR carpanidir (mutlak yuzde degil) -- bkz. wave_detector.atr_pct
 # ve main.py'deki kullanimi. Boylece ayni katsayi BTC icin de yuksek oynaklikli
 # bir memecoin icin de o coinin kendi volatilitesine gore olceklenmis olur.
-DEVIATIONS = [0.8, 1.2, 1.8, 2.5]
-TP_MULTS = [1.272, 1.618, 2.0]
-SL_MULT = 0.15  # sabit tutuyoruz, grid'i sismesin diye
+WAVE_DEVIATIONS = [0.8, 1.2, 1.8, 2.5]
+WAVE_TP_MULTS = [1.272, 1.618, 2.0]
+WAVE_SL_MULT = 0.15  # sabit tutuyoruz, grid'i sismesin diye
+
+# VWAP (ortalamaya donus) stratejisinin grid'i: bant genisligi (std carpani)
+# ve VWAP'a donus hedefinin ne kadari kadar kar alinacagi.
+VWAP_BAND_MULTS = [1.5, 2.0, 2.5]
+VWAP_TP_MULTS = [0.5, 0.75, 1.0]
+VWAP_SL_MULT = 0.5
 
 MIN_SYMBOL_SAMPLES = 3  # bu esikten once sembol bazli istatistik yerine global fallback kullanilir
 
 
-def build_grid() -> List[WaveParams]:
-    grid = []
-    for dev in DEVIATIONS:
-        for tp in TP_MULTS:
-            grid.append(WaveParams(deviation_pct=dev, tp_mult=tp, sl_mult=SL_MULT))
-    return grid
+def build_wave_grid() -> List[WaveParams]:
+    return [WaveParams(deviation_pct=dev, tp_mult=tp, sl_mult=WAVE_SL_MULT)
+            for dev in WAVE_DEVIATIONS for tp in WAVE_TP_MULTS]
+
+
+def build_vwap_grid() -> List[VwapParams]:
+    return [VwapParams(band_mult=band, tp_mult=tp, sl_mult=VWAP_SL_MULT)
+            for band in VWAP_BAND_MULTS for tp in VWAP_TP_MULTS]
 
 
 class Learner:
-    def __init__(self, state_path: str, epsilon: float = 0.25):
+    def __init__(self, state_path: str, epsilon: float = 0.25, strategy: str = "wave"):
         self.state_path = state_path
         self.epsilon = epsilon
-        self.grid = build_grid()
+        self.strategy = strategy
+        self.grid = build_wave_grid() if strategy == "wave" else build_vwap_grid()
         self.stats = {}          # key(tuple) -> {"n","reward_sum","wins","losses"}  (GENEL/global)
         self.symbol_stats = {}   # (symbol, key(tuple)) -> {...}                      (coin bazli)
         self._load()
@@ -133,7 +143,9 @@ class Learner:
             rows.append((avg_r, win_rate, s["n"], p))
 
         rows.sort(key=lambda r: r[0], reverse=True)
-        lines = [f"{'atr_x':>6} {'tp_x':>6} {'n':>4} {'winrate':>8} {'avgR':>7}"]
+        first_col = "atr_x" if self.strategy == "wave" else "band_x"
+        lines = [f"{first_col:>6} {'tp_x':>6} {'n':>4} {'winrate':>8} {'avgR':>7}"]
         for avg_r, win_rate, n, p in rows[:top_n]:
-            lines.append(f"{p.deviation_pct:>6.1f} {p.tp_mult:>6.3f} {n:>4} {win_rate:>7.1f}% {avg_r:>7.2f}")
+            first_val = p.key()[0]  # deviation_pct (wave) veya band_mult (vwap) -- key() ikisinde de ayni sirada
+            lines.append(f"{first_val:>6.1f} {p.tp_mult:>6.3f} {n:>4} {win_rate:>7.1f}% {avg_r:>7.2f}")
         return "\n".join(lines) if len(lines) > 1 else "Henuz yeterli veri yok."

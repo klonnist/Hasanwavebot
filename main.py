@@ -36,6 +36,7 @@ import ccxt
 
 from data_feed import build_exchange, fetch_ohlcv, fetch_last_price, fetch_funding_rate
 from wave_detector import zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams
+from vwap_detector import detect_vwap_signal, VwapParams
 from paper_account import PaperAccount
 from learner import Learner
 
@@ -71,14 +72,8 @@ def normalize_symbol(symbol: str, market: str) -> str:
     return symbol
 
 
-def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, account: PaperAccount):
-    """Bu sembolde acik pozisyon yoksa yeni bir Dalga-3 kurulumu arar ve sanal islem acar."""
-    if account.has_open_position(symbol) or not account.can_open_new():
-        return
-
-    params: WaveParams = learner.select(symbol)
-
-    df = fetch_ohlcv(exchange, symbol, timeframe, limit=limit)
+def _find_wave_setup(df, params: WaveParams, symbol, timeframe):
+    """Elliott Wave Dalga-3 kurulumu arar (trend takip eden strateji)."""
     vol_pct = atr_pct(df)
     effective_dev_pct = max(params.deviation_pct * vol_pct, 0.05)
     pivots = zigzag_pivots(df, deviation_pct=effective_dev_pct)
@@ -87,32 +82,57 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
     if setup is None:
         log(f"{symbol} {timeframe} | atr_x={params.deviation_pct} (atr%={vol_pct:.2f} -> "
             f"esik%={effective_dev_pct:.2f}) tp_x={params.tp_mult} -> gecerli kurulum yok.")
-        return
+        return None
 
     last_close = float(df["close"].iloc[-1])
     entry, tp, sl = build_signal_levels(setup, params, last_close)
+    extra = f"param(atr_x={params.deviation_pct}, tp_x={params.tp_mult}) | dalga2 retrace=%{setup['retrace_pct']:.1f}"
+    return setup["direction"], entry, tp, sl, extra
 
-    # TP/SL seviyeleri pivot noktasina (p2) gore hesaplaniyor ama entry, o anki
-    # (daha guncel) son kapanis fiyati -- fiyat pivot'tan bu yana TP seviyesini
-    # zaten gecmis/asmissa entry, TP'nin "yanlis" tarafinda kalabilir (orn. BUY'da
-    # tp < entry). Boyle bir kurulumu acarsak, fiyat bir tik bile hareket etmeden
-    # "TP'ye carpti" diye kapanir ama gercekte zararla kapanir (entry > tp).
-    # Bu tutarsiz TP/zarar etiketlemesini onlemek icin gecersiz kurulumlari eliyoruz.
-    valid = (sl < entry < tp) if setup["direction"] == "BUY" else (tp < entry < sl)
+
+def _find_vwap_setup(df, params: VwapParams, symbol, timeframe):
+    """VWAP'tan asiri sapip geri donen fiyat arar (ortalamaya donus stratejisi)."""
+    sig = detect_vwap_signal(df, params)
+    if sig is None:
+        log(f"{symbol} {timeframe} | band_x={params.band_mult} tp_x={params.tp_mult} -> gecerli VWAP kurulumu yok.")
+        return None
+    extra = f"param(band_x={params.band_mult}, tp_x={params.tp_mult}) | vwap_z={sig['z']:.2f} vwap={sig['vwap']:.6f}"
+    return sig["direction"], sig["entry"], sig["tp"], sig["sl"], extra
+
+
+def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, account: PaperAccount, strategy: str):
+    """Bu sembolde acik pozisyon yoksa secilen stratejiye gore yeni bir kurulum arar ve sanal islem acar."""
+    if account.has_open_position(symbol) or not account.can_open_new():
+        return
+
+    params = learner.select(symbol)
+    df = fetch_ohlcv(exchange, symbol, timeframe, limit=limit)
+
+    finder = _find_wave_setup if strategy == "wave" else _find_vwap_setup
+    found = finder(df, params, symbol, timeframe)
+    if found is None:
+        return
+    direction, entry, tp, sl, extra = found
+
+    # TP/SL seviyeleri bir pivot/referans noktasina gore hesaplaniyor ama entry,
+    # o anki (daha guncel) son kapanis fiyati -- fiyat referanstan bu yana TP
+    # seviyesini zaten gecmis/asmissa entry, TP'nin "yanlis" tarafinda kalabilir
+    # (orn. BUY'da tp < entry). Boyle bir kurulumu acarsak, fiyat bir tik bile
+    # hareket etmeden "TP'ye carpti" diye kapanir ama gercekte zararla kapanir.
+    # Bu tutarsiz etiketlemeyi onlemek icin gecersiz kurulumlari eliyoruz.
+    valid = (sl < entry < tp) if direction == "BUY" else (tp < entry < sl)
     if not valid:
         log(f"{symbol} {timeframe} | gecersiz kurulum (entry TP/SL disinda: "
             f"entry={entry:.6f} tp={tp:.6f} sl={sl:.6f}) -> atlaniyor.")
         return
 
     pos = account.open_trade(
-        symbol=symbol, side=setup["direction"], entry=entry, tp=tp, sl=sl,
+        symbol=symbol, side=direction, entry=entry, tp=tp, sl=sl,
         param_key=params.key(),
     )
     if pos:
-        log(f">>> SANAL ISLEM ACILDI: {setup['direction']} {symbol} | entry={entry:.6f} "
-            f"tp={tp:.6f} sl={sl:.6f} | kaldirac={pos.leverage}x margin={pos.margin:.2f} "
-            f"| param(atr_x={params.deviation_pct}, tp_x={params.tp_mult}) "
-            f"| dalga2 retrace=%{setup['retrace_pct']:.1f}")
+        log(f">>> SANAL ISLEM ACILDI ({strategy}): {direction} {symbol} | entry={entry:.6f} "
+            f"tp={tp:.6f} sl={sl:.6f} | kaldirac={pos.leverage}x margin={pos.margin:.2f} | {extra}")
 
 
 def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount):
@@ -178,13 +198,13 @@ def print_report(account: PaperAccount, learner: Learner, symbols):
     print("-" * 70)
 
 
-def run_cycle(exchange, symbols, timeframe, limit, learner, account):
+def run_cycle(exchange, symbols, timeframe, limit, learner, account, strategy):
     for symbol in symbols:
         try:
             if account.has_open_position(symbol):
                 try_close_position(exchange, symbol, learner, account)
             else:
-                try_open_position(exchange, symbol, timeframe, limit, learner, account)
+                try_open_position(exchange, symbol, timeframe, limit, learner, account, strategy)
         except ccxt.NetworkError as e:
             log(f"{symbol}: ag hatasi, tekrar denenecek: {e}")
         except ccxt.ExchangeError as e:
@@ -197,6 +217,8 @@ def main():
     parser = argparse.ArgumentParser(description="Elliott Wave Dalga-3 Ogrenen Ajan (OKX, SANAL/paper trading, coklu-coin)")
     parser.add_argument("--symbols", default=",".join(POPULAR_COINS),
                          help="Virgulle ayrilmis coin listesi, orn: BTC/USDT,ETH/USDT,SOL/USDT")
+    parser.add_argument("--strategy", default="wave", choices=["wave", "vwap"],
+                         help="wave = Elliott Wave dalga-3 (trend takip), vwap = VWAP'a donus (mean-reversion)")
     parser.add_argument("--timeframe", default="1h")
     parser.add_argument("--market", default="swap", choices=["swap", "spot"])
     parser.add_argument("--limit", type=int, default=300)
@@ -239,20 +261,20 @@ def main():
         partial_tp_fraction=args.partial_tp_fraction,
         trail_giveback_pct=args.trail_giveback_pct,
     )
-    learner = Learner(state_path=f"{args.data_dir}/learner_state.json", epsilon=args.epsilon)
+    learner = Learner(state_path=f"{args.data_dir}/learner_state.json", epsilon=args.epsilon, strategy=args.strategy)
 
-    log(f"Ajan baslatildi | market={args.market} | {len(symbols)} coin izleniyor: {', '.join(symbols)}")
+    log(f"Ajan baslatildi | strateji={args.strategy} | market={args.market} | {len(symbols)} coin izleniyor: {', '.join(symbols)}")
     log(f"Sanal bakiye={account.balance} USDT | islem_basina_teminat={args.trade_margin} USDT | kaldirac={args.leverage}x "
         f"| max_ayni_anda_pozisyon={args.max_open} | max_portfoy_riski=%{args.max_portfolio_risk_pct}")
 
     if args.once:
-        run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account)
+        run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account, args.strategy)
         print_report(account, learner, symbols)
         return
 
     cycle = 0
     while True:
-        run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account)
+        run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account, args.strategy)
         cycle += 1
         if cycle % args.report_every == 0:
             print_report(account, learner, symbols)

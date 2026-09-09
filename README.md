@@ -1,12 +1,13 @@
 # Elliott Wave Dalga-3 Öğrenen Ajan (OKX, Çoklu-Coin)
 
 OKX'ten (varsayılan: **USDT-M Perpetual Futures / swap**) canlı veri okuyan,
-**birden fazla popüler coini aynı anda tarayan**, her birinde Elliott Wave
-Dalga 1-2-3 kurulumlarını arayan ve bulduğunda **sanal (paper trading) ortak
-bir 10.000 USDT'lik hesap üzerinden** BUY/SELL pozisyonu açıp TP/SL'e göre
-kapatan bir ajan. Her kapanan işlemden sonra hangi parametre kombinasyonunun
-daha iyi sonuç verdiğini öğrenir ve zamanla kazandıran kombinasyonları daha
-sık, kaybettirenleri daha az kullanır.
+**birden fazla popüler coini aynı anda tarayan**, her birinde bir kurulum
+(Elliott Wave Dalga 1-2-3 veya VWAP'a dönüş — bkz. aşağı) arayan ve
+bulduğunda **sanal (paper trading) bir hesap üzerinden** BUY/SELL
+pozisyonu açıp kademeli kâr alma/trailing stop ile yöneten bir ajan. Her
+kapanan işlemden sonra hangi parametre kombinasyonunun daha iyi sonuç
+verdiğini öğrenir ve zamanla kazandıran kombinasyonları daha sık,
+kaybettirenleri daha az kullanır.
 
 ## Varsayılan izlenen coinler
 
@@ -17,21 +18,41 @@ BTC, ETH, SOL, XRP, BNB, DOGE, ADA, AVAX, LINK, TON, ETHFI, PENGU, NEAR
 > USDT-M perpetual futures (swap) karşılığı yok — bu yüzden listeye
 > eklenmedi.
 
-## GitHub Actions ile 7/24 çoklu zaman dilimi taraması
+## GitHub Actions ile 7/24 çoklu profil taraması
 
 [`.github/workflows/run-bot.yml`](.github/workflows/run-bot.yml) her 15
-dakikada bir **üç ayrı zaman dilimini birbirinden bağımsız** tarar; her
-biri kendi ayrı sanal 10.000 USDT hesabına ve kendi öğrenen ajanına
-sahiptir, böylece sonuçları birbirinden bağımsız karşılaştırabilirsiniz:
+dakikada bir **dört ayrı profili birbirinden bağımsız** tarar; her biri
+kendi ayrı sanal 10.000 USDT hesabına ve kendi öğrenen ajanına sahiptir,
+böylece sonuçları birbirinden bağımsız karşılaştırabilirsiniz:
 
-| Zaman dilimi | Klasör       | Kaldıraç | Profil            |
-|--------------|--------------|----------|--------------------|
-| `15m`        | `data/15m/`  | 10x      | Scalp               |
-| `4h`         | `data/4h/`   | 5x       | Swing                |
-| `1d`         | `data/1d/`   | 3x       | Pozisyon             |
+| Profil  | Strateji | Zaman dilimi | Klasör       | Kaldıraç |
+|---------|----------|--------------|--------------|----------|
+| `15m`   | Elliott Wave (`--strategy wave`) | 15dk | `data/15m/`  | 10x |
+| `4h`    | Elliott Wave (`--strategy wave`) | 4 saat | `data/4h/`   | 5x  |
+| `1d`    | Elliott Wave (`--strategy wave`) | 1 gün | `data/1d/`   | 3x  |
+| `vwap`  | VWAP ortalamaya dönüş (`--strategy vwap`) | 15dk | `data/vwap/` | 10x |
 
 Sonuçlar [klonnist.github.io/Hasanwavebot](https://klonnist.github.io/Hasanwavebot/)
 adresindeki panelde sekmeler halinde canlı gösterilir.
+
+## İki farklı strateji
+
+`--strategy` bayrağıyla seçilir; ikisi de aynı altyapıyı (veri çekme,
+sanal hesap, risk yönetimi, öğrenen ajan, kademeli kâr alma) paylaşır,
+sadece "ne zaman işlem açılır" mantığı farklıdır:
+
+- **`wave` (varsayılan)** — Elliott Wave Dalga-3: **trend takip eden**
+  bir yaklaşım. Dalga-2 düzeltmesi bitince Dalga-3'ün geleceğine bahis
+  oynar (`wave_detector.py`).
+- **`vwap`** — VWAP'a dönüş: **ortalamaya dönüş (mean-reversion)**
+  yaklaşımı, gün içi kurumsal işlemcilerin sık kullandığı bir yöntem.
+  Fiyat VWAP'tan (hacim ağırlıklı ortalama fiyat) istatistiksel olarak
+  anlamlı şekilde uzaklaşıp (`band_mult` × standart sapma) geri dönmeye
+  başladığında, VWAP'a doğru bir hareket bekleyerek işlem açar
+  (`vwap_detector.py`). Karakteri `wave`'in tam tersi: `wave` "trend
+  devam edecek" der, `vwap` "aşırı hareket geri çekilecek" der — ikisini
+  aynı anda çalıştırmak, botun tek bir piyasa görüşüne bağımlı kalmasını
+  önler.
 
 **Pozisyon büyüklüğü — sabit teminat × kaldıraç:** Her işlem, bakiyenin
 yüzdesi yerine **sabit `--trade-margin` (varsayılan 500 USDT)** teminat
@@ -104,9 +125,10 @@ görünür (istatistiklere dahil edilmez, tamamlanmış bir işlem sayılmaz).
 
 | Dosya               | Görev                                                             |
 |----------------------|--------------------------------------------------------------------|
-| `data_feed.py`       | OKX'ten `ccxt` ile mum/fiyat verisi çeker                          |
-| `wave_detector.py`   | Zigzag pivot tespiti + Elliott Wave Dalga 1-2-3 kurulum tespiti     |
-| `paper_account.py`   | Sanal bakiye, pozisyon açma/kapama, işlem geçmişi (JSON'a kaydeder)|
+| `data_feed.py`       | OKX'ten `ccxt` ile mum/fiyat/funding verisi çeker                  |
+| `wave_detector.py`   | Zigzag pivot tespiti + Elliott Wave Dalga 1-2-3 kurulum tespiti (strateji: `wave`) |
+| `vwap_detector.py`   | VWAP hesabı + ortalamaya dönüş kurulum tespiti (strateji: `vwap`)  |
+| `paper_account.py`   | Sanal bakiye, pozisyon açma/kapama, kademeli kâr alma, işlem geçmişi (JSON'a kaydeder) |
 | `learner.py`         | Parametre kombinasyonlarını deneyen öğrenen ajan (bandit)          |
 | `main.py`            | Tüm parçaları birleştiren ana döngü                                 |
 
@@ -164,6 +186,9 @@ python main.py --once
 
 # Spot piyasa, farkli islem basina teminat ve kesif orani, daha az coin
 python main.py --symbols BTC/USDT,ETH/USDT --market spot --trade-margin 250 --epsilon 0.15
+
+# VWAP (ortalamaya donus) stratejisiyle calistir
+python main.py --strategy vwap --timeframe 15m
 ```
 
 ### Parametreler
@@ -171,6 +196,7 @@ python main.py --symbols BTC/USDT,ETH/USDT --market spot --trade-margin 250 --ep
 | Parametre        | Açıklama                                                        | Varsayılan               |
 |-------------------|---------------------------------------------------------------------|---------------------------|
 | `--symbols`       | Virgülle ayrılmış coin listesi                                       | 10 popüler coin (BTC..TON)|
+| `--strategy`      | `wave` (Elliott Wave, trend takip) veya `vwap` (VWAP'a dönüş, mean-reversion) | `wave`      |
 | `--timeframe`      | Mum aralığı (`1m,5m,15m,1h,4h,1d`)                                    | `1h`                       |
 | `--market`         | `swap` (futures) veya `spot`                                          | `swap`                     |
 | `--limit`          | Çekilecek mum sayısı                                                  | `300`                       |
