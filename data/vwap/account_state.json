@@ -1,5 +1,5 @@
 {
-  "balance": 9938.824965755482,
+  "balance": 9957.435107629079,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -344,37 +344,51 @@
       "open_time": "2026-09-09T13:43:37+00:00",
       "close_time": "2026-09-09T14:29:26+00:00",
       "balance_after": 9938.825
-    }
-  ],
-  "open_positions": {
-    "ETHFI/USDT:USDT": {
+    },
+    {
       "symbol": "ETHFI/USDT:USDT",
       "side": "SELL",
       "entry": 0.6268,
-      "tp": 0.6101366872803481,
-      "sl": 0.61885,
-      "risk_amount": 15.757312985602097,
-      "size": 3988.5130823229097,
+      "exit": 0.61885,
+      "result": "SL",
+      "pnl": 56.4375,
+      "final_leg_pnl": 31.7087,
+      "partial_taken": true,
+      "r_multiple": 1.791,
       "param_key": [
         1.5,
         0.5,
         0.5
       ],
-      "open_time": "2026-09-09T10:46:04+00:00",
       "leverage": 10.0,
-      "notional": 2500.0,
-      "margin": 250.0,
-      "last_funding_time": "2026-09-09T10:46:04+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.6188,
-      "unrealized_pnl": 31.9081,
-      "unrealized_r": 2.025,
-      "initial_sl": 0.6307506735117502,
-      "initial_risk_amount": 31.514625971204193,
-      "breakeven_done": true,
-      "partial_tp_done": true,
-      "partial_pnl_realized": 24.72878111040197
+      "open_time": "2026-09-09T10:46:04+00:00",
+      "close_time": "2026-09-09T14:47:22+00:00",
+      "balance_after": 9970.5336
     },
+    {
+      "symbol": "PENGU/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.008136,
+      "exit": 0.008114686060380646,
+      "result": "SL",
+      "pnl": -13.0985,
+      "final_leg_pnl": -13.0985,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.5,
+        0.75,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-09T14:29:25+00:00",
+      "close_time": "2026-09-09T14:47:22+00:00",
+      "balance_after": 9957.4351
+    }
+  ],
+  "open_positions": {
     "LINK/USDT:USDT": {
       "symbol": "LINK/USDT:USDT",
       "side": "BUY",
@@ -394,9 +408,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-09T11:55:09+00:00",
       "funding_paid": 0.0,
-      "last_price": 12.146,
-      "unrealized_pnl": 18.1788,
-      "unrealized_r": 0.299,
+      "last_price": 12.101,
+      "unrealized_pnl": -0.4132,
+      "unrealized_r": -0.007,
       "initial_sl": 11.954994472900697,
       "initial_risk_amount": 60.73604656226364,
       "breakeven_done": false,
@@ -422,39 +436,39 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-09T13:16:04+00:00",
       "funding_paid": 0.0,
-      "last_price": 1.43,
-      "unrealized_pnl": 18.463,
-      "unrealized_r": 0.611,
+      "last_price": 1.4269,
+      "unrealized_pnl": 29.2622,
+      "unrealized_r": 0.969,
       "initial_sl": 1.4439701772148337,
       "initial_risk_amount": 30.2033624149434,
       "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
     },
-    "PENGU/USDT:USDT": {
-      "symbol": "PENGU/USDT:USDT",
+    "SOL/USDT:USDT": {
+      "symbol": "SOL/USDT:USDT",
       "side": "BUY",
-      "entry": 0.008136,
-      "tp": 0.008364705859533538,
-      "sl": 0.008114686060380646,
-      "risk_amount": 13.09853713087085,
-      "size": 614552.6057030483,
+      "entry": 103.6,
+      "tp": 104.32143660363745,
+      "sl": 103.2296575720556,
+      "risk_amount": 17.873669302335603,
+      "size": 48.262548262548265,
       "param_key": [
-        1.5,
-        0.75,
+        2.0,
+        1.0,
         0.5
       ],
-      "open_time": "2026-09-09T14:29:25+00:00",
+      "open_time": "2026-09-09T14:47:21+00:00",
       "leverage": 10.0,
       "notional": 5000.0,
       "margin": 500.0,
-      "last_funding_time": "2026-09-09T14:29:25+00:00",
+      "last_funding_time": "2026-09-09T14:47:21+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.008136,
+      "last_price": 103.6,
       "unrealized_pnl": 0.0,
       "unrealized_r": 0.0,
-      "initial_sl": 0.008114686060380646,
-      "initial_risk_amount": 13.09853713087085,
+      "initial_sl": 103.2296575720556,
+      "initial_risk_amount": 17.873669302335603,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
