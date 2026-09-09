@@ -1,5 +1,5 @@
 {
-  "balance": 9800.0,
+  "balance": 9774.237098578047,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -20,6 +20,25 @@
       "open_time": "2026-09-09T06:13:57+00:00",
       "close_time": "2026-09-09T08:29:19+00:00",
       "balance_after": 9800.0
+    },
+    {
+      "symbol": "ETHFI/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.6259,
+      "exit": 0.629125,
+      "result": "SL",
+      "pnl": -25.7629,
+      "r_multiple": -1.0,
+      "param_key": [
+        0.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-09T08:29:20+00:00",
+      "close_time": "2026-09-09T08:45:37+00:00",
+      "balance_after": 9774.2371
     }
   ],
   "open_positions": {
@@ -42,9 +61,9 @@
       "margin": 1247.6733713599456,
       "last_funding_time": "2026-09-09T05:53:31+00:00",
       "funding_paid": 0.0,
-      "last_price": 104.83,
-      "unrealized_pnl": 111.6782,
-      "unrealized_r": 0.558
+      "last_price": 104.71,
+      "unrealized_pnl": 97.2681,
+      "unrealized_r": 0.486
     },
     "LINK/USDT:USDT": {
       "symbol": "LINK/USDT:USDT",
@@ -65,9 +84,9 @@
       "margin": 1157.616508230929,
       "last_funding_time": "2026-09-09T05:53:32+00:00",
       "funding_paid": 0.0,
-      "last_price": 12.496,
-      "unrealized_pnl": 12.984,
-      "unrealized_r": 0.065
+      "last_price": 12.487,
+      "unrealized_pnl": 4.6371,
+      "unrealized_r": 0.023
     },
     "BTC/USDT:USDT": {
       "symbol": "BTC/USDT:USDT",
@@ -88,9 +107,9 @@
       "margin": 4070.014413672355,
       "last_funding_time": "2026-09-09T06:13:56+00:00",
       "funding_paid": 0.0,
-      "last_price": 79623.8,
-      "unrealized_pnl": 288.119,
-      "unrealized_r": 1.441
+      "last_price": 79610.0,
+      "unrealized_pnl": 281.0151,
+      "unrealized_r": 1.405
     },
     "ADA/USDT:USDT": {
       "symbol": "ADA/USDT:USDT",
@@ -111,30 +130,30 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-09T08:29:19+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.2222,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0
+      "last_price": 0.2217,
+      "unrealized_pnl": -11.2511,
+      "unrealized_r": -0.189
     },
-    "ETHFI/USDT:USDT": {
-      "symbol": "ETHFI/USDT:USDT",
+    "PENGU/USDT:USDT": {
+      "symbol": "PENGU/USDT:USDT",
       "side": "SELL",
-      "entry": 0.6259,
-      "tp": 0.607084,
-      "sl": 0.629125,
-      "risk_amount": 25.762901421952655,
-      "size": 7988.496564946477,
+      "entry": 0.008264,
+      "tp": 0.008124999999999999,
+      "sl": 0.008324950000000001,
+      "risk_amount": 36.876815101646045,
+      "size": 605033.8818973862,
       "param_key": [
         0.8,
-        1.272,
+        2.0,
         0.15
       ],
-      "open_time": "2026-09-09T08:29:20+00:00",
+      "open_time": "2026-09-09T08:45:37+00:00",
       "leverage": 10.0,
       "notional": 5000.0,
       "margin": 500.0,
-      "last_funding_time": "2026-09-09T08:29:20+00:00",
+      "last_funding_time": "2026-09-09T08:45:37+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.6259,
+      "last_price": 0.008264,
       "unrealized_pnl": 0.0,
       "unrealized_r": 0.0
     }
