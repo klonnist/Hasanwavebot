@@ -1,0 +1,1727 @@
+{
+  "id": "20260909-122539-wave-15m",
+  "created_at": "2026-09-09T12:25:39+00:00",
+  "config": {
+    "strategy": "wave",
+    "timeframe": "15m",
+    "market": "swap",
+    "date_from": "2026-09-01",
+    "date_to": "2026-09-09",
+    "symbols": [
+      "BTC/USDT:USDT",
+      "ETH/USDT:USDT",
+      "SOL/USDT:USDT",
+      "XRP/USDT:USDT",
+      "BNB/USDT:USDT",
+      "DOGE/USDT:USDT",
+      "ADA/USDT:USDT",
+      "AVAX/USDT:USDT",
+      "LINK/USDT:USDT",
+      "TON/USDT:USDT",
+      "ETHFI/USDT:USDT",
+      "PENGU/USDT:USDT",
+      "NEAR/USDT:USDT"
+    ],
+    "window": 150,
+    "starting_balance": 10000.0,
+    "trade_margin": 500.0,
+    "leverage": 10.0,
+    "max_open": 5,
+    "max_portfolio_risk_pct": 8.0,
+    "breakeven_r": 1.0,
+    "partial_tp_r": 1.5,
+    "partial_tp_fraction": 0.5,
+    "trail_giveback_pct": 0.5,
+    "epsilon": 0.25
+  },
+  "summary": {
+    "starting_balance": 10000.0,
+    "final_balance": 9698.43,
+    "total_pnl": -301.57,
+    "total_pnl_pct": -3.02,
+    "trades": 72,
+    "win_rate": 48.6,
+    "max_drawdown_pct": 6.4,
+    "open_at_end": 5
+  },
+  "leaderboard": [
+    {
+      "first": 1.8,
+      "tp_mult": 1.618,
+      "n": 6,
+      "win_rate": 66.7,
+      "avg_r": 0.56
+    },
+    {
+      "first": 2.5,
+      "tp_mult": 2.0,
+      "n": 4,
+      "win_rate": 100.0,
+      "avg_r": 0.516
+    },
+    {
+      "first": 0.8,
+      "tp_mult": 2.0,
+      "n": 5,
+      "win_rate": 40.0,
+      "avg_r": 0.269
+    },
+    {
+      "first": 1.2,
+      "tp_mult": 2.0,
+      "n": 6,
+      "win_rate": 50.0,
+      "avg_r": 0.143
+    },
+    {
+      "first": 0.8,
+      "tp_mult": 1.272,
+      "n": 5,
+      "win_rate": 60.0,
+      "avg_r": 0.087
+    },
+    {
+      "first": 2.5,
+      "tp_mult": 1.272,
+      "n": 6,
+      "win_rate": 50.0,
+      "avg_r": -0.093
+    },
+    {
+      "first": 1.2,
+      "tp_mult": 1.618,
+      "n": 6,
+      "win_rate": 66.7,
+      "avg_r": -0.17
+    },
+    {
+      "first": 0.8,
+      "tp_mult": 1.618,
+      "n": 6,
+      "win_rate": 50.0,
+      "avg_r": -0.212
+    },
+    {
+      "first": 1.8,
+      "tp_mult": 1.272,
+      "n": 7,
+      "win_rate": 28.6,
+      "avg_r": -0.327
+    },
+    {
+      "first": 1.8,
+      "tp_mult": 2.0,
+      "n": 8,
+      "win_rate": 37.5,
+      "avg_r": -0.362
+    },
+    {
+      "first": 2.5,
+      "tp_mult": 1.618,
+      "n": 8,
+      "win_rate": 25.0,
+      "avg_r": -0.525
+    },
+    {
+      "first": 1.2,
+      "tp_mult": 1.272,
+      "n": 5,
+      "win_rate": 40.0,
+      "avg_r": -0.563
+    }
+  ],
+  "equity": [
+    {
+      "t": "2026-09-02T14:15:00+00:00",
+      "balance": 10000.0
+    },
+    {
+      "t": "2026-09-02T15:00:00+00:00",
+      "balance": 10155.35
+    },
+    {
+      "t": "2026-09-02T17:00:00+00:00",
+      "balance": 9569.15
+    },
+    {
+      "t": "2026-09-02T23:45:00+00:00",
+      "balance": 9504.95
+    },
+    {
+      "t": "2026-09-03T01:00:00+00:00",
+      "balance": 9679.38
+    },
+    {
+      "t": "2026-09-03T06:15:00+00:00",
+      "balance": 10007.26
+    },
+    {
+      "t": "2026-09-03T07:00:00+00:00",
+      "balance": 10109.95
+    },
+    {
+      "t": "2026-09-03T08:00:00+00:00",
+      "balance": 10046.54
+    },
+    {
+      "t": "2026-09-03T10:30:00+00:00",
+      "balance": 10137.5
+    },
+    {
+      "t": "2026-09-03T11:15:00+00:00",
+      "balance": 10082.9
+    },
+    {
+      "t": "2026-09-03T12:45:00+00:00",
+      "balance": 10041.37
+    },
+    {
+      "t": "2026-09-03T12:45:00+00:00",
+      "balance": 9751.83
+    },
+    {
+      "t": "2026-09-03T13:30:00+00:00",
+      "balance": 10072.56
+    },
+    {
+      "t": "2026-09-03T13:30:00+00:00",
+      "balance": 9552.7
+    },
+    {
+      "t": "2026-09-03T13:30:00+00:00",
+      "balance": 9769.98
+    },
+    {
+      "t": "2026-09-03T14:15:00+00:00",
+      "balance": 10102.21
+    },
+    {
+      "t": "2026-09-03T14:15:00+00:00",
+      "balance": 10099.73
+    },
+    {
+      "t": "2026-09-03T14:15:00+00:00",
+      "balance": 9606.03
+    },
+    {
+      "t": "2026-09-03T14:30:00+00:00",
+      "balance": 9847.87
+    },
+    {
+      "t": "2026-09-03T14:30:00+00:00",
+      "balance": 10137.79
+    },
+    {
+      "t": "2026-09-03T14:45:00+00:00",
+      "balance": 10101.57
+    },
+    {
+      "t": "2026-09-03T14:45:00+00:00",
+      "balance": 9631.34
+    },
+    {
+      "t": "2026-09-03T15:45:00+00:00",
+      "balance": 10121.02
+    },
+    {
+      "t": "2026-09-03T15:45:00+00:00",
+      "balance": 9635.06
+    },
+    {
+      "t": "2026-09-03T20:15:00+00:00",
+      "balance": 9909.54
+    },
+    {
+      "t": "2026-09-03T22:00:00+00:00",
+      "balance": 10051.13
+    },
+    {
+      "t": "2026-09-04T00:45:00+00:00",
+      "balance": 10102.21
+    },
+    {
+      "t": "2026-09-04T02:15:00+00:00",
+      "balance": 10085.31
+    },
+    {
+      "t": "2026-09-04T06:15:00+00:00",
+      "balance": 10045.95
+    },
+    {
+      "t": "2026-09-04T07:30:00+00:00",
+      "balance": 10056.74
+    },
+    {
+      "t": "2026-09-04T10:45:00+00:00",
+      "balance": 10034.34
+    },
+    {
+      "t": "2026-09-04T11:15:00+00:00",
+      "balance": 9994.98
+    },
+    {
+      "t": "2026-09-04T12:30:00+00:00",
+      "balance": 10141.33
+    },
+    {
+      "t": "2026-09-04T12:30:00+00:00",
+      "balance": 10070.97
+    },
+    {
+      "t": "2026-09-04T12:30:00+00:00",
+      "balance": 9697.11
+    },
+    {
+      "t": "2026-09-04T12:30:00+00:00",
+      "balance": 9979.15
+    },
+    {
+      "t": "2026-09-04T12:30:00+00:00",
+      "balance": 9943.94
+    },
+    {
+      "t": "2026-09-04T12:45:00+00:00",
+      "balance": 10181.87
+    },
+    {
+      "t": "2026-09-04T12:45:00+00:00",
+      "balance": 9719.83
+    },
+    {
+      "t": "2026-09-04T13:00:00+00:00",
+      "balance": 9975.03
+    },
+    {
+      "t": "2026-09-04T23:45:00+00:00",
+      "balance": 9997.41
+    },
+    {
+      "t": "2026-09-05T03:30:00+00:00",
+      "balance": 10030.98
+    },
+    {
+      "t": "2026-09-05T07:00:00+00:00",
+      "balance": 10052.74
+    },
+    {
+      "t": "2026-09-05T11:00:00+00:00",
+      "balance": 10105.91
+    },
+    {
+      "t": "2026-09-05T12:15:00+00:00",
+      "balance": 10164.68
+    },
+    {
+      "t": "2026-09-05T17:00:00+00:00",
+      "balance": 10032.57
+    },
+    {
+      "t": "2026-09-05T17:00:00+00:00",
+      "balance": 9698.43
+    },
+    {
+      "t": "2026-09-05T21:30:00+00:00",
+      "balance": 10013.65
+    },
+    {
+      "t": "2026-09-06T03:15:00+00:00",
+      "balance": 9809.39
+    },
+    {
+      "t": "2026-09-06T08:00:00+00:00",
+      "balance": 10022.12
+    },
+    {
+      "t": "2026-09-06T14:00:00+00:00",
+      "balance": 10013.65
+    },
+    {
+      "t": "2026-09-06T14:15:00+00:00",
+      "balance": 10057.21
+    },
+    {
+      "t": "2026-09-06T14:45:00+00:00",
+      "balance": 10095.49
+    },
+    {
+      "t": "2026-09-06T23:15:00+00:00",
+      "balance": 9954.36
+    },
+    {
+      "t": "2026-09-07T01:30:00+00:00",
+      "balance": 9930.42
+    },
+    {
+      "t": "2026-09-07T01:30:00+00:00",
+      "balance": 9987.77
+    },
+    {
+      "t": "2026-09-07T01:30:00+00:00",
+      "balance": 10054.84
+    },
+    {
+      "t": "2026-09-07T02:30:00+00:00",
+      "balance": 9880.91
+    },
+    {
+      "t": "2026-09-07T12:45:00+00:00",
+      "balance": 9880.91
+    },
+    {
+      "t": "2026-09-07T14:30:00+00:00",
+      "balance": 9879.71
+    },
+    {
+      "t": "2026-09-07T15:30:00+00:00",
+      "balance": 9824.93
+    },
+    {
+      "t": "2026-09-07T15:30:00+00:00",
+      "balance": 10035.9
+    },
+    {
+      "t": "2026-09-07T16:45:00+00:00",
+      "balance": 10059.96
+    },
+    {
+      "t": "2026-09-07T19:30:00+00:00",
+      "balance": 9879.71
+    },
+    {
+      "t": "2026-09-07T19:30:00+00:00",
+      "balance": 10041.48
+    },
+    {
+      "t": "2026-09-07T22:30:00+00:00",
+      "balance": 9795.95
+    },
+    {
+      "t": "2026-09-07T22:30:00+00:00",
+      "balance": 9833.15
+    },
+    {
+      "t": "2026-09-07T22:30:00+00:00",
+      "balance": 9995.42
+    },
+    {
+      "t": "2026-09-08T01:15:00+00:00",
+      "balance": 9761.27
+    },
+    {
+      "t": "2026-09-08T01:15:00+00:00",
+      "balance": 9807.83
+    },
+    {
+      "t": "2026-09-08T02:45:00+00:00",
+      "balance": 9767.17
+    },
+    {
+      "t": "2026-09-08T02:45:00+00:00",
+      "balance": 9976.06
+    },
+    {
+      "t": "2026-09-08T05:15:00+00:00",
+      "balance": 10054.84
+    },
+    {
+      "t": "2026-09-08T06:15:00+00:00",
+      "balance": 10234.37
+    },
+    {
+      "t": "2026-09-08T06:15:00+00:00",
+      "balance": 9700.19
+    },
+    {
+      "t": "2026-09-08T06:45:00+00:00",
+      "balance": 10240.59
+    },
+    {
+      "t": "2026-09-08T09:30:00+00:00",
+      "balance": 9667.57
+    },
+    {
+      "t": "2026-09-08T10:15:00+00:00",
+      "balance": 9731.3
+    },
+    {
+      "t": "2026-09-08T13:00:00+00:00",
+      "balance": 9940.96
+    },
+    {
+      "t": "2026-09-08T13:30:00+00:00",
+      "balance": 10266.4
+    },
+    {
+      "t": "2026-09-08T13:30:00+00:00",
+      "balance": 9614.51
+    },
+    {
+      "t": "2026-09-08T15:45:00+00:00",
+      "balance": 10003.33
+    },
+    {
+      "t": "2026-09-08T16:00:00+00:00",
+      "balance": 10046.02
+    },
+    {
+      "t": "2026-09-08T20:45:00+00:00",
+      "balance": 9975.27
+    },
+    {
+      "t": "2026-09-09T05:00:00+00:00",
+      "balance": 10187.96
+    },
+    {
+      "t": "2026-09-09T05:00:00+00:00",
+      "balance": 9652.26
+    },
+    {
+      "t": "2026-09-09T09:30:00+00:00",
+      "balance": 10187.96
+    }
+  ],
+  "trades": [
+    {
+      "symbol": "DOGE/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.08747,
+      "exit": 0.08687210000000001,
+      "result": "TP",
+      "pnl": 34.1774,
+      "final_leg_pnl": 34.1774,
+      "partial_taken": false,
+      "r_multiple": 0.279,
+      "param_key": [
+        1.2,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-03T22:15:00+00:00",
+      "close_time": "2026-09-04T02:15:00+00:00",
+      "balance_after": 10085.3097
+    },
+    {
+      "symbol": "DOGE/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.08752,
+      "exit": 0.086831,
+      "result": "SL",
+      "pnl": -39.3624,
+      "final_leg_pnl": -39.3624,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        0.8,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T04:15:00+00:00",
+      "close_time": "2026-09-04T06:15:00+00:00",
+      "balance_after": 10045.9473
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "BUY",
+      "entry": 727.6,
+      "exit": 715.8050000000001,
+      "result": "SL",
+      "pnl": -81.0542,
+      "final_leg_pnl": -81.0542,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.2,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-03T15:45:00+00:00",
+      "close_time": "2026-09-04T07:30:00+00:00",
+      "balance_after": 10056.7367
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "SELL",
+      "entry": 718.8,
+      "exit": 722.02,
+      "result": "SL",
+      "pnl": -22.3984,
+      "final_leg_pnl": -22.3984,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        0.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T09:30:00+00:00",
+      "close_time": "2026-09-04T10:45:00+00:00",
+      "balance_after": 10034.3382
+    },
+    {
+      "symbol": "DOGE/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.08692,
+      "exit": 0.087806,
+      "result": "SL",
+      "pnl": -50.9664,
+      "final_leg_pnl": -50.9664,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.5,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T06:30:00+00:00",
+      "close_time": "2026-09-04T11:15:00+00:00",
+      "balance_after": 9994.9809
+    },
+    {
+      "symbol": "BTC/USDT:USDT",
+      "side": "SELL",
+      "result": "PARTIAL_TP",
+      "entry": 80908.7,
+      "exit": 79642.8,
+      "pnl": 39.1151,
+      "r_multiple": 1.5,
+      "param_key": [
+        1.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T01:00:00+00:00",
+      "close_time": "2026-09-04T12:30:00+00:00",
+      "balance_after": 10141.328
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "BUY",
+      "entry": 2506.83,
+      "exit": 2481.736,
+      "result": "SL",
+      "pnl": -50.0513,
+      "final_leg_pnl": -50.0513,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        0.8,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-03T18:00:00+00:00",
+      "close_time": "2026-09-04T12:30:00+00:00",
+      "balance_after": 10070.9706
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "SELL",
+      "result": "PARTIAL_TP",
+      "entry": 103.96,
+      "exit": 101.38,
+      "pnl": 62.0431,
+      "r_multiple": 1.5,
+      "param_key": [
+        0.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-03T16:15:00+00:00",
+      "close_time": "2026-09-04T12:30:00+00:00",
+      "balance_after": 9697.1061
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "SELL",
+      "result": "PARTIAL_TP",
+      "entry": 1.4509,
+      "exit": 1.4105,
+      "pnl": 69.612,
+      "r_multiple": 1.5,
+      "param_key": [
+        0.8,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-03T23:45:00+00:00",
+      "close_time": "2026-09-04T12:30:00+00:00",
+      "balance_after": 9979.1516
+    },
+    {
+      "symbol": "DOGE/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.08773,
+      "exit": 0.0868345,
+      "result": "SL",
+      "pnl": -51.0373,
+      "final_leg_pnl": -51.0373,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T11:45:00+00:00",
+      "close_time": "2026-09-04T12:30:00+00:00",
+      "balance_after": 9943.9436
+    },
+    {
+      "symbol": "BTC/USDT:USDT",
+      "side": "SELL",
+      "entry": 80908.7,
+      "exit": 79596.5016,
+      "result": "TP",
+      "pnl": 79.6607,
+      "final_leg_pnl": 40.5457,
+      "partial_taken": true,
+      "r_multiple": 1.797,
+      "param_key": [
+        1.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T01:00:00+00:00",
+      "close_time": "2026-09-04T12:45:00+00:00",
+      "balance_after": 10181.8737
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "SELL",
+      "entry": 103.96,
+      "exit": 103.01487999999999,
+      "result": "TP",
+      "pnl": 84.7711,
+      "final_leg_pnl": 22.728,
+      "partial_taken": true,
+      "r_multiple": 1.186,
+      "param_key": [
+        0.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-03T16:15:00+00:00",
+      "close_time": "2026-09-04T12:45:00+00:00",
+      "balance_after": 9719.8341
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "BUY",
+      "entry": 723.3,
+      "exit": 714.7199999999999,
+      "result": "SL",
+      "pnl": -59.3115,
+      "final_leg_pnl": -59.3115,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T11:00:00+00:00",
+      "close_time": "2026-09-04T13:00:00+00:00",
+      "balance_after": 9975.0267
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "BUY",
+      "result": "PARTIAL_TP",
+      "entry": 714.9,
+      "exit": 721.3,
+      "pnl": 22.3808,
+      "r_multiple": 1.5,
+      "param_key": [
+        1.2,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T13:45:00+00:00",
+      "close_time": "2026-09-04T23:45:00+00:00",
+      "balance_after": 9997.4075
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "BUY",
+      "entry": 714.9,
+      "exit": 724.5,
+      "result": "TP",
+      "pnl": 55.9519,
+      "final_leg_pnl": 33.5711,
+      "partial_taken": true,
+      "r_multiple": 1.923,
+      "param_key": [
+        1.2,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T13:45:00+00:00",
+      "close_time": "2026-09-05T03:30:00+00:00",
+      "balance_after": 10030.9786
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "BUY",
+      "entry": 726.3,
+      "exit": 729.4608000000001,
+      "result": "TP",
+      "pnl": 21.7596,
+      "final_leg_pnl": 21.7596,
+      "partial_taken": false,
+      "r_multiple": 0.469,
+      "param_key": [
+        1.2,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-05T06:30:00+00:00",
+      "close_time": "2026-09-05T07:00:00+00:00",
+      "balance_after": 10052.7382
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "BUY",
+      "result": "PARTIAL_TP",
+      "entry": 738.2,
+      "exit": 753.9,
+      "pnl": 53.1699,
+      "r_multiple": 1.5,
+      "param_key": [
+        0.8,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-05T07:45:00+00:00",
+      "close_time": "2026-09-05T11:00:00+00:00",
+      "balance_after": 10105.9081
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "BUY",
+      "entry": 738.2,
+      "exit": 755.5554000000001,
+      "result": "TP",
+      "pnl": 111.9459,
+      "final_leg_pnl": 58.7761,
+      "partial_taken": true,
+      "r_multiple": 1.705,
+      "param_key": [
+        0.8,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-05T07:45:00+00:00",
+      "close_time": "2026-09-05T12:15:00+00:00",
+      "balance_after": 10164.6842
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "SELL",
+      "entry": 1.4509,
+      "exit": 1.4199000000000002,
+      "result": "SL",
+      "pnl": 123.0271,
+      "final_leg_pnl": 53.4151,
+      "partial_taken": true,
+      "r_multiple": 2.319,
+      "param_key": [
+        0.8,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-03T23:45:00+00:00",
+      "close_time": "2026-09-05T17:00:00+00:00",
+      "balance_after": 10032.5667
+    },
+    {
+      "symbol": "DOGE/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.08468,
+      "exit": 0.088838,
+      "result": "SL",
+      "pnl": -245.5125,
+      "final_leg_pnl": -245.5125,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.5,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T13:00:00+00:00",
+      "close_time": "2026-09-05T17:00:00+00:00",
+      "balance_after": 9698.4311
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "SELL",
+      "entry": 2452.59,
+      "exit": 2480.709,
+      "result": "SL",
+      "pnl": -57.3251,
+      "final_leg_pnl": -57.3251,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.2,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T14:15:00+00:00",
+      "close_time": "2026-09-05T21:30:00+00:00",
+      "balance_after": 10013.6455
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "BUY",
+      "result": "PARTIAL_TP",
+      "entry": 101.33,
+      "exit": 104.96,
+      "pnl": 89.5589,
+      "r_multiple": 1.5,
+      "param_key": [
+        2.5,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T14:00:00+00:00",
+      "close_time": "2026-09-06T03:15:00+00:00",
+      "balance_after": 9809.3929
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "BUY",
+      "entry": 777.7,
+      "exit": 755.525,
+      "result": "SL",
+      "pnl": -142.5678,
+      "final_leg_pnl": -142.5678,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-05T17:15:00+00:00",
+      "close_time": "2026-09-06T08:00:00+00:00",
+      "balance_after": 10022.1163
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "BUY",
+      "entry": 2488.0,
+      "exit": 2488.0,
+      "result": "SL",
+      "pnl": 0.0,
+      "final_leg_pnl": 0.0,
+      "partial_taken": false,
+      "r_multiple": 0.0,
+      "param_key": [
+        1.8,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-05T21:45:00+00:00",
+      "close_time": "2026-09-06T14:00:00+00:00",
+      "balance_after": 10013.6455
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "SELL",
+      "result": "PARTIAL_TP",
+      "entry": 755.2,
+      "exit": 744.6,
+      "pnl": 35.09,
+      "r_multiple": 1.5,
+      "param_key": [
+        2.5,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-06T12:30:00+00:00",
+      "close_time": "2026-09-06T14:15:00+00:00",
+      "balance_after": 10057.2064
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "SELL",
+      "entry": 755.2,
+      "exit": 743.636,
+      "result": "TP",
+      "pnl": 73.3713,
+      "final_leg_pnl": 38.2813,
+      "partial_taken": true,
+      "r_multiple": 2.015,
+      "param_key": [
+        2.5,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-06T12:30:00+00:00",
+      "close_time": "2026-09-06T14:45:00+00:00",
+      "balance_after": 10095.4876
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "SELL",
+      "entry": 2480.67,
+      "exit": 2510.083,
+      "result": "SL",
+      "pnl": -59.2844,
+      "final_leg_pnl": -59.2844,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-06T14:15:00+00:00",
+      "close_time": "2026-09-06T23:15:00+00:00",
+      "balance_after": 9954.3611
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "BUY",
+      "entry": 2514.0,
+      "exit": 2501.9605,
+      "result": "SL",
+      "pnl": -23.9449,
+      "final_leg_pnl": -23.9449,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.2,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T00:30:00+00:00",
+      "close_time": "2026-09-07T01:30:00+00:00",
+      "balance_after": 9930.4162
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "BUY",
+      "entry": 1.4182,
+      "exit": 1.405495,
+      "result": "SL",
+      "pnl": -44.7927,
+      "final_leg_pnl": -44.7927,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.5,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-05T17:15:00+00:00",
+      "close_time": "2026-09-07T01:30:00+00:00",
+      "balance_after": 9987.7741
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "BUY",
+      "entry": 752.2,
+      "exit": 746.085,
+      "result": "SL",
+      "pnl": -40.6474,
+      "final_leg_pnl": -40.6474,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.5,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-06T23:00:00+00:00",
+      "close_time": "2026-09-07T01:30:00+00:00",
+      "balance_after": 10054.8402
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "SELL",
+      "entry": 2499.74,
+      "exit": 2524.4915,
+      "result": "SL",
+      "pnl": -49.5081,
+      "final_leg_pnl": -49.5081,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.2,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T02:00:00+00:00",
+      "close_time": "2026-09-07T02:30:00+00:00",
+      "balance_after": 9880.9081
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "SELL",
+      "entry": 2503.61,
+      "exit": 2503.61,
+      "result": "SL",
+      "pnl": 0.0,
+      "final_leg_pnl": 0.0,
+      "partial_taken": false,
+      "r_multiple": 0.0,
+      "param_key": [
+        0.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T05:45:00+00:00",
+      "close_time": "2026-09-07T12:45:00+00:00",
+      "balance_after": 9880.9081
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "BUY",
+      "entry": 101.33,
+      "exit": 104.18,
+      "result": "SL",
+      "pnl": 159.8737,
+      "final_leg_pnl": 70.3148,
+      "partial_taken": true,
+      "r_multiple": 1.427,
+      "param_key": [
+        2.5,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T14:00:00+00:00",
+      "close_time": "2026-09-07T14:30:00+00:00",
+      "balance_after": 9879.7078
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "BUY",
+      "entry": 2507.53,
+      "exit": 2479.4585,
+      "result": "SL",
+      "pnl": -55.9744,
+      "final_leg_pnl": -55.9744,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T13:15:00+00:00",
+      "close_time": "2026-09-07T15:30:00+00:00",
+      "balance_after": 9824.9337
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "SELL",
+      "result": "PARTIAL_TP",
+      "entry": 1.4079,
+      "exit": 1.3808,
+      "pnl": 48.1213,
+      "r_multiple": 1.5,
+      "param_key": [
+        1.8,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T06:15:00+00:00",
+      "close_time": "2026-09-07T15:30:00+00:00",
+      "balance_after": 10035.8954
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "SELL",
+      "entry": 1.4079,
+      "exit": 1.39435,
+      "result": "SL",
+      "pnl": 72.182,
+      "final_leg_pnl": 24.0607,
+      "partial_taken": true,
+      "r_multiple": 1.541,
+      "param_key": [
+        1.8,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T06:15:00+00:00",
+      "close_time": "2026-09-07T16:45:00+00:00",
+      "balance_after": 10059.956
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "SELL",
+      "entry": 104.19,
+      "exit": 104.19,
+      "result": "SL",
+      "pnl": 0.0,
+      "final_leg_pnl": 0.0,
+      "partial_taken": false,
+      "r_multiple": 0.0,
+      "param_key": [
+        1.2,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T15:00:00+00:00",
+      "close_time": "2026-09-07T19:30:00+00:00",
+      "balance_after": 9879.7078
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "SELL",
+      "entry": 1.3938,
+      "exit": 1.39895,
+      "result": "SL",
+      "pnl": -18.4747,
+      "final_leg_pnl": -18.4747,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.2,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T19:00:00+00:00",
+      "close_time": "2026-09-07T19:30:00+00:00",
+      "balance_after": 10041.4814
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "BUY",
+      "entry": 2495.22,
+      "exit": 2480.7554999999998,
+      "result": "SL",
+      "pnl": -28.9844,
+      "final_leg_pnl": -28.9844,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T19:30:00+00:00",
+      "close_time": "2026-09-07T22:30:00+00:00",
+      "balance_after": 9795.9492
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "BUY",
+      "entry": 104.29,
+      "exit": 103.31899999999999,
+      "result": "SL",
+      "pnl": -46.5529,
+      "final_leg_pnl": -46.5529,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.5,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T19:45:00+00:00",
+      "close_time": "2026-09-07T22:30:00+00:00",
+      "balance_after": 9833.1549
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "BUY",
+      "entry": 1.4014,
+      "exit": 1.38849,
+      "result": "SL",
+      "pnl": -46.0611,
+      "final_leg_pnl": -46.0611,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T19:45:00+00:00",
+      "close_time": "2026-09-07T22:30:00+00:00",
+      "balance_after": 9995.4203
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "SELL",
+      "entry": 2481.6,
+      "exit": 2498.8125,
+      "result": "SL",
+      "pnl": -34.6802,
+      "final_leg_pnl": -34.6802,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T22:45:00+00:00",
+      "close_time": "2026-09-08T01:15:00+00:00",
+      "balance_after": 9761.269
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "SELL",
+      "entry": 103.66,
+      "exit": 104.18499999999999,
+      "result": "SL",
+      "pnl": -25.3232,
+      "final_leg_pnl": -25.3232,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.2,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T00:00:00+00:00",
+      "close_time": "2026-09-08T01:15:00+00:00",
+      "balance_after": 9807.8317
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "BUY",
+      "entry": 104.09,
+      "exit": 103.2435,
+      "result": "SL",
+      "pnl": -40.6619,
+      "final_leg_pnl": -40.6619,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.2,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T01:30:00+00:00",
+      "close_time": "2026-09-08T02:45:00+00:00",
+      "balance_after": 9767.1698
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "BUY",
+      "entry": 1.4008,
+      "exit": 1.395375,
+      "result": "SL",
+      "pnl": -19.3639,
+      "final_leg_pnl": -19.3639,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        0.8,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T02:15:00+00:00",
+      "close_time": "2026-09-08T02:45:00+00:00",
+      "balance_after": 9976.0563
+    },
+    {
+      "symbol": "BNB/USDT:USDT",
+      "side": "SELL",
+      "entry": 748.5,
+      "exit": 748.5,
+      "result": "SL",
+      "pnl": 0.0,
+      "final_leg_pnl": 0.0,
+      "partial_taken": false,
+      "r_multiple": 0.0,
+      "param_key": [
+        2.5,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-07T01:45:00+00:00",
+      "close_time": "2026-09-08T05:15:00+00:00",
+      "balance_after": 10054.8402
+    },
+    {
+      "symbol": "BTC/USDT:USDT",
+      "side": "SELL",
+      "entry": 79276.3,
+      "exit": 78443.90980000001,
+      "result": "TP",
+      "pnl": 52.4993,
+      "final_leg_pnl": 52.4993,
+      "partial_taken": false,
+      "r_multiple": 0.351,
+      "param_key": [
+        1.8,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-04T13:15:00+00:00",
+      "close_time": "2026-09-08T06:15:00+00:00",
+      "balance_after": 10234.373
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "BUY",
+      "entry": 2498.81,
+      "exit": 2468.2855,
+      "result": "SL",
+      "pnl": -61.0781,
+      "final_leg_pnl": -61.0781,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.5,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T01:30:00+00:00",
+      "close_time": "2026-09-08T06:15:00+00:00",
+      "balance_after": 9700.1909
+    },
+    {
+      "symbol": "BTC/USDT:USDT",
+      "side": "SELL",
+      "entry": 78390.1,
+      "exit": 78292.60960000001,
+      "result": "TP",
+      "pnl": 6.2183,
+      "final_leg_pnl": 6.2183,
+      "partial_taken": false,
+      "r_multiple": 0.185,
+      "param_key": [
+        1.2,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T06:30:00+00:00",
+      "close_time": "2026-09-08T06:45:00+00:00",
+      "balance_after": 10240.5913
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "SELL",
+      "entry": 2474.99,
+      "exit": 2491.1355,
+      "result": "SL",
+      "pnl": -32.6173,
+      "final_leg_pnl": -32.6173,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T08:15:00+00:00",
+      "close_time": "2026-09-08T09:30:00+00:00",
+      "balance_after": 9667.5736
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "SELL",
+      "entry": 103.0,
+      "exit": 103.73899999999999,
+      "result": "SL",
+      "pnl": -35.8738,
+      "final_leg_pnl": -35.8738,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T06:00:00+00:00",
+      "close_time": "2026-09-08T10:15:00+00:00",
+      "balance_after": 9731.296
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "SELL",
+      "entry": 1.3903,
+      "exit": 1.40006,
+      "result": "SL",
+      "pnl": -35.1003,
+      "final_leg_pnl": -35.1003,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.2,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T04:45:00+00:00",
+      "close_time": "2026-09-08T13:00:00+00:00",
+      "balance_after": 9940.956
+    },
+    {
+      "symbol": "BTC/USDT:USDT",
+      "side": "SELL",
+      "entry": 78378.2,
+      "exit": 77973.6,
+      "result": "TP",
+      "pnl": 25.8107,
+      "final_leg_pnl": 25.8107,
+      "partial_taken": false,
+      "r_multiple": 0.753,
+      "param_key": [
+        1.2,
+        2.0,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T07:00:00+00:00",
+      "close_time": "2026-09-08T13:30:00+00:00",
+      "balance_after": 10266.402
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "BUY",
+      "entry": 2490.87,
+      "exit": 2464.433,
+      "result": "SL",
+      "pnl": -53.0678,
+      "final_leg_pnl": -53.0678,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T09:45:00+00:00",
+      "close_time": "2026-09-08T13:30:00+00:00",
+      "balance_after": 9614.5058
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "BUY",
+      "result": "PARTIAL_TP",
+      "entry": 1.3989,
+      "exit": 1.4338,
+      "pnl": 62.3704,
+      "r_multiple": 1.5,
+      "param_key": [
+        2.5,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T13:15:00+00:00",
+      "close_time": "2026-09-08T15:45:00+00:00",
+      "balance_after": 10003.3264
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "BUY",
+      "entry": 1.3989,
+      "exit": 1.4227903999999998,
+      "result": "TP",
+      "pnl": 105.0654,
+      "final_leg_pnl": 42.695,
+      "partial_taken": true,
+      "r_multiple": 1.79,
+      "param_key": [
+        2.5,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T13:15:00+00:00",
+      "close_time": "2026-09-08T16:00:00+00:00",
+      "balance_after": 10046.0214
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "BUY",
+      "entry": 1.4353,
+      "exit": 1.41499,
+      "result": "SL",
+      "pnl": -70.7518,
+      "final_leg_pnl": -70.7518,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        0.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T16:45:00+00:00",
+      "close_time": "2026-09-08T20:45:00+00:00",
+      "balance_after": 9975.2696
+    },
+    {
+      "symbol": "BTC/USDT:USDT",
+      "side": "SELL",
+      "entry": 77941.9,
+      "exit": 79164.62,
+      "result": "SL",
+      "pnl": -78.4379,
+      "final_leg_pnl": -78.4379,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.5,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T13:45:00+00:00",
+      "close_time": "2026-09-09T05:00:00+00:00",
+      "balance_after": 10187.9641
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "SELL",
+      "entry": 102.77,
+      "exit": 104.39450000000001,
+      "result": "SL",
+      "pnl": -79.0357,
+      "final_leg_pnl": -79.0357,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.5,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-08T11:00:00+00:00",
+      "close_time": "2026-09-09T05:00:00+00:00",
+      "balance_after": 9652.2603
+    },
+    {
+      "symbol": "BTC/USDT:USDT",
+      "side": "BUY",
+      "entry": 79089.3,
+      "exit": 79089.3,
+      "result": "SL",
+      "pnl": 0.0,
+      "final_leg_pnl": 0.0,
+      "partial_taken": false,
+      "r_multiple": 0.0,
+      "param_key": [
+        1.2,
+        1.618,
+        0.15
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-09T06:00:00+00:00",
+      "close_time": "2026-09-09T09:30:00+00:00",
+      "balance_after": 10187.9641
+    }
+  ]
+}
