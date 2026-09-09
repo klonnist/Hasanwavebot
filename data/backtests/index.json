@@ -1,6 +1,24 @@
 {
   "runs": [
     {
+      "id": "20260909-123343-wave-15m",
+      "file": "20260909-123343-wave-15m.json",
+      "created_at": "2026-09-09T12:33:43+00:00",
+      "strategy": "wave",
+      "timeframe": "15m",
+      "date_from": "2026-09-01",
+      "date_to": "2026-09-09",
+      "symbol_count": 1,
+      "starting_balance": 10000.0,
+      "final_balance": 10131.05,
+      "total_pnl": 131.05,
+      "total_pnl_pct": 1.31,
+      "trades": 13,
+      "win_rate": 53.8,
+      "max_drawdown_pct": 1.23,
+      "open_at_end": 1
+    },
+    {
       "id": "20260909-123148-wave-15m",
       "file": "20260909-123148-wave-15m.json",
       "created_at": "2026-09-09T12:31:48+00:00",
