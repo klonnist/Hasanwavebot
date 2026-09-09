@@ -42,9 +42,14 @@
       "margin": 1224.1690286008757,
       "last_funding_time": "2026-09-09T05:53:41+00:00",
       "funding_paid": 0.0,
-      "last_price": 1.4319,
-      "unrealized_pnl": 17.0059,
-      "unrealized_r": 0.085
+      "last_price": 1.429,
+      "unrealized_pnl": 9.5336,
+      "unrealized_r": 0.048,
+      "initial_sl": 0.0,
+      "initial_risk_amount": 0.0,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
     },
     "BNB/USDT:USDT": {
       "symbol": "BNB/USDT:USDT",
@@ -65,9 +70,14 @@
       "margin": 2911.6991373461387,
       "last_funding_time": "2026-09-09T05:53:41+00:00",
       "funding_paid": 0.0,
-      "last_price": 756.2,
-      "unrealized_pnl": -60.4827,
-      "unrealized_r": -0.302
+      "last_price": 756.8,
+      "unrealized_pnl": -67.4615,
+      "unrealized_r": -0.337,
+      "initial_sl": 0.0,
+      "initial_risk_amount": 0.0,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
     },
     "DOGE/USDT:USDT": {
       "symbol": "DOGE/USDT:USDT",
@@ -88,9 +98,14 @@
       "margin": 2085.7076673615998,
       "last_funding_time": "2026-09-09T05:53:41+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.09095,
-      "unrealized_pnl": 63.2384,
-      "unrealized_r": 0.316
+      "last_price": 0.09082,
+      "unrealized_pnl": 54.2043,
+      "unrealized_r": 0.271,
+      "initial_sl": 0.0,
+      "initial_risk_amount": 0.0,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
     },
     "LINK/USDT:USDT": {
       "symbol": "LINK/USDT:USDT",
@@ -111,9 +126,14 @@
       "margin": 1361.1474694589872,
       "last_funding_time": "2026-09-09T05:53:42+00:00",
       "funding_paid": 0.0,
-      "last_price": 12.437,
-      "unrealized_pnl": -13.7435,
-      "unrealized_r": -0.069
+      "last_price": 12.43,
+      "unrealized_pnl": -16.034,
+      "unrealized_r": -0.08,
+      "initial_sl": 0.0,
+      "initial_risk_amount": 0.0,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
     }
   }
 }
