@@ -16,5 +16,17 @@
     "reward_sum": -1.0,
     "wins": 0,
     "losses": 1
+  },
+  "[\"LINK/USDT:USDT\", 1.5, 1.618, 0.15]": {
+    "n": 1,
+    "reward_sum": -1.0,
+    "wins": 0,
+    "losses": 1
+  },
+  "[\"PENGU/USDT:USDT\", 0.8, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": 3.954,
+    "wins": 1,
+    "losses": 0
   }
 }
