@@ -46,5 +46,11 @@
     "reward_sum": 4.095,
     "wins": 3,
     "losses": 2
+  },
+  "[2.5, 1.0, 0.5]": {
+    "n": 1,
+    "reward_sum": -1.0,
+    "wins": 0,
+    "losses": 1
   }
 }
