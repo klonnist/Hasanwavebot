@@ -220,5 +220,11 @@
     "reward_sum": 1.942,
     "wins": 1,
     "losses": 0
+  },
+  "[\"ETHFI/USDT:USDT\", 1.5, 1.0, 0.5]": {
+    "n": 1,
+    "reward_sum": 1.94,
+    "wins": 1,
+    "losses": 0
   }
 }
