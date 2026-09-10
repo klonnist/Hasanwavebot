@@ -1,5 +1,5 @@
 {
-  "balance": 10310.93758465936,
+  "balance": 10345.659806881582,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -1448,6 +1448,25 @@
       "open_time": "2026-09-10T13:14:06+00:00",
       "close_time": "2026-09-10T14:13:37+00:00",
       "balance_after": 10310.9376
+    },
+    {
+      "symbol": "ADA/USDT:USDT",
+      "side": "BUY",
+      "result": "PARTIAL_TP",
+      "entry": 0.2088,
+      "exit": 0.2117,
+      "pnl": 34.7222,
+      "r_multiple": 1.5,
+      "param_key": [
+        2.5,
+        0.75,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-10T13:14:05+00:00",
+      "close_time": "2026-09-10T14:47:21+00:00",
+      "balance_after": 10345.6598
     }
   ],
   "open_positions": {
@@ -1456,7 +1475,7 @@
       "side": "BUY",
       "entry": 98.96,
       "tp": 100.9340277342769,
-      "sl": 99.50999999999999,
+      "sl": 99.62,
       "risk_amount": 10.618181134989797,
       "size": 25.26273241713824,
       "param_key": [
@@ -1470,9 +1489,9 @@
       "margin": 250.0,
       "last_funding_time": "2026-09-10T13:14:05+00:00",
       "funding_paid": 0.0,
-      "last_price": 100.06,
-      "unrealized_pnl": 27.789,
-      "unrealized_r": 2.617,
+      "last_price": 100.28,
+      "unrealized_pnl": 33.3468,
+      "unrealized_r": 3.141,
       "initial_sl": 98.53968991795256,
       "initial_risk_amount": 21.236362269979594,
       "breakeven_done": true,
@@ -1484,9 +1503,9 @@
       "side": "BUY",
       "entry": 0.2088,
       "tp": 0.21606222565665337,
-      "sl": 0.2088,
-      "risk_amount": 35.91522340161054,
-      "size": 23946.360153256705,
+      "sl": 0.21025,
+      "risk_amount": 17.95761170080527,
+      "size": 11973.180076628352,
       "param_key": [
         2.5,
         0.75,
@@ -1494,8 +1513,8 @@
       ],
       "open_time": "2026-09-10T13:14:05+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
+      "notional": 2500.0,
+      "margin": 250.0,
       "last_funding_time": "2026-09-10T13:14:05+00:00",
       "funding_paid": 0.0,
       "last_price": 0.2107,
@@ -1504,8 +1523,8 @@
       "initial_sl": 0.20730018027074876,
       "initial_risk_amount": 35.91522340161054,
       "breakeven_done": true,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
+      "partial_tp_done": true,
+      "partial_pnl_realized": 34.72222222222205
     },
     "BTC/USDT:USDT": {
       "symbol": "BTC/USDT:USDT",
@@ -1526,9 +1545,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-10T13:29:34+00:00",
       "funding_paid": 0.0,
-      "last_price": 77265.1,
-      "unrealized_pnl": 22.883,
-      "unrealized_r": 0.768,
+      "last_price": 77360.0,
+      "unrealized_pnl": 29.0523,
+      "unrealized_r": 0.975,
       "initial_sl": 76454.69460062956,
       "initial_risk_amount": 29.80021604710015,
       "breakeven_done": false,
@@ -1540,7 +1559,7 @@
       "side": "BUY",
       "entry": 2418.79,
       "tp": 2463.8842416746347,
-      "sl": 2396.777993144824,
+      "sl": 2418.79,
       "risk_amount": 45.50210405859121,
       "size": 2.0671492771178976,
       "param_key": [
@@ -1554,12 +1573,12 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-10T13:29:34+00:00",
       "funding_paid": 0.0,
-      "last_price": 2438.93,
-      "unrealized_pnl": 41.6324,
-      "unrealized_r": 0.915,
+      "last_price": 2441.85,
+      "unrealized_pnl": 47.6685,
+      "unrealized_r": 1.048,
       "initial_sl": 2396.777993144824,
       "initial_risk_amount": 45.50210405859121,
-      "breakeven_done": false,
+      "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
     },
@@ -1582,9 +1601,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-10T14:30:18+00:00",
       "funding_paid": 0.0,
-      "last_price": 1.3638,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 1.3636,
+      "unrealized_pnl": -0.7332,
+      "unrealized_r": -0.036,
       "initial_sl": 1.3582858927510195,
       "initial_risk_amount": 20.215967330181783,
       "breakeven_done": false,
