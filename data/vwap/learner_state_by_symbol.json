@@ -208,5 +208,17 @@
     "reward_sum": 0.0,
     "wins": 1,
     "losses": 0
+  },
+  "[\"AVAX/USDT:USDT\", 2.5, 0.75, 0.5]": {
+    "n": 1,
+    "reward_sum": 1.406,
+    "wins": 1,
+    "losses": 0
+  },
+  "[\"LINK/USDT:USDT\", 2.0, 1.0, 0.5]": {
+    "n": 1,
+    "reward_sum": 1.942,
+    "wins": 1,
+    "losses": 0
   }
 }
