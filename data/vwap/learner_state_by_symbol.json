@@ -304,5 +304,11 @@
     "reward_sum": 1.45,
     "wins": 1,
     "losses": 0
+  },
+  "[\"SOL/USDT:USDT\", 1.5, 0.5, 0.5]": {
+    "n": 1,
+    "reward_sum": 1.677,
+    "wins": 1,
+    "losses": 0
   }
 }
