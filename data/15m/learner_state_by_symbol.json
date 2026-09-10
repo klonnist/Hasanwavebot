@@ -124,5 +124,17 @@
     "reward_sum": 0.896,
     "wins": 1,
     "losses": 0
+  },
+  "[\"XRP/USDT:USDT\", 2.5, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.544,
+    "wins": 1,
+    "losses": 0
+  },
+  "[\"BNB/USDT:USDT\", 1.8, 1.618, 0.15]": {
+    "n": 1,
+    "reward_sum": 0.95,
+    "wins": 1,
+    "losses": 0
   }
 }
