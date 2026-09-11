@@ -42,6 +42,7 @@ class PaperAccount:
     def __init__(self, state_path: str, starting_balance: float = 10000.0,
                  trade_margin: float = 500.0, max_open_positions: int = 5,
                  leverage: float = 1.0, max_portfolio_risk_pct: float = 8.0,
+                 max_same_direction: int = 3,
                  breakeven_r: float = 1.0, partial_tp_r: float = 1.5,
                  partial_tp_fraction: float = 0.5, trail_giveback_pct: float = 0.5):
         self.state_path = state_path
@@ -49,6 +50,13 @@ class PaperAccount:
         self.max_open_positions = max_open_positions
         self.leverage = leverage
         self.max_portfolio_risk_pct = max_portfolio_risk_pct
+        # Ayni anda ayni yonde (hepsi BUY veya hepsi SELL) acik olabilecek en
+        # fazla pozisyon sayisi -- portfoy risk tavani TOPLAM riski sinirlar
+        # ama yon korelasyonunu sinirlamaz: piyasa geneli tek yonde hareket
+        # ettiginde (ozellikle VWAP gibi coklu coin'in ayni anda tetiklendigi
+        # stratejilerde) tum acik pozisyonlar ayni yonde birikip piyasa ters
+        # gittiginde hep birlikte vurabilir.
+        self.max_same_direction = max_same_direction
         # Kademeli kar alma / trailing stop ayarlari:
         self.breakeven_r = breakeven_r            # bu R'a ulasinca SL basabasa cekilir
         self.partial_tp_r = partial_tp_r           # bu R'a ulasinca pozisyonun bir kismi kapatilir
@@ -102,12 +110,22 @@ class PaperAccount:
     def used_margin(self) -> float:
         return sum(p.margin for p in self.open_positions.values())
 
+    def same_direction_count(self, side: str) -> int:
+        return sum(1 for p in self.open_positions.values() if p.side == side)
+
     # ---------------- trading ----------------
     def open_trade(self, symbol: str, side: str, entry: float, tp: float, sl: float, param_key: tuple):
         if symbol in self.open_positions or not self.can_open_new():
             return None
         risk_per_unit = abs(entry - sl)
         if risk_per_unit <= 0:
+            return None
+
+        # Yon konsantrasyonu tavani: acik pozisyonlarin hepsi ayni yonde
+        # (hepsi BUY veya hepsi SELL) birikemez -- piyasa genelinin tek yonlu
+        # hareketinde (ozellikle korelasyonlu coinlerde) toplu vurulma riskini
+        # sinirlar. Portfoy risk tavanindan BAGIMSIZ bir kontroldur.
+        if self.same_direction_count(side) >= self.max_same_direction:
             return None
 
         # Pozisyon buyuklugu artik bakiyenin yuzdesi degil, SABIT bir teminat

@@ -232,6 +232,9 @@ def main():
     parser.add_argument("--max-portfolio-risk-pct", type=float, default=8.0,
                          help="Tum acik pozisyonlarin TOPLAM riskinin bakiyeye orani ust siniri "
                               "(korelasyonlu coinlerin ayni anda vurmasina karsi)")
+    parser.add_argument("--max-same-direction", type=int, default=3,
+                         help="Ayni anda ayni yonde (hepsi BUY veya hepsi SELL) acik olabilecek en fazla pozisyon "
+                              "sayisi (piyasa genelinin tek yonlu hareketinde toplu vurulma riskine karsi)")
     parser.add_argument("--breakeven-r", type=float, default=1.0,
                          help="Bu R'a ulasinca SL basabasa (giris fiyatina) cekilir")
     parser.add_argument("--partial-tp-r", type=float, default=1.5,
@@ -256,6 +259,7 @@ def main():
         max_open_positions=args.max_open,
         leverage=args.leverage,
         max_portfolio_risk_pct=args.max_portfolio_risk_pct,
+        max_same_direction=args.max_same_direction,
         breakeven_r=args.breakeven_r,
         partial_tp_r=args.partial_tp_r,
         partial_tp_fraction=args.partial_tp_fraction,
@@ -265,7 +269,8 @@ def main():
 
     log(f"Ajan baslatildi | strateji={args.strategy} | market={args.market} | {len(symbols)} coin izleniyor: {', '.join(symbols)}")
     log(f"Sanal bakiye={account.balance} USDT | islem_basina_teminat={args.trade_margin} USDT | kaldirac={args.leverage}x "
-        f"| max_ayni_anda_pozisyon={args.max_open} | max_portfoy_riski=%{args.max_portfolio_risk_pct}")
+        f"| max_ayni_anda_pozisyon={args.max_open} | max_portfoy_riski=%{args.max_portfolio_risk_pct} "
+        f"| max_ayni_yon={args.max_same_direction}")
 
     if args.once:
         run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account, args.strategy)

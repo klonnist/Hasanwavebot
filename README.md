@@ -78,6 +78,16 @@ Bunu sınırlamak için `--max-portfolio-risk-pct` (varsayılan **%8**) tüm aç
 pozisyonların **toplam** riskine üst sınır koyar; pozisyon sayısı sınırına
 ulaşılmasa bile bu tavan aşılacaksa yeni işlem açılmaz.
 
+**Yön konsantrasyonu tavanı:** Portföy risk tavanı toplam riski
+sınırlar ama açık pozisyonların hepsinin **aynı yönde** (hepsi BUY veya
+hepsi SELL) birikmesini engellemez — özellikle VWAP gibi çoklu coin'in
+aynı anda tetiklendiği stratejilerde, piyasa genelinin tek yönlü
+hareketinde bu birikme gerçekleşiyor (gözlemlendi: bazı taramalarda
+5 pozisyonun hepsi aynı yönde açılmıştı). `--max-same-direction`
+(varsayılan **3**) aynı anda aynı yönde açık olabilecek pozisyon
+sayısına ayrı bir üst sınır koyar; panelde her profilde "Yön Bazlı
+Performans" tablosuyla BUY/SELL ayrımını da canlı takip edebilirsiniz.
+
 **Teminat (margin) kontrolü:** Gerçek bir borsada olduğu gibi, açık
 pozisyonların toplam margin'i (`notional / kaldıraç`) mevcut bakiyeyi
 aşacaksa yeni işlem reddedilir — yani simülasyon, gerçekte imkansız
@@ -252,6 +262,7 @@ python main.py --strategy vwap --timeframe 15m
 | `--leverage`       | Pozisyonlarda kullanılacak kaldıraç                                    | `1.0`                       |
 | `--max-open`       | Aynı anda açık olabilecek en fazla pozisyon sayısı                     | `5`                         |
 | `--max-portfolio-risk-pct` | Tüm açık pozisyonların toplam riskinin bakiyeye oranı üst sınırı | `8.0`                 |
+| `--max-same-direction` | Aynı anda aynı yönde (hepsi BUY/SELL) açık olabilecek en fazla pozisyon | `3`                |
 | `--breakeven-r`    | Bu R'a ulaşınca SL başabaşa (giriş fiyatına) çekilir                    | `1.0`                       |
 | `--partial-tp-r`   | Bu R'a ulaşınca pozisyonun bir kısmı kapatılır (kısmi kâr alma)          | `1.5`                       |
 | `--partial-tp-fraction` | Kısmi kâr alırken kapatılacak oran (0.5 = pozisyonun yarısı)        | `0.5`                       |

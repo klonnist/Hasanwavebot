@@ -167,9 +167,54 @@ function computeStats(account) {
   };
 }
 
+function computeSideStats(account) {
+  const history = account.history || [];
+  const completed = history.filter(t => t.result === "TP" || t.result === "SL");
+  const sides = { BUY: { n: 0, wins: 0, pnl: 0 }, SELL: { n: 0, wins: 0, pnl: 0 } };
+  for (const t of completed) {
+    const s = sides[t.side];
+    if (!s) continue;
+    s.n += 1;
+    s.pnl += t.pnl;
+    if (t.pnl >= 0) s.wins += 1;
+  }
+  return sides;
+}
+
+function renderSideStats(p, account) {
+  const el = document.getElementById(`side-${p.key}`);
+  const sides = computeSideStats(account);
+  const rows = ["BUY", "SELL"].map(side => {
+    const s = sides[side];
+    const winRate = s.n ? 100 * s.wins / s.n : 0;
+    return `
+      <tr>
+        <td class="side-${side.toLowerCase()}">${side}</td>
+        <td>${s.n}</td>
+        <td>${s.n ? `%${fmt(winRate, 1)}` : "-"}</td>
+        <td class="${pnlClass(s.pnl)}">${s.n ? `${s.pnl >= 0 ? "+" : ""}${fmt(s.pnl)}` : "-"}</td>
+      </tr>
+    `;
+  }).join("");
+  el.innerHTML = `
+    <table>
+      <thead><tr><th>Yön</th><th>İşlem</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
 function buildProfileSkeleton(p) {
   return `
     <div class="cards" id="cards-${p.key}"></div>
+    <section>
+      <h2>Yön Bazlı Performans (BUY vs SELL)</h2>
+      <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
+        Piyasa genel bir yönde hareket ettiğinde bir taraf (örn. hep SELL) sistematik olarak daha iyi/kötü çalışabilir —
+        bu asimetriyi burada takip edebilirsin.
+      </div>
+      <div class="table-wrap" id="side-${p.key}"></div>
+    </section>
     <section>
       <h2>Açık Pozisyonlar</h2>
       <div class="table-wrap" id="open-${p.key}"></div>
@@ -531,6 +576,7 @@ async function loadProfile(p) {
     fetchJson(`${p.dir}/learner_state.json`).catch(() => ({})),
   ]);
   renderCards(p, computeStats(account));
+  renderSideStats(p, account);
   renderOpenPositions(p, account);
   renderHistory(p, account);
   renderLeaderboard(p, learner);

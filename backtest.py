@@ -205,6 +205,7 @@ def write_report(report_dir, account: PaperAccount, learner: Learner, symbols, a
             "window": args.window, "starting_balance": args.balance,
             "trade_margin": args.trade_margin, "leverage": args.leverage,
             "max_open": args.max_open, "max_portfolio_risk_pct": args.max_portfolio_risk_pct,
+            "max_same_direction": args.max_same_direction,
             "breakeven_r": args.breakeven_r, "partial_tp_r": args.partial_tp_r,
             "partial_tp_fraction": args.partial_tp_fraction,
             "trail_giveback_pct": args.trail_giveback_pct, "epsilon": args.epsilon,
@@ -275,6 +276,7 @@ def main():
     parser.add_argument("--leverage", type=float, default=1.0)
     parser.add_argument("--max-open", type=int, default=5)
     parser.add_argument("--max-portfolio-risk-pct", type=float, default=8.0)
+    parser.add_argument("--max-same-direction", type=int, default=3)
     parser.add_argument("--breakeven-r", type=float, default=1.0)
     parser.add_argument("--partial-tp-r", type=float, default=1.5)
     parser.add_argument("--partial-tp-fraction", type=float, default=0.5)
@@ -300,6 +302,7 @@ def main():
         state_path=state_path, starting_balance=args.balance, trade_margin=args.trade_margin,
         max_open_positions=args.max_open, leverage=args.leverage,
         max_portfolio_risk_pct=args.max_portfolio_risk_pct,
+        max_same_direction=args.max_same_direction,
         breakeven_r=args.breakeven_r, partial_tp_r=args.partial_tp_r,
         partial_tp_fraction=args.partial_tp_fraction, trail_giveback_pct=args.trail_giveback_pct,
     )
