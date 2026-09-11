@@ -28,5 +28,11 @@
     "reward_sum": 1.228,
     "wins": 1,
     "losses": 0
+  },
+  "[\"NEAR/USDT:USDT\", 0.8, 1.272, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.603,
+    "wins": 1,
+    "losses": 0
   }
 }
