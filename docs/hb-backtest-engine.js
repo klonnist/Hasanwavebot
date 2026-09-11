@@ -195,6 +195,54 @@ function hbDetectVwapSignal(candles, params) {
   return null;
 }
 
+// ---------------- donchian_detector.py port ----------------
+
+function hbComputeDonchianBands(candles, channelPeriod = 20) {
+  const n = candles.length;
+  const upper = new Array(n).fill(NaN), lower = new Array(n).fill(NaN);
+  for (let i = channelPeriod; i < n; i++) {
+    // SU ANKI mum (i) HARIC, kendisinden onceki channelPeriod mumun high/low'u
+    let hi = -Infinity, lo = Infinity;
+    for (let j = i - channelPeriod; j < i; j++) {
+      if (candles[j].high > hi) hi = candles[j].high;
+      if (candles[j].low < lo) lo = candles[j].low;
+    }
+    upper[i] = hi;
+    lower[i] = lo;
+  }
+  return { upper, lower };
+}
+
+function hbDetectDonchianSignal(candles, params) {
+  const n = candles.length;
+  if (n < params.channelPeriod + 2) return null;
+  const { upper, lower } = hbComputeDonchianBands(candles, params.channelPeriod);
+  const lastUpper = upper[n - 1], lastLower = lower[n - 1];
+  const prevUpper = upper[n - 2], prevLower = lower[n - 2];
+  if ([lastUpper, lastLower, prevUpper, prevLower].some(v => Number.isNaN(v))) return null;
+
+  const width = lastUpper - lastLower;
+  if (!(width > 0)) return null;
+
+  const lastClose = candles[n - 1].close, prevClose = candles[n - 2].close;
+
+  if (lastClose > lastUpper && prevClose <= prevUpper) {
+    const entry = lastClose;
+    const tp = entry + width * params.tpMult;
+    const sl = entry - width * params.slMult;
+    if (!(sl < entry && entry < tp)) return null;
+    return { direction: "BUY", entry, tp, sl };
+  }
+  if (lastClose < lastLower && prevClose >= prevLower) {
+    const entry = lastClose;
+    const tp = entry - width * params.tpMult;
+    const sl = entry + width * params.slMult;
+    if (!(tp < entry && entry < sl)) return null;
+    return { direction: "SELL", entry, tp, sl };
+  }
+  return null;
+}
+
 // ---------------- learner.py port ----------------
 
 const HB_WAVE_DEVIATIONS = [0.8, 1.2, 1.8, 2.5];
@@ -203,6 +251,9 @@ const HB_WAVE_SL_MULT = 0.15;
 const HB_VWAP_BAND_MULTS = [1.5, 2.0, 2.5];
 const HB_VWAP_TP_MULTS = [0.5, 0.75, 1.0];
 const HB_VWAP_SL_MULT = 0.5;
+const HB_DONCHIAN_PERIODS = [20, 40, 55];
+const HB_DONCHIAN_TP_MULTS = [1.0, 1.5, 2.0];
+const HB_DONCHIAN_SL_MULT = 1.0;
 const HB_MIN_SYMBOL_SAMPLES = 3;
 
 function hbBuildWaveGrid() {
@@ -215,17 +266,22 @@ function hbBuildVwapGrid() {
     bandMult: band, tpMult: tp, slMult: HB_VWAP_SL_MULT,
   })));
 }
+function hbBuildDonchianGrid() {
+  return HB_DONCHIAN_PERIODS.flatMap(period => HB_DONCHIAN_TP_MULTS.map(tp => ({
+    channelPeriod: period, tpMult: tp, slMult: HB_DONCHIAN_SL_MULT,
+  })));
+}
 function hbParamKey(p, strategy) {
-  return strategy === "wave"
-    ? [hbRound(p.deviationPct, 3), hbRound(p.tpMult, 3), hbRound(p.slMult, 3)]
-    : [hbRound(p.bandMult, 3), hbRound(p.tpMult, 3), hbRound(p.slMult, 3)];
+  if (strategy === "wave") return [hbRound(p.deviationPct, 3), hbRound(p.tpMult, 3), hbRound(p.slMult, 3)];
+  if (strategy === "donchian") return [hbRound(p.channelPeriod, 3), hbRound(p.tpMult, 3), hbRound(p.slMult, 3)];
+  return [hbRound(p.bandMult, 3), hbRound(p.tpMult, 3), hbRound(p.slMult, 3)];
 }
 
 class HbLearner {
   constructor(strategy, epsilon = 0.25) {
     this.strategy = strategy;
     this.epsilon = epsilon;
-    this.grid = strategy === "wave" ? hbBuildWaveGrid() : hbBuildVwapGrid();
+    this.grid = strategy === "wave" ? hbBuildWaveGrid() : strategy === "donchian" ? hbBuildDonchianGrid() : hbBuildVwapGrid();
     this.stats = new Map();
     this.symbolStats = new Map();
   }
@@ -435,6 +491,9 @@ function hbReplaySymbol(candles, symbol, strategy, window, learner, account) {
         const pivots = hbZigzagPivots(windowDf, effectiveDev);
         const setup = hbDetectWave3Setup(pivots, params);
         if (setup) { const lv = hbBuildSignalLevels(setup, params, barClose); entry = lv.entry; tp = lv.tp; sl = lv.sl; direction = setup.direction; }
+      } else if (strategy === "donchian") {
+        const sig = hbDetectDonchianSignal(windowDf, params);
+        if (sig) { direction = sig.direction; entry = sig.entry; tp = sig.tp; sl = sig.sl; }
       } else {
         const sig = hbDetectVwapSignal(windowDf, params);
         if (sig) { direction = sig.direction; entry = sig.entry; tp = sig.tp; sl = sig.sl; }

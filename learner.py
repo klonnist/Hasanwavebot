@@ -21,6 +21,7 @@ from typing import List
 
 from wave_detector import WaveParams
 from vwap_detector import VwapParams
+from donchian_detector import DonchianParams
 
 # Denenecek parametre kombinasyonlari (grid).
 # WAVE_DEVIATIONS artik ATR carpanidir (mutlak yuzde degil) -- bkz. wave_detector.atr_pct
@@ -36,6 +37,12 @@ VWAP_BAND_MULTS = [1.5, 2.0, 2.5]
 VWAP_TP_MULTS = [0.5, 0.75, 1.0]
 VWAP_SL_MULT = 0.5
 
+# Donchian Channel breakout (trend takip) stratejisinin grid'i: kanal
+# periyodu (kac mum geriye bakilir) ve kirilma yonunde ne kadar hedeflenecegi.
+DONCHIAN_PERIODS = [20, 40, 55]
+DONCHIAN_TP_MULTS = [1.0, 1.5, 2.0]
+DONCHIAN_SL_MULT = 1.0
+
 MIN_SYMBOL_SAMPLES = 3  # bu esikten once sembol bazli istatistik yerine global fallback kullanilir
 
 
@@ -49,12 +56,22 @@ def build_vwap_grid() -> List[VwapParams]:
             for band in VWAP_BAND_MULTS for tp in VWAP_TP_MULTS]
 
 
+def build_donchian_grid() -> List[DonchianParams]:
+    return [DonchianParams(channel_period=period, tp_mult=tp, sl_mult=DONCHIAN_SL_MULT)
+            for period in DONCHIAN_PERIODS for tp in DONCHIAN_TP_MULTS]
+
+
 class Learner:
     def __init__(self, state_path: str, epsilon: float = 0.25, strategy: str = "wave"):
         self.state_path = state_path
         self.epsilon = epsilon
         self.strategy = strategy
-        self.grid = build_wave_grid() if strategy == "wave" else build_vwap_grid()
+        if strategy == "wave":
+            self.grid = build_wave_grid()
+        elif strategy == "vwap":
+            self.grid = build_vwap_grid()
+        else:
+            self.grid = build_donchian_grid()
         self.stats = {}          # key(tuple) -> {"n","reward_sum","wins","losses"}  (GENEL/global)
         self.symbol_stats = {}   # (symbol, key(tuple)) -> {...}                      (coin bazli)
         self._load()
@@ -143,9 +160,9 @@ class Learner:
             rows.append((avg_r, win_rate, s["n"], p))
 
         rows.sort(key=lambda r: r[0], reverse=True)
-        first_col = "atr_x" if self.strategy == "wave" else "band_x"
+        first_col = {"wave": "atr_x", "vwap": "band_x", "donchian": "period"}[self.strategy]
         lines = [f"{first_col:>6} {'tp_x':>6} {'n':>4} {'winrate':>8} {'avgR':>7}"]
         for avg_r, win_rate, n, p in rows[:top_n]:
-            first_val = p.key()[0]  # deviation_pct (wave) veya band_mult (vwap) -- key() ikisinde de ayni sirada
+            first_val = p.key()[0]  # deviation_pct (wave) / band_mult (vwap) / channel_period (donchian)
             lines.append(f"{first_val:>6.1f} {p.tp_mult:>6.3f} {n:>4} {win_rate:>7.1f}% {avg_r:>7.2f}")
         return "\n".join(lines) if len(lines) > 1 else "Henuz yeterli veri yok."

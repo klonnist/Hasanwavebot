@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Elliott Wave Bot — Panel</title>
+<title>Donchian Channel Breakout — Panel</title>
 <style>
   :root {
     color-scheme: dark;
@@ -14,7 +14,7 @@
     --muted: #8b98a5;
     --green: #3fb950;
     --red: #f85149;
-    --accent: #58a6ff;
+    --accent: #d29922;
   }
   * { box-sizing: border-box; }
   body {
@@ -29,20 +29,11 @@
   .sub a { color: var(--accent); }
   #status { color: var(--muted); font-size: 12px; margin-bottom: 24px; }
 
-  .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-  .tab-btn {
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    color: var(--text);
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    cursor: pointer;
+  .explainer {
+    background: var(--panel); border: 1px solid var(--panel-border); border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 20px; font-size: 13px; line-height: 1.6; color: var(--text);
   }
-  .tab-btn.active { border-color: var(--accent); color: var(--accent); }
-
-  .profile { display: none; }
-  .profile.active { display: block; }
+  .explainer b { color: var(--accent); }
 
   .cards {
     display: grid;
@@ -121,17 +112,56 @@
 </head>
 <body>
 
-<h1>Elliott Wave Öğrenen Ajan — Sanal Hesap Paneli</h1>
+<h1>Donchian Channel Breakout — Sanal Hesap Paneli</h1>
 <div class="sub">
-  Veriler GitHub Actions tarafından her 15 dakikada bir güncellenir · repo:
+  Veriler GitHub Actions tarafından her 15 dakikada bir güncellenir (4 saatlik zaman diliminde taranır) · repo:
   <a href="https://github.com/klonnist/Hasanwavebot" target="_blank">klonnist/Hasanwavebot</a>
-  · her profil (3 Elliott Wave zaman dilimi + 1 VWAP ortalamaya dönüş) kendi ayrı sanal 10.000 USDT hesabıyla çalışır
-  · <a href="donchian.html">Donchian Channel breakout paneli →</a>
+  · <a href="index.html">← Elliott Wave / VWAP paneline dön</a>
 </div>
+
+<div class="explainer">
+  <b>Donchian Channel breakout</b>, Richard Donchian'ın geliştirdiği ve Turtle Trading sisteminin temelini
+  oluşturan klasik bir <b>trend takip</b> stratejisidir. Fikir basittir: son <b>N mumun</b> en yüksek seviyesi
+  (üst bant) ve en düşük seviyesi (alt bant) bir kanal oluşturur. Fiyat bu kanalın <b>üstüne kapanışla kırarsa</b>
+  ("breakout") yükselişin devam edeceğine bahis oynanır (BUY); <b>altına kırarsa</b> düşüşün devam edeceğine
+  bahis oynanır (SELL). VWAP stratejisinin tam tersi bir karakteri vardır: VWAP bandın dışına çıkan fiyatın
+  <b>geri döneceğini</b> varsayar (mean-reversion), Donchian ise kırılımın <b>devam edeceğini</b> varsayar
+  (momentum/trend takip) — Elliott Wave dalga-3 stratejisiyle aynı aileden ama çok daha basit bir kural setiyle.
+</div>
+
 <div id="status">Yükleniyor…</div>
 
-<div class="tabs" id="tabs"></div>
-<div id="profiles"></div>
+<div class="cards" id="cards"></div>
+<section>
+  <h2>Yön Bazlı Performans (BUY vs SELL)</h2>
+  <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
+    Piyasa genel bir yönde hareket ettiğinde bir taraf (örn. hep BUY) sistematik olarak daha iyi/kötü çalışabilir —
+    bu asimetriyi burada takip edebilirsin.
+  </div>
+  <div class="table-wrap" id="side-stats"></div>
+</section>
+<section>
+  <h2>Açık Pozisyonlar</h2>
+  <div class="table-wrap" id="open-positions"></div>
+</section>
+<section>
+  <h2>Son İşlemler</h2>
+  <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
+    "KISMİ AL" satırları pozisyon henüz kapanmadan alınan kısmi kârı gösterir (istatistiklere dahil edilmez) ·
+    K/Z yanındaki * işareti, o işlemde kısmi kâr alınıp kalanının trailing stop ile devam ettiğini belirtir
+  </div>
+  <div class="table-wrap" id="history"></div>
+</section>
+<section>
+  <h2>Öğrenilen En İyi Parametre Kombinasyonları</h2>
+  <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
+    Periyot = kanalı oluşturmak için geriye bakılan mum sayısı (20 / 40 / 55) · TP Çarpanı = kanal genişliğinin
+    kaç katı hedeflendiği
+  </div>
+  <div class="table-wrap" id="leaderboard"></div>
+</section>
+
+<div id="backtest-root"></div>
 
 <script src="hb-backtest-engine.js"></script>
 <script>
@@ -139,13 +169,8 @@ const OWNER = "klonnist";
 const REPO = "Hasanwavebot";
 const BRANCH = "main";
 const RAW = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/data`;
-
-const PROFILES = [
-  { key: "15m", dir: "15m", label: "15 Dakika · Scalp", leverage: "10x" },
-  { key: "4h",  dir: "4h",  label: "4 Saat · Swing",    leverage: "5x" },
-  { key: "1d",  dir: "1d",  label: "1 Gün · Pozisyon",  leverage: "3x" },
-  { key: "vwap", dir: "vwap", label: "VWAP · Ortalamaya Dönüş", leverage: "10x" },
-];
+const DATA_DIR = "donchian";
+const LEVERAGE_LABEL = "5x";
 
 function fmt(n, digits = 2) {
   if (n === undefined || n === null || isNaN(n)) return "-";
@@ -168,26 +193,16 @@ function computeStats(account) {
   const fundingTotal = history.reduce((s, t) => s + (t.funding_paid || 0), 0)
     + openPositions.reduce((s, p) => s + (p.funding_paid || 0), 0);
   const base = {
-    total_pnl: account.balance - startingBalance,  // gerceklesen net (funding dahil)
+    total_pnl: account.balance - startingBalance,
     balance: account.balance,
     open_positions: openPositions.length,
     unrealized_pnl: unrealizedPnl,
     funding_total: fundingTotal,
   };
-  // PARTIAL_TP kayitlari tamamlanmis bir islem degil (pozisyon hala acik,
-  // trailing stop ile devam ediyor) -- islem sayisi/kazanma oranindan haric.
   const completed = history.filter(t => t.result === "TP" || t.result === "SL");
-  if (completed.length === 0) {
-    return { trades: 0, win_rate: 0, ...base };
-  }
-  // Kazanma/kayip GERCEK pnl isaretine gore: trailing stop kar durumundayken
-  // tetiklenirse (result "SL" olsa bile) bu hala bir kazanctir.
+  if (completed.length === 0) return { trades: 0, win_rate: 0, ...base };
   const wins = completed.filter(t => t.pnl >= 0).length;
-  return {
-    trades: completed.length,
-    win_rate: 100 * wins / completed.length,
-    ...base,
-  };
+  return { trades: completed.length, win_rate: 100 * wins / completed.length, ...base };
 }
 
 function computeSideStats(account) {
@@ -197,15 +212,33 @@ function computeSideStats(account) {
   for (const t of completed) {
     const s = sides[t.side];
     if (!s) continue;
-    s.n += 1;
-    s.pnl += t.pnl;
+    s.n += 1; s.pnl += t.pnl;
     if (t.pnl >= 0) s.wins += 1;
   }
   return sides;
 }
 
-function renderSideStats(p, account) {
-  const el = document.getElementById(`side-${p.key}`);
+function renderCards(stats) {
+  const cards = [
+    { label: "Bakiye", value: `${fmt(stats.balance)} USDT` },
+    { label: "Toplam K/Z", value: `${stats.total_pnl >= 0 ? "+" : ""}${fmt(stats.total_pnl)} USDT`, cls: pnlClass(stats.total_pnl) },
+    { label: "Anlık K/Z", value: `${stats.unrealized_pnl >= 0 ? "+" : ""}${fmt(stats.unrealized_pnl)} USDT`, cls: pnlClass(stats.unrealized_pnl) },
+    { label: "Funding Maliyeti", value: `${stats.funding_total >= 0 ? "-" : "+"}${fmt(Math.abs(stats.funding_total))} USDT`, cls: stats.funding_total > 0 ? "neg" : "pos" },
+    { label: "Kazanma Oranı", value: `%${fmt(stats.win_rate, 1)}` },
+    { label: "Toplam İşlem", value: stats.trades },
+    { label: "Açık Pozisyon", value: stats.open_positions },
+    { label: "Kaldıraç", value: LEVERAGE_LABEL },
+  ];
+  document.getElementById("cards").innerHTML = cards.map(c => `
+    <div class="card">
+      <div class="label">${c.label}</div>
+      <div class="value ${c.cls || ""}">${c.value}</div>
+    </div>
+  `).join("");
+}
+
+function renderSideStats(account) {
+  const el = document.getElementById("side-stats");
   const sides = computeSideStats(account);
   const rows = ["BUY", "SELL"].map(side => {
     const s = sides[side];
@@ -227,58 +260,9 @@ function renderSideStats(p, account) {
   `;
 }
 
-function buildProfileSkeleton(p) {
-  return `
-    <div class="cards" id="cards-${p.key}"></div>
-    <section>
-      <h2>Yön Bazlı Performans (BUY vs SELL)</h2>
-      <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
-        Piyasa genel bir yönde hareket ettiğinde bir taraf (örn. hep SELL) sistematik olarak daha iyi/kötü çalışabilir —
-        bu asimetriyi burada takip edebilirsin.
-      </div>
-      <div class="table-wrap" id="side-${p.key}"></div>
-    </section>
-    <section>
-      <h2>Açık Pozisyonlar</h2>
-      <div class="table-wrap" id="open-${p.key}"></div>
-    </section>
-    <section>
-      <h2>Son İşlemler</h2>
-      <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
-        "KISMİ AL" satırları pozisyon henüz kapanmadan alınan kısmi kârı gösterir (istatistiklere dahil edilmez) ·
-        K/Z yanındaki * işareti, o işlemde kısmi kâr alınıp kalanının trailing stop ile devam ettiğini belirtir
-      </div>
-      <div class="table-wrap" id="hist-${p.key}"></div>
-    </section>
-    <section>
-      <h2>Öğrenilen En İyi Parametre Kombinasyonları</h2>
-      <div class="table-wrap" id="lb-${p.key}"></div>
-    </section>
-  `;
-}
-
-function renderCards(p, stats) {
-  const cards = [
-    { label: "Bakiye", value: `${fmt(stats.balance)} USDT` },
-    { label: "Toplam K/Z", value: `${stats.total_pnl >= 0 ? "+" : ""}${fmt(stats.total_pnl)} USDT`, cls: pnlClass(stats.total_pnl) },
-    { label: "Anlık K/Z", value: `${stats.unrealized_pnl >= 0 ? "+" : ""}${fmt(stats.unrealized_pnl)} USDT`, cls: pnlClass(stats.unrealized_pnl) },
-    { label: "Funding Maliyeti", value: `${stats.funding_total >= 0 ? "-" : "+"}${fmt(Math.abs(stats.funding_total))} USDT`, cls: stats.funding_total > 0 ? "neg" : "pos" },
-    { label: "Kazanma Oranı", value: `%${fmt(stats.win_rate, 1)}` },
-    { label: "Toplam İşlem", value: stats.trades },
-    { label: "Açık Pozisyon", value: stats.open_positions },
-    { label: "Kaldıraç", value: p.leverage },
-  ];
-  document.getElementById(`cards-${p.key}`).innerHTML = cards.map(c => `
-    <div class="card">
-      <div class="label">${c.label}</div>
-      <div class="value ${c.cls || ""}">${c.value}</div>
-    </div>
-  `).join("");
-}
-
-function renderOpenPositions(p, account) {
+function renderOpenPositions(account) {
   const positions = Object.values(account.open_positions || {});
-  const el = document.getElementById(`open-${p.key}`);
+  const el = document.getElementById("open-positions");
   if (positions.length === 0) {
     el.innerHTML = `<div class="empty">Şu anda açık pozisyon yok.</div>`;
     return;
@@ -316,9 +300,9 @@ function renderOpenPositions(p, account) {
   `;
 }
 
-function renderHistory(p, account) {
+function renderHistory(account) {
   const history = [...(account.history || [])].reverse().slice(0, 30);
-  const el = document.getElementById(`hist-${p.key}`);
+  const el = document.getElementById("history");
   if (history.length === 0) {
     el.innerHTML = `<div class="empty">Henüz kapanmış işlem yok.</div>`;
     return;
@@ -331,8 +315,6 @@ function renderHistory(p, account) {
       <tbody>
         ${history.map(t => {
           const isPartial = t.result === "PARTIAL_TP";
-          // Kazanma/kayip GERCEK pnl isaretine gore: trailing stop kar durumundayken
-          // tetiklenirse (result "SL" olsa bile) bu hala bir kazanctir.
           const profitable = t.pnl >= 0;
           let sonucLabel, sonucCls;
           if (isPartial) { sonucLabel = "KISMİ AL"; sonucCls = ""; }
@@ -358,27 +340,26 @@ function renderHistory(p, account) {
   `;
 }
 
-function renderLeaderboard(p, learner) {
+function renderLeaderboard(learner) {
   const rows = Object.entries(learner || {}).map(([key, s]) => {
-    const [dev, tp, sl] = JSON.parse(key);
-    return { dev, tp, sl, n: s.n, winRate: s.n ? 100 * s.wins / s.n : 0, avgR: s.n ? s.reward_sum / s.n : 0 };
+    const [period, tp, sl] = JSON.parse(key);
+    return { period, tp, sl, n: s.n, winRate: s.n ? 100 * s.wins / s.n : 0, avgR: s.n ? s.reward_sum / s.n : 0 };
   }).filter(r => r.n > 0).sort((a, b) => b.avgR - a.avgR);
 
-  const el = document.getElementById(`lb-${p.key}`);
+  const el = document.getElementById("leaderboard");
   if (rows.length === 0) {
     el.innerHTML = `<div class="empty">Henüz yeterli veri yok.</div>`;
     return;
   }
-  const firstColLabel = p.key === "vwap" ? "Bant×" : "ATR×";
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th>${firstColLabel}</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Ort. R</th>
+        <th>Periyot</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Ort. R</th>
       </tr></thead>
       <tbody>
         ${rows.map(r => `
           <tr>
-            <td>${fmt(r.dev, 1)}</td>
+            <td>${fmt(r.period, 0)}</td>
             <td>${fmt(r.tp, 3)}</td>
             <td>${r.n}</td>
             <td>%${fmt(r.winRate, 1)}</td>
@@ -390,11 +371,9 @@ function renderLeaderboard(p, learner) {
   `;
 }
 
-// ---------------- backtest sekmesi ----------------
+// ---------------- backtest bölümü ----------------
 function buildEquitySvg(points, startingBalance) {
-  if (!points || points.length < 2) {
-    return `<div class="empty">Grafik için yeterli veri yok.</div>`;
-  }
+  if (!points || points.length < 2) return `<div class="empty">Grafik için yeterli veri yok.</div>`;
   const W = 640, H = 180, padL = 62, padR = 14, padT = 14, padB = 24;
   const plotW = W - padL - padR, plotH = H - padT - padB;
   const balances = points.map(p => p.balance);
@@ -413,8 +392,6 @@ function buildEquitySvg(points, startingBalance) {
   const firstT = (points[0].t || "").slice(0, 10);
   const lastT = (points[points.length - 1].t || "").slice(0, 10);
 
-  // Etiketler ust uste binmesin: baslangic cizgisine 12px'den yakin olan
-  // min/max etiketini cizme (baslangic seviyesi daha bilgilendirici).
   const yMaxLabel = padT + 10, yMinLabel = padT + plotH;
   const labels = [
     { y: baseY + 3, text: fmt(startingBalance, 0) },
@@ -434,45 +411,9 @@ function buildEquitySvg(points, startingBalance) {
   `;
 }
 
-function renderBacktestList(runs) {
-  const el = document.getElementById("bt-list");
-  if (!runs || runs.length === 0) {
-    el.innerHTML = `<div class="empty">Henüz backtest çalıştırılmamış — yukarıdaki bağlantıdan başlatabilirsin.</div>`;
-    return;
-  }
-  el.innerHTML = `
-    <table>
-      <thead><tr>
-        <th>Çalıştırma</th><th>Strateji</th><th>Periyot</th><th>Tarih Aralığı</th><th>Coin</th>
-        <th>İşlem</th><th>Kazanma</th><th>Toplam K/Z</th><th>Max Drawdown</th><th></th>
-      </tr></thead>
-      <tbody>
-        ${runs.map(r => `
-          <tr>
-            <td>${fmtTime(r.created_at)}</td>
-            <td>${r.strategy}</td>
-            <td>${r.timeframe}</td>
-            <td>${r.date_from} → ${r.date_to}</td>
-            <td>${r.symbol_count}</td>
-            <td>${r.trades}</td>
-            <td>%${fmt(r.win_rate, 1)}</td>
-            <td class="${pnlClass(r.total_pnl)}">${r.total_pnl >= 0 ? "+" : ""}${fmt(r.total_pnl)} (${r.total_pnl_pct >= 0 ? "+" : ""}${fmt(r.total_pnl_pct, 1)}%)</td>
-            <td class="neg">%${fmt(r.max_drawdown_pct, 1)}</td>
-            <td><button class="bt-open" data-file="${r.file}">Detay</button></td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
-  el.querySelectorAll(".bt-open").forEach(btn => {
-    btn.addEventListener("click", () => openBacktestDetail(btn.dataset.file));
-  });
-}
-
 function renderBacktestDetail(r) {
   const el = document.getElementById("bt-detail");
   const s = r.summary, c = r.config;
-  const firstColLabel = { wave: "ATR×", vwap: "Bant×", donchian: "Periyot" }[c.strategy] || "ATR×";
 
   const cards = [
     { label: "Başlangıç", value: `${fmt(s.starting_balance)} USDT` },
@@ -486,7 +427,7 @@ function renderBacktestDetail(r) {
 
   const lbRows = (r.leaderboard || []).map(row => `
     <tr>
-      <td>${fmt(row.first, 1)}</td>
+      <td>${fmt(row.first, 0)}</td>
       <td>${fmt(row.tp_mult, 3)}</td>
       <td>${row.n}</td>
       <td>%${fmt(row.win_rate, 1)}</td>
@@ -526,7 +467,7 @@ function renderBacktestDetail(r) {
     </div>
 
     <section>
-      <h2>Bakiye Eğrisi — ${c.strategy} · ${c.timeframe} · ${c.date_from} → ${c.date_to}</h2>
+      <h2>Bakiye Eğrisi — donchian · ${c.timeframe} · ${c.date_from} → ${c.date_to}</h2>
       ${buildEquitySvg(r.equity, s.starting_balance)}
     </section>
 
@@ -534,7 +475,7 @@ function renderBacktestDetail(r) {
       <h2>Bu Testte Öğrenilen En İyi Parametreler</h2>
       <div class="table-wrap">
         ${lbRows ? `<table>
-          <thead><tr><th>${firstColLabel}</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Ort. R</th></tr></thead>
+          <thead><tr><th>Periyot</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Ort. R</th></tr></thead>
           <tbody>${lbRows}</tbody>
         </table>` : `<div class="empty">Yeterli veri yok.</div>`}
       </div>
@@ -553,7 +494,7 @@ function renderBacktestDetail(r) {
     <section>
       <h2>Kullanılan Ayarlar</h2>
       <div class="bt-config">
-        <div>Strateji: <b>${c.strategy}</b></div>
+        <div>Strateji: <b>donchian</b></div>
         <div>Zaman dilimi: <b>${c.timeframe}</b></div>
         <div>Pencere: <b>${c.window} mum</b></div>
         <div>Kaldıraç: <b>${fmt(c.leverage, 0)}x</b></div>
@@ -565,6 +506,40 @@ function renderBacktestDetail(r) {
       </div>
     </section>
   `;
+}
+
+function renderBacktestList(runs) {
+  const el = document.getElementById("bt-list");
+  if (!runs || runs.length === 0) {
+    el.innerHTML = `<div class="empty">Henüz donchian backtest'i çalıştırılmamış — yukarıdaki formdan başlatabilirsin.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Çalıştırma</th><th>Periyot</th><th>Tarih Aralığı</th><th>Coin</th>
+        <th>İşlem</th><th>Kazanma</th><th>Toplam K/Z</th><th>Max Drawdown</th><th></th>
+      </tr></thead>
+      <tbody>
+        ${runs.map(r => `
+          <tr>
+            <td>${fmtTime(r.created_at)}</td>
+            <td>${r.timeframe}</td>
+            <td>${r.date_from} → ${r.date_to}</td>
+            <td>${r.symbol_count}</td>
+            <td>${r.trades}</td>
+            <td>%${fmt(r.win_rate, 1)}</td>
+            <td class="${pnlClass(r.total_pnl)}">${r.total_pnl >= 0 ? "+" : ""}${fmt(r.total_pnl)} (${r.total_pnl_pct >= 0 ? "+" : ""}${fmt(r.total_pnl_pct, 1)}%)</td>
+            <td class="neg">%${fmt(r.max_drawdown_pct, 1)}</td>
+            <td><button class="bt-open" data-file="${r.file}">Detay</button></td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+  el.querySelectorAll(".bt-open").forEach(btn => {
+    btn.addEventListener("click", () => openBacktestDetail(btn.dataset.file));
+  });
 }
 
 async function openBacktestDetail(file) {
@@ -585,24 +560,13 @@ async function loadBacktests() {
   } catch {
     index = { runs: [] };
   }
-  const runs = index.runs || [];
+  // Sadece bu sayfaya ait (donchian) backtest kosularini listele.
+  const runs = (index.runs || []).filter(r => r.strategy === "donchian");
   renderBacktestList(runs);
   if (runs.length > 0 && !document.getElementById("bt-detail").dataset.loaded) {
     document.getElementById("bt-detail").dataset.loaded = "1";
-    await openBacktestDetail(runs[0].file);  // en yeni calistirmayi otomatik ac
+    await openBacktestDetail(runs[0].file);
   }
-}
-
-async function loadProfile(p) {
-  const [account, learner] = await Promise.all([
-    fetchJson(`${p.dir}/account_state.json`).catch(() => ({ balance: 10000, history: [], open_positions: {} })),
-    fetchJson(`${p.dir}/learner_state.json`).catch(() => ({})),
-  ]);
-  renderCards(p, computeStats(account));
-  renderSideStats(p, account);
-  renderOpenPositions(p, account);
-  renderHistory(p, account);
-  renderLeaderboard(p, learner);
 }
 
 function buildBacktestSkeleton() {
@@ -611,15 +575,9 @@ function buildBacktestSkeleton() {
   `).join("");
   return `
     <section>
-      <h2>Yeni Backtest — kendi tarih aralığınızı seçin (tarayıcınızda anında çalışır)</h2>
+      <h2>Yeni Donchian Backtest — kendi tarih aralığınızı seçin (tarayıcınızda anında çalışır)</h2>
       <form id="bt-run-form">
         <div class="bt-form-grid">
-          <label>Strateji
-            <select name="strategy">
-              <option value="wave">Elliott Wave (trend takip)</option>
-              <option value="vwap">VWAP (ortalamaya dönüş)</option>
-            </select>
-          </label>
           <label>Zaman Dilimi
             <select name="timeframe">
               <option value="15m">15 Dakika</option>
@@ -657,10 +615,10 @@ function buildBacktestSkeleton() {
       </form>
     </section>
     <section>
-      <h2>Geçmiş Backtest Çalışmaları (GitHub Actions üzerinden yayınlanan)</h2>
+      <h2>Geçmiş Donchian Backtest Çalışmaları (GitHub Actions üzerinden yayınlanan)</h2>
       <div class="bt-hint">
         Sonucu depoya kalıcı olarak kaydetmek istersen:
-        <a href="https://github.com/${OWNER}/${REPO}/actions/workflows/backtest.yml" target="_blank">Actions → "Backtest calistir" → Run workflow</a>
+        <a href="https://github.com/${OWNER}/${REPO}/actions/workflows/backtest.yml" target="_blank">Actions → "Backtest calistir" → Run workflow (strateji: donchian)</a>
         — sonuç birkaç dakika içinde burada listelenir.
       </div>
       <div class="table-wrap" id="bt-list"></div>
@@ -709,7 +667,7 @@ function setupHbBacktestForm() {
     document.getElementById("bt-detail").innerHTML = "";
     try {
       const report = await runHbBacktest({
-        strategy: fd.get("strategy"), timeframe: fd.get("timeframe"), symbols, sinceMs, untilMs,
+        strategy: "donchian", timeframe: fd.get("timeframe"), symbols, sinceMs, untilMs,
         window: Number(fd.get("window")), balance: Number(fd.get("balance")),
         tradeMargin: Number(fd.get("trade_margin")), leverage: Number(fd.get("leverage")),
         maxOpen: Number(fd.get("max_open")), maxPortfolioRiskPct: Number(fd.get("max_portfolio_risk_pct")),
@@ -730,38 +688,29 @@ function setupHbBacktestForm() {
   });
 }
 
-function initTabs() {
-  document.getElementById("tabs").innerHTML = PROFILES.map((p, i) => `
-    <button class="tab-btn ${i === 0 ? "active" : ""}" data-key="${p.key}">${p.label}</button>
-  `).join("") + `<button class="tab-btn" data-key="backtest">📊 Backtest</button>`;
-
-  document.getElementById("profiles").innerHTML = PROFILES.map((p, i) => `
-    <div class="profile ${i === 0 ? "active" : ""}" id="profile-${p.key}">
-      ${buildProfileSkeleton(p)}
-    </div>
-  `).join("") + `<div class="profile" id="profile-backtest">${buildBacktestSkeleton()}</div>`;
-
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".profile").forEach(s => s.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById(`profile-${btn.dataset.key}`).classList.add("active");
-    });
-  });
+async function loadLive() {
+  const [account, learner] = await Promise.all([
+    fetchJson(`${DATA_DIR}/account_state.json`).catch(() => ({ balance: 10000, history: [], open_positions: {} })),
+    fetchJson(`${DATA_DIR}/learner_state.json`).catch(() => ({})),
+  ]);
+  renderCards(computeStats(account));
+  renderSideStats(account);
+  renderOpenPositions(account);
+  renderHistory(account);
+  renderLeaderboard(learner);
 }
 
 async function loadAll() {
   const status = document.getElementById("status");
   try {
-    await Promise.all([...PROFILES.map(loadProfile), loadBacktests()]);
+    await Promise.all([loadLive(), loadBacktests()]);
     status.textContent = `Son güncelleme: ${new Date().toLocaleString("tr-TR")}`;
   } catch (e) {
     status.textContent = `Veri yüklenemedi: ${e.message}`;
   }
 }
 
-initTabs();
+document.getElementById("backtest-root").innerHTML = buildBacktestSkeleton();
 setupHbBacktestForm();
 loadAll();
 setInterval(loadAll, 60000);

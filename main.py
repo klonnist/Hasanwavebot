@@ -37,6 +37,7 @@ import ccxt
 from data_feed import build_exchange, fetch_ohlcv, fetch_last_price, fetch_funding_rate
 from wave_detector import zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams
 from vwap_detector import detect_vwap_signal, VwapParams
+from donchian_detector import detect_donchian_signal, DonchianParams
 from paper_account import PaperAccount
 from learner import Learner
 
@@ -100,6 +101,24 @@ def _find_vwap_setup(df, params: VwapParams, symbol, timeframe):
     return sig["direction"], sig["entry"], sig["tp"], sig["sl"], extra
 
 
+def _find_donchian_setup(df, params: DonchianParams, symbol, timeframe):
+    """Fiyatin son N mumun kanalini (en yuksek/en dusuk) kirdigi breakout kurulumunu arar (trend takip)."""
+    sig = detect_donchian_signal(df, params)
+    if sig is None:
+        log(f"{symbol} {timeframe} | period={params.channel_period} tp_x={params.tp_mult} -> gecerli Donchian kurulumu yok.")
+        return None
+    extra = (f"param(period={params.channel_period}, tp_x={params.tp_mult}) | "
+             f"ust={sig['upper']:.6f} alt={sig['lower']:.6f} genislik={sig['width']:.6f}")
+    return sig["direction"], sig["entry"], sig["tp"], sig["sl"], extra
+
+
+STRATEGY_FINDERS = {
+    "wave": _find_wave_setup,
+    "vwap": _find_vwap_setup,
+    "donchian": _find_donchian_setup,
+}
+
+
 def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, account: PaperAccount, strategy: str):
     """Bu sembolde acik pozisyon yoksa secilen stratejiye gore yeni bir kurulum arar ve sanal islem acar."""
     if account.has_open_position(symbol) or not account.can_open_new():
@@ -108,7 +127,7 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
     params = learner.select(symbol)
     df = fetch_ohlcv(exchange, symbol, timeframe, limit=limit)
 
-    finder = _find_wave_setup if strategy == "wave" else _find_vwap_setup
+    finder = STRATEGY_FINDERS[strategy]
     found = finder(df, params, symbol, timeframe)
     if found is None:
         return
@@ -217,8 +236,9 @@ def main():
     parser = argparse.ArgumentParser(description="Elliott Wave Dalga-3 Ogrenen Ajan (OKX, SANAL/paper trading, coklu-coin)")
     parser.add_argument("--symbols", default=",".join(POPULAR_COINS),
                          help="Virgulle ayrilmis coin listesi, orn: BTC/USDT,ETH/USDT,SOL/USDT")
-    parser.add_argument("--strategy", default="wave", choices=["wave", "vwap"],
-                         help="wave = Elliott Wave dalga-3 (trend takip), vwap = VWAP'a donus (mean-reversion)")
+    parser.add_argument("--strategy", default="wave", choices=["wave", "vwap", "donchian"],
+                         help="wave = Elliott Wave dalga-3 (trend takip), vwap = VWAP'a donus (mean-reversion), "
+                              "donchian = Donchian Channel breakout (trend takip)")
     parser.add_argument("--timeframe", default="1h")
     parser.add_argument("--market", default="swap", choices=["swap", "spot"])
     parser.add_argument("--limit", type=int, default=300)
