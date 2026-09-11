@@ -1,5 +1,5 @@
 {
-  "balance": 9590.076096863713,
+  "balance": 9668.55736722202,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -123,6 +123,25 @@
       "open_time": "2026-09-09T20:11:03+00:00",
       "close_time": "2026-09-11T10:28:16+00:00",
       "balance_after": 9590.3373
+    },
+    {
+      "symbol": "NEAR/USDT:USDT",
+      "side": "BUY",
+      "result": "PARTIAL_TP",
+      "entry": 2.456,
+      "exit": 2.713,
+      "pnl": 78.4813,
+      "r_multiple": 1.5,
+      "param_key": [
+        0.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 3.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-11T10:44:12+00:00",
+      "close_time": "2026-09-11T14:31:37+00:00",
+      "balance_after": 9668.5574
     }
   ],
   "open_positions": {
@@ -145,9 +164,9 @@
       "margin": 2911.6991373461387,
       "last_funding_time": "2026-09-11T13:53:41+00:00",
       "funding_paid": -0.598897986533662,
-      "last_price": 733.2,
-      "unrealized_pnl": 207.0369,
-      "unrealized_r": 1.035,
+      "last_price": 734.3,
+      "unrealized_pnl": 194.2425,
+      "unrealized_r": 0.971,
       "initial_sl": 0.0,
       "initial_risk_amount": 0.0,
       "breakeven_done": true,
@@ -173,9 +192,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-11T12:11:02+00:00",
       "funding_paid": -0.0028426459990499846,
-      "last_price": 103.93,
-      "unrealized_pnl": 24.1983,
-      "unrealized_r": 0.225,
+      "last_price": 103.78,
+      "unrealized_pnl": 21.9984,
+      "unrealized_r": 0.205,
       "initial_sl": 94.946,
       "initial_risk_amount": 107.55768478685964,
       "breakeven_done": false,
@@ -201,9 +220,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-11T10:45:02+00:00",
       "funding_paid": -0.46705401733785,
-      "last_price": 79001.9,
-      "unrealized_pnl": -14.7231,
-      "unrealized_r": -0.392,
+      "last_price": 79006.3,
+      "unrealized_pnl": -14.8075,
+      "unrealized_r": -0.395,
       "initial_sl": 80190.70999999999,
       "initial_risk_amount": 37.51648899455464,
       "breakeven_done": false,
@@ -229,9 +248,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-11T08:27:40+00:00",
       "funding_paid": -0.0730673554218,
-      "last_price": 0.08667,
-      "unrealized_pnl": -67.0805,
-      "unrealized_r": -0.24,
+      "last_price": 0.0865,
+      "unrealized_pnl": -64.0068,
+      "unrealized_r": -0.229,
       "initial_sl": 0.098422,
       "initial_risk_amount": 279.56846673095447,
       "breakeven_done": false,
@@ -243,9 +262,9 @@
       "side": "BUY",
       "entry": 2.456,
       "tp": 2.877248,
-      "sl": 2.456,
-      "risk_amount": 97.93363192182397,
-      "size": 610.7491856677525,
+      "sl": 2.713,
+      "risk_amount": 48.96681596091199,
+      "size": 305.37459283387625,
       "param_key": [
         0.8,
         1.272,
@@ -253,8 +272,8 @@
       ],
       "open_time": "2026-09-11T10:44:12+00:00",
       "leverage": 3.0,
-      "notional": 1500.0,
-      "margin": 500.0,
+      "notional": 750.0000000000001,
+      "margin": 250.00000000000003,
       "last_funding_time": "2026-09-11T10:44:12+00:00",
       "funding_paid": 0.0,
       "last_price": 2.647,
@@ -263,8 +282,8 @@
       "initial_sl": 2.29565,
       "initial_risk_amount": 97.93363192182397,
       "breakeven_done": true,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
+      "partial_tp_done": true,
+      "partial_pnl_realized": 78.48127035830623
     }
   }
 }
