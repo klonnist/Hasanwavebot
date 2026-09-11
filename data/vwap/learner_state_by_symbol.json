@@ -186,9 +186,9 @@
     "losses": 1
   },
   "[\"BTC/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 1,
-    "reward_sum": -1.0,
-    "wins": 0,
+    "n": 2,
+    "reward_sum": 2.145,
+    "wins": 1,
     "losses": 1
   },
   "[\"NEAR/USDT:USDT\", 2.5, 0.75, 0.5]": {
@@ -324,9 +324,9 @@
     "losses": 1
   },
   "[\"ETH/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 1,
-    "reward_sum": 1.84,
-    "wins": 1,
+    "n": 2,
+    "reward_sum": 3.925,
+    "wins": 2,
     "losses": 0
   },
   "[\"DOGE/USDT:USDT\", 1.5, 0.75, 0.5]": {
@@ -450,9 +450,9 @@
     "losses": 0
   },
   "[\"SOL/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 1,
-    "reward_sum": 1.568,
-    "wins": 1,
+    "n": 2,
+    "reward_sum": 6.122,
+    "wins": 2,
     "losses": 0
   },
   "[\"SOL/USDT:USDT\", 1.5, 1.0, 0.5]": {
