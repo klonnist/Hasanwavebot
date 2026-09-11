@@ -1,5 +1,5 @@
 {
-  "balance": 10497.60452524442,
+  "balance": 10564.478595424784,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -2264,37 +2264,51 @@
       "open_time": "2026-09-11T09:55:20+00:00",
       "close_time": "2026-09-11T10:11:09+00:00",
       "balance_after": 10497.6045
-    }
-  ],
-  "open_positions": {
-    "ETHFI/USDT:USDT": {
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "BUY",
+      "entry": 99.32,
+      "exit": 99.445,
+      "result": "SL",
+      "pnl": 9.4392,
+      "final_leg_pnl": 3.1464,
+      "partial_taken": true,
+      "r_multiple": 1.374,
+      "param_key": [
+        1.5,
+        1.0,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-11T09:55:20+00:00",
+      "close_time": "2026-09-11T10:28:19+00:00",
+      "balance_after": 10500.7509
+    },
+    {
       "symbol": "ETHFI/USDT:USDT",
       "side": "SELL",
       "entry": 0.6752,
-      "tp": 0.6579884296194453,
-      "sl": 0.6675,
-      "risk_amount": 15.426929129717552,
-      "size": 3702.60663507109,
+      "exit": 0.6579884296194453,
+      "result": "TP",
+      "pnl": 120.7478,
+      "final_leg_pnl": 63.7277,
+      "partial_taken": true,
+      "r_multiple": 3.914,
       "param_key": [
         2.0,
         1.0,
         0.5
       ],
-      "open_time": "2026-09-11T08:47:19+00:00",
       "leverage": 10.0,
-      "notional": 2500.0,
-      "margin": 250.0,
-      "last_funding_time": "2026-09-11T08:47:19+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.6614,
-      "unrealized_pnl": 51.096,
-      "unrealized_r": 3.312,
-      "initial_sl": 0.6793665050193541,
-      "initial_risk_amount": 30.853858259435103,
-      "breakeven_done": true,
-      "partial_tp_done": true,
-      "partial_pnl_realized": 57.02014218009467
-    },
+      "open_time": "2026-09-11T08:47:19+00:00",
+      "close_time": "2026-09-11T10:28:20+00:00",
+      "balance_after": 10564.4786
+    }
+  ],
+  "open_positions": {
     "BTC/USDT:USDT": {
       "symbol": "BTC/USDT:USDT",
       "side": "BUY",
@@ -2314,42 +2328,14 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-11T09:55:19+00:00",
       "funding_paid": 0.0,
-      "last_price": 77085.6,
-      "unrealized_pnl": 6.007,
-      "unrealized_r": 1.065,
+      "last_price": 77019.1,
+      "unrealized_pnl": 1.6885,
+      "unrealized_r": 0.299,
       "initial_sl": 76906.27304347008,
       "initial_risk_amount": 5.638619339260724,
       "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
-    },
-    "SOL/USDT:USDT": {
-      "symbol": "SOL/USDT:USDT",
-      "side": "BUY",
-      "entry": 99.32,
-      "tp": 101.90109309755351,
-      "sl": 99.445,
-      "risk_amount": 3.434887863821657,
-      "size": 25.171163914619413,
-      "param_key": [
-        1.5,
-        1.0,
-        0.5
-      ],
-      "open_time": "2026-09-11T09:55:20+00:00",
-      "leverage": 10.0,
-      "notional": 2500.0,
-      "margin": 250.0,
-      "last_funding_time": "2026-09-11T09:55:20+00:00",
-      "funding_paid": 0.0,
-      "last_price": 99.32,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 99.18353877494609,
-      "initial_risk_amount": 6.869775727643314,
-      "breakeven_done": true,
-      "partial_tp_done": true,
-      "partial_pnl_realized": 6.292790978654853
     },
     "XRP/USDT:USDT": {
       "symbol": "XRP/USDT:USDT",
@@ -2370,9 +2356,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-11T09:55:20+00:00",
       "funding_paid": 0.0,
-      "last_price": 1.3418,
-      "unrealized_pnl": 2.6098,
-      "unrealized_r": 0.174,
+      "last_price": 1.3389,
+      "unrealized_pnl": -8.2022,
+      "unrealized_r": -0.547,
       "initial_sl": 1.3370744924452789,
       "initial_risk_amount": 15.00823038819285,
       "breakeven_done": false,
