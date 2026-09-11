@@ -96,6 +96,27 @@
     color: var(--muted); font-size: 11.5px; line-height: 1.7;
     display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2px 16px;
   }
+  .bt-form-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px; margin-bottom: 14px; align-items: end;
+  }
+  .bt-form-grid label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); }
+  .bt-form-grid input, .bt-form-grid select {
+    background: #0e1219; border: 1px solid var(--panel-border); color: var(--text);
+    border-radius: 6px; padding: 8px 10px; font-size: 13px; color-scheme: dark;
+  }
+  .bt-coins { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-bottom: 14px; font-size: 12.5px; }
+  .bt-coins label { display: flex; align-items: center; gap: 5px; color: var(--text); cursor: pointer; }
+  .bt-coins-toggle { color: var(--accent); cursor: pointer; font-size: 12px; text-decoration: underline; background: none; border: none; padding: 0; }
+  .bt-run-btn {
+    background: var(--accent); border: 1px solid var(--accent); color: #0b0f14;
+    font-weight: 600; cursor: pointer; height: 38px; border-radius: 8px; padding: 0 18px; font-size: 13px;
+  }
+  .bt-run-btn:disabled { opacity: .6; cursor: default; }
+  details.bt-advanced { margin-bottom: 14px; }
+  details.bt-advanced summary { cursor: pointer; color: var(--muted); font-size: 12px; margin-bottom: 10px; }
+  .bt-progress { color: var(--muted); font-size: 12.5px; margin-top: 8px; min-height: 18px; }
+  .bt-error { color: var(--red); font-size: 12.5px; margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -111,6 +132,7 @@
 <div class="tabs" id="tabs"></div>
 <div id="profiles"></div>
 
+<script src="hb-backtest-engine.js"></script>
 <script>
 const OWNER = "klonnist";
 const REPO = "Hasanwavebot";
@@ -583,18 +605,128 @@ async function loadProfile(p) {
 }
 
 function buildBacktestSkeleton() {
+  const coinBoxes = HB_POPULAR_COINS.map(c => `
+    <label><input type="checkbox" name="symbol" value="${c}" checked> ${c}</label>
+  `).join("");
   return `
     <section>
-      <h2>Geçmiş Backtest Çalışmaları</h2>
+      <h2>Yeni Backtest — kendi tarih aralığınızı seçin (tarayıcınızda anında çalışır)</h2>
+      <form id="bt-run-form">
+        <div class="bt-form-grid">
+          <label>Strateji
+            <select name="strategy">
+              <option value="wave">Elliott Wave (trend takip)</option>
+              <option value="vwap">VWAP (ortalamaya dönüş)</option>
+            </select>
+          </label>
+          <label>Zaman Dilimi
+            <select name="timeframe">
+              <option value="15m">15 Dakika</option>
+              <option value="1h">1 Saat</option>
+              <option value="4h" selected>4 Saat</option>
+              <option value="1d">1 Gün</option>
+            </select>
+          </label>
+          <label>Başlangıç <input type="date" name="from" required></label>
+          <label>Bitiş <input type="date" name="to"></label>
+          <label>Bakiye (USDT) <input type="number" name="balance" value="10000" min="100" step="100"></label>
+          <label>Marjin / İşlem (USDT) <input type="number" name="trade_margin" value="500" min="10" step="10"></label>
+          <label>Kaldıraç <input type="number" name="leverage" value="5" min="1" max="50" step="1"></label>
+        </div>
+        <div class="bt-coins">
+          <button type="button" class="bt-coins-toggle" id="bt-coins-toggle">Tümünü kaldır</button>
+          ${coinBoxes}
+        </div>
+        <details class="bt-advanced">
+          <summary>Gelişmiş ayarlar (risk yönetimi)</summary>
+          <div class="bt-form-grid">
+            <label>Pencere (mum) <input type="number" name="window" value="150" min="30" step="10"></label>
+            <label>Max eşzamanlı pozisyon <input type="number" name="max_open" value="5" min="1" step="1"></label>
+            <label>Max portföy riski % <input type="number" name="max_portfolio_risk_pct" value="8" min="1" step="0.5"></label>
+            <label>Max aynı yön <input type="number" name="max_same_direction" value="3" min="1" step="1"></label>
+            <label>Başabaş R <input type="number" name="breakeven_r" value="1.0" step="0.1"></label>
+            <label>Kısmi TP R <input type="number" name="partial_tp_r" value="1.5" step="0.1"></label>
+            <label>Kısmi TP oranı <input type="number" name="partial_tp_fraction" value="0.5" min="0.1" max="0.9" step="0.1"></label>
+            <label>Trail giveback % <input type="number" name="trail_giveback_pct" value="0.5" min="0" max="1" step="0.1"></label>
+            <label>Epsilon (keşif oranı) <input type="number" name="epsilon" value="0.25" min="0" max="1" step="0.05"></label>
+          </div>
+        </details>
+        <button type="submit" class="bt-run-btn">▶ Çalıştır</button>
+        <div class="bt-progress" id="bt-progress"></div>
+      </form>
+    </section>
+    <section>
+      <h2>Geçmiş Backtest Çalışmaları (GitHub Actions üzerinden yayınlanan)</h2>
       <div class="bt-hint">
-        Yeni bir backtest başlatmak için:
+        Sonucu depoya kalıcı olarak kaydetmek istersen:
         <a href="https://github.com/${OWNER}/${REPO}/actions/workflows/backtest.yml" target="_blank">Actions → "Backtest calistir" → Run workflow</a>
-        — strateji, zaman dilimi ve tarih aralığını girip çalıştır; sonuç birkaç dakika içinde burada listelenir.
+        — sonuç birkaç dakika içinde burada listelenir.
       </div>
       <div class="table-wrap" id="bt-list"></div>
     </section>
     <div id="bt-detail"></div>
   `;
+}
+
+function hbDateInputToMs(value, endOfDay) {
+  const [y, m, d] = value.split("-").map(Number);
+  return endOfDay ? Date.UTC(y, m - 1, d, 23, 59, 59, 999) : Date.UTC(y, m - 1, d, 0, 0, 0, 0);
+}
+
+function setupHbBacktestForm() {
+  const form = document.getElementById("bt-run-form");
+  if (!form) return;
+  const fromInput = form.querySelector("[name=from]");
+  const toInput = form.querySelector("[name=to]");
+  const today = new Date();
+  toInput.value = today.toISOString().slice(0, 10);
+  fromInput.value = new Date(today.getTime() - 60 * 86_400_000).toISOString().slice(0, 10);
+
+  const toggleBtn = document.getElementById("bt-coins-toggle");
+  toggleBtn.addEventListener("click", () => {
+    const boxes = [...form.querySelectorAll("input[name=symbol]")];
+    const allChecked = boxes.every(b => b.checked);
+    boxes.forEach(b => { b.checked = !allChecked; });
+    toggleBtn.textContent = allChecked ? "Tümünü seç" : "Tümünü kaldır";
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const symbols = fd.getAll("symbol");
+    const progress = document.getElementById("bt-progress");
+    const btn = form.querySelector(".bt-run-btn");
+    if (!symbols.length) { progress.innerHTML = `<span class="bt-error">En az bir coin seçmelisin.</span>`; return; }
+
+    const sinceMs = hbDateInputToMs(fd.get("from"), false);
+    const untilVal = fd.get("to");
+    const untilMs = untilVal ? hbDateInputToMs(untilVal, true) : Date.now();
+    if (sinceMs >= untilMs) { progress.innerHTML = `<span class="bt-error">Başlangıç tarihi bitişten önce olmalı.</span>`; return; }
+
+    btn.disabled = true;
+    btn.textContent = "Çalışıyor…";
+    document.getElementById("bt-detail").innerHTML = "";
+    try {
+      const report = await runHbBacktest({
+        strategy: fd.get("strategy"), timeframe: fd.get("timeframe"), symbols, sinceMs, untilMs,
+        window: Number(fd.get("window")), balance: Number(fd.get("balance")),
+        tradeMargin: Number(fd.get("trade_margin")), leverage: Number(fd.get("leverage")),
+        maxOpen: Number(fd.get("max_open")), maxPortfolioRiskPct: Number(fd.get("max_portfolio_risk_pct")),
+        maxSameDirection: Number(fd.get("max_same_direction")), breakevenR: Number(fd.get("breakeven_r")),
+        partialTpR: Number(fd.get("partial_tp_r")), partialTpFraction: Number(fd.get("partial_tp_fraction")),
+        trailGivebackPct: Number(fd.get("trail_giveback_pct")), epsilon: Number(fd.get("epsilon")),
+        onProgress: (msg) => { progress.textContent = msg; },
+      });
+      progress.textContent = "Tamamlandı.";
+      renderBacktestDetail(report);
+      document.getElementById("bt-detail").scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (err) {
+      progress.innerHTML = `<span class="bt-error">Backtest başarısız: ${err.message}</span>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "▶ Çalıştır";
+    }
+  });
 }
 
 function initTabs() {
@@ -629,6 +761,7 @@ async function loadAll() {
 }
 
 initTabs();
+setupHbBacktestForm();
 loadAll();
 setInterval(loadAll, 60000);
 </script>
