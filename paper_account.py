@@ -216,6 +216,13 @@ class PaperAccount:
             pos.notional = pos.entry * pos.size
             pos.margin = pos.notional / pos.leverage if pos.leverage else pos.notional
             pos.partial_tp_done = True
+            # SL'i DOGRUDAN kismi kar alinan fiyata cek (halihazirdaki entry-sl
+            # arasinin ortasina degil) -- boylece kalan pozisyon en kotu ihtimalle
+            # de kismi ile AYNI seviyeden kapanir, yani islem toplamda en az
+            # "2 x kismi kar" kadar guvence altina alinmis olur ("risksiz kalan
+            # pozisyon" / risk-free runner). Asagidaki (3) adim buradan itibaren
+            # devam eder, sadece bu tabanin USTUNE cikan ek kazanci geri verir.
+            pos.sl = max(pos.sl, last_price) if pos.side == "BUY" else min(pos.sl, last_price)
             partial_event = {"price": last_price, "pnl": partial_pnl}
 
         # 3) Trailing stop: kismi alindiktan sonra, fiyat ilerledikce SL'i

@@ -334,6 +334,9 @@ class HbPaperAccount {
       pos.notional = pos.entry * pos.size;
       pos.margin = pos.leverage ? pos.notional / pos.leverage : pos.notional;
       pos.partialTpDone = true;
+      // SL'i DOGRUDAN kismi kar alinan fiyata cek (paper_account.py ile ayni) --
+      // kalan pozisyon en kotu ihtimalle de kismi ile ayni seviyeden kapanir.
+      pos.sl = pos.side === "BUY" ? Math.max(pos.sl, lastPrice) : Math.min(pos.sl, lastPrice);
       partialEvent = { price: lastPrice, pnl: partialPnl };
     }
     if (pos.partialTpDone) {

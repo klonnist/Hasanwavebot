@@ -111,11 +111,14 @@ pozisyon kâra geçtikçe üç aşamalı bir yönetim uygulanır:
    SL, giriş fiyatına çekilir. Pozisyon artık en kötü ihtimalle nötr kapanır.
 2. **Kısmi kâr alma** — `--partial-tp-r` R'a ulaşınca (varsayılan **1.5R**)
    pozisyonun `--partial-tp-fraction` kadarı (varsayılan **%50**) hemen
-   nakde çevrilir; kalan kısım açık kalmaya devam eder.
-3. **Trailing stop** — kısmi alındıktan sonra SL, fiyat ilerledikçe
-   kazancın en fazla `--trail-giveback-pct` kadarını (varsayılan **%50**)
-   geri verecek şekilde takip eder — orijinal TP seviyesini asla aşmaz
-   (bir tavan/çatı olarak kalır).
+   nakde çevrilir; SL de AYNI ANDA kısmi alınan fiyata çekilir. Böylece
+   kalan kısım en kötü ihtimalle de kısmi ile aynı seviyeden kapanır —
+   işlem toplamda en az **"2 × kısmi kâr"** kadar güvence altına alınmış
+   olur ("risksiz kalan pozisyon" / risk-free runner).
+3. **Trailing stop** — bu noktadan sonra SL, fiyat ilerledikçe kazancın
+   en fazla `--trail-giveback-pct` kadarını (varsayılan **%50**) geri
+   verecek şekilde takip eder — orijinal TP seviyesini asla aşmaz (bir
+   tavan/çatı olarak kalır).
 
 Böylece bir pozisyon "SL'e çarptı" görünse bile, trailing stop kâr
 durumundayken tetiklenmişse **gerçekte kazançlı** kapanmış olabilir —
