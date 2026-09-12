@@ -134,7 +134,6 @@
   <a href="https://github.com/klonnist/Hasanwavebot" target="_blank">klonnist/Hasanwavebot</a>
   · her profil (3 Elliott Wave zaman dilimi + 1 VWAP ortalamaya dönüş) kendi ayrı sanal 10.000 USDT hesabıyla çalışır
   · <a href="donchian.html">Donchian Channel breakout paneli →</a>
-  · <a href="vwap-adaptive.html">VWAP (adaptif öğrenen) — eski/yeni karşılaştırma →</a>
 </div>
 <div id="status">Yükleniyor…</div>
 
@@ -256,7 +255,6 @@ function buildProfileSkeleton(p) {
         "KISMİ AL" satırları pozisyon henüz kapanmadan alınan kısmi kârı gösterir (istatistiklere dahil edilmez) ·
         K/Z yanındaki * işareti, o işlemde kısmi kâr alınıp kalanının trailing stop ile devam ettiğini belirtir
       </div>
-      <div id="hist-filter-${p.key}"></div>
       <div class="table-wrap" id="hist-${p.key}"></div>
     </section>
     <section>
@@ -325,47 +323,11 @@ function renderOpenPositions(p, account) {
   `;
 }
 
-const HB_HISTORY_FILTERS = {};
-const HB_LAST_ACCOUNT = {};
-
-function hbGetHistoryFilter(key) {
-  return HB_HISTORY_FILTERS[key] || (HB_HISTORY_FILTERS[key] = { symbol: "ALL", side: "ALL" });
-}
-
-function renderHistoryFilterBar(containerId, filter, allTrades, onFiltered) {
-  const symbols = [...new Set(allTrades.map(t => t.symbol))].sort();
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  el.innerHTML = `
-    <div class="bt-form-grid" style="margin-bottom:10px;max-width:420px;">
-      <label>Coin
-        <select class="hb-filter-symbol">
-          <option value="ALL">Tüm coinler</option>
-          ${symbols.map(s => `<option value="${s}" ${filter.symbol === s ? "selected" : ""}>${s}</option>`).join("")}
-        </select>
-      </label>
-      <label>Yön
-        <select class="hb-filter-side">
-          <option value="ALL" ${filter.side === "ALL" ? "selected" : ""}>Tüm yönler</option>
-          <option value="BUY" ${filter.side === "BUY" ? "selected" : ""}>BUY</option>
-          <option value="SELL" ${filter.side === "SELL" ? "selected" : ""}>SELL</option>
-        </select>
-      </label>
-    </div>
-  `;
-  el.querySelector(".hb-filter-symbol").addEventListener("change", (e) => { filter.symbol = e.target.value; onFiltered(); });
-  el.querySelector(".hb-filter-side").addEventListener("change", (e) => { filter.side = e.target.value; onFiltered(); });
-}
-
 function renderHistory(p, account) {
-  HB_LAST_ACCOUNT[p.key] = account;
-  const filter = hbGetHistoryFilter(p.key);
-  const allHistory = account.history || [];
-  renderHistoryFilterBar(`hist-filter-${p.key}`, filter, allHistory, () => renderHistory(p, HB_LAST_ACCOUNT[p.key]));
-  const history = [...hbFilterTrades(allHistory, filter)].reverse().slice(0, 30);
+  const history = [...(account.history || [])].reverse().slice(0, 30);
   const el = document.getElementById(`hist-${p.key}`);
   if (history.length === 0) {
-    el.innerHTML = `<div class="empty">${allHistory.length === 0 ? "Henüz kapanmış işlem yok." : "Bu filtreyle eşleşen işlem yok."}</div>`;
+    el.innerHTML = `<div class="empty">Henüz kapanmış işlem yok.</div>`;
     return;
   }
   el.innerHTML = `
@@ -514,11 +476,6 @@ function renderBacktestList(runs) {
   });
 }
 
-const HB_BT_TRADE_FILTERS = {};
-function hbGetBtFilter(targetId) {
-  return HB_BT_TRADE_FILTERS[targetId] || (HB_BT_TRADE_FILTERS[targetId] = { symbol: "ALL", side: "ALL" });
-}
-
 function renderBacktestDetail(r, targetId = "bt-detail") {
   const el = document.getElementById(targetId);
   const s = r.summary, c = r.config;
@@ -544,12 +501,7 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
     </tr>
   `).join("");
 
-  const btFilter = hbGetBtFilter(targetId);
-  const allTrades = r.trades || [];
-  const btSymbols = [...new Set(allTrades.map(t => t.symbol))].sort();
-  const filteredTrades = hbFilterTrades(allTrades, btFilter);
-
-  const tradeRows = [...filteredTrades].reverse().map(t => {
+  const tradeRows = [...(r.trades || [])].reverse().map(t => {
     const isPartial = t.result === "PARTIAL_TP";
     const profitable = t.pnl >= 0;
     let label, cls;
@@ -596,27 +548,12 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
     </section>
 
     <section>
-      <h2>İşlemler (${filteredTrades.length} / ${allTrades.length})</h2>
-      <div class="bt-form-grid" style="margin-bottom:10px;max-width:420px;">
-        <label>Coin
-          <select class="hb-filter-symbol">
-            <option value="ALL">Tüm coinler</option>
-            ${btSymbols.map(sym => `<option value="${sym}" ${btFilter.symbol === sym ? "selected" : ""}>${sym}</option>`).join("")}
-          </select>
-        </label>
-        <label>Yön
-          <select class="hb-filter-side">
-            <option value="ALL" ${btFilter.side === "ALL" ? "selected" : ""}>Tüm yönler</option>
-            <option value="BUY" ${btFilter.side === "BUY" ? "selected" : ""}>BUY</option>
-            <option value="SELL" ${btFilter.side === "SELL" ? "selected" : ""}>SELL</option>
-          </select>
-        </label>
-      </div>
+      <h2>İşlemler (son ${(r.trades || []).length})</h2>
       <div class="table-wrap">
         ${tradeRows ? `<table>
           <thead><tr><th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>K/Z (USDT)</th><th>R</th><th>Kapanış</th></tr></thead>
           <tbody>${tradeRows}</tbody>
-        </table>` : `<div class="empty">${allTrades.length === 0 ? "İşlem yok." : "Bu filtreyle eşleşen işlem yok."}</div>`}
+        </table>` : `<div class="empty">İşlem yok.</div>`}
       </div>
     </section>
 
@@ -635,8 +572,6 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
       </div>
     </section>
   `;
-  el.querySelector(".hb-filter-symbol").addEventListener("change", (e) => { btFilter.symbol = e.target.value; renderBacktestDetail(r, targetId); });
-  el.querySelector(".hb-filter-side").addEventListener("change", (e) => { btFilter.side = e.target.value; renderBacktestDetail(r, targetId); });
 }
 
 async function openBacktestDetail(file) {
