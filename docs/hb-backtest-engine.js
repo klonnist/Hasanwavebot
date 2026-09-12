@@ -17,6 +17,17 @@ function hbInstId(base) { return `${base}-USDT-SWAP`; }
 function hbSleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function hbRound(x, n) { const f = 10 ** n; return Math.round(x * f) / f; }
 
+// Panel sayfalarindaki islem tablolarini (canli gecmis + backtest raporu) coin
+// ve yon (BUY/SELL) bazinda filtrelemek icin ortak yardimci -- her sayfa kendi
+// filtre UI'sini cizer, bu fonksiyon sadece filtreleme mantigini paylasir.
+function hbFilterTrades(trades, filter = {}) {
+  const symbol = filter.symbol || "ALL";
+  const side = filter.side || "ALL";
+  return (trades || []).filter(t =>
+    (symbol === "ALL" || t.symbol === symbol) && (side === "ALL" || t.side === side)
+  );
+}
+
 async function hbFetchHistoryCandles(instId, okxBar, startMs, endMs, pause = 150) {
   const rows = [];
   const seen = new Set();
@@ -324,6 +335,65 @@ class HbLearner {
   }
 }
 
+// ---------------- adaptive_learner.py port (recency-weighted / EWMA, non-stationary bandit) ----------------
+// learner.py'nin standart Learner'i tum-zamanlarin kumulatif ortalamasini tutar (rewardSum/n) --
+// yeni bir islem, kombinasyon 5 kere mi 500 kere mi denenmis olursa olsun ayni agirlikla katilir.
+// Bu learner yerine SABIT adim buyuklugu (decayAlpha) ile ussel azalan agirlikli ortalama (EWMA)
+// tutar: Q_{n+1} = Q_n + alpha*(R_n - Q_n) -- en son islemler, cok eski islemlerden daha fazla
+// agirlik tasir, boylece piyasa rejimi degistiginde ajan daha hizli adapte olur.
+
+const HB_DEFAULT_DECAY_ALPHA = 0.2;
+
+class HbAdaptiveLearner {
+  constructor(strategy, epsilon = 0.25, decayAlpha = HB_DEFAULT_DECAY_ALPHA) {
+    this.strategy = strategy;
+    this.epsilon = epsilon;
+    this.decayAlpha = decayAlpha;
+    this.grid = strategy === "wave" ? hbBuildWaveGrid() : strategy === "donchian" ? hbBuildDonchianGrid() : hbBuildVwapGrid();
+    this.stats = new Map();
+    this.symbolStats = new Map();
+  }
+  select(symbol) {
+    const unexplored = this.grid.filter(p => !this.symbolStats.has(`${symbol}|${JSON.stringify(hbParamKey(p, this.strategy))}`));
+    if (unexplored.length) return unexplored[Math.floor(Math.random() * unexplored.length)];
+    if (Math.random() < this.epsilon) return this.grid[Math.floor(Math.random() * this.grid.length)];
+    const scoreOf = (p) => {
+      const key = JSON.stringify(hbParamKey(p, this.strategy));
+      const symS = this.symbolStats.get(`${symbol}|${key}`);
+      if (symS && symS.n >= HB_MIN_SYMBOL_SAMPLES) return symS.avgReward;
+      const gS = this.stats.get(key);
+      return gS ? gS.avgReward : 0;
+    };
+    let best = this.grid[0], bestScore = -Infinity;
+    for (const p of this.grid) { const s = scoreOf(p); if (s > bestScore) { bestScore = s; best = p; } }
+    return best;
+  }
+  update(symbol, keyArr, reward, win) {
+    const key = JSON.stringify(keyArr);
+    for (const [map, k] of [[this.stats, key], [this.symbolStats, `${symbol}|${key}`]]) {
+      const s = map.get(k) || { n: 0, avgReward: 0, wins: 0, losses: 0 };
+      s.n++;
+      s.avgReward = s.n === 1 ? reward : s.avgReward + this.decayAlpha * (reward - s.avgReward);
+      win ? s.wins++ : s.losses++;
+      map.set(k, s);
+    }
+  }
+  leaderboardRows(topN = 12) {
+    const rows = [];
+    for (const p of this.grid) {
+      const key = JSON.stringify(hbParamKey(p, this.strategy));
+      const s = this.stats.get(key);
+      if (!s || s.n === 0) continue;
+      rows.push({
+        first: hbParamKey(p, this.strategy)[0], tp_mult: p.tpMult, n: s.n,
+        win_rate: hbRound((100 * s.wins) / s.n, 1), avg_r: hbRound(s.avgReward, 3),
+      });
+    }
+    rows.sort((a, b) => b.avg_r - a.avg_r);
+    return rows.slice(0, topN);
+  }
+}
+
 // ---------------- paper_account.py port (funding excluded, matches backtest.py) ----------------
 
 class HbPaperAccount {
@@ -532,39 +602,8 @@ function hbBuildEquityCurve(history, startingBalance, maxPoints = 300) {
   return points;
 }
 
-async function runHbBacktest({
-  strategy, timeframe, symbols, sinceMs, untilMs, window = 150,
-  balance = 10000, tradeMargin = 500, leverage = 1, maxOpen = 5, maxPortfolioRiskPct = 8,
-  maxSameDirection = 3, breakevenR = 1.0, partialTpR = 1.5, partialTpFraction = 0.5,
-  trailGivebackPct = 0.5, epsilon = 0.25, onProgress,
-}) {
-  const account = new HbPaperAccount({
-    startingBalance: balance, tradeMargin, maxOpenPositions: maxOpen, leverage,
-    maxPortfolioRiskPct, maxSameDirection, breakevenR, partialTpR, partialTpFraction, trailGivebackPct,
-  });
-  const learner = new HbLearner(strategy, epsilon);
-  const okxBar = HB_OKX_BAR[timeframe];
-  const warmupMs = HB_BAR_MS[timeframe] * window;
-
-  for (const symbol of symbols) {
-    onProgress?.(`${symbol}: OKX'ten veri çekiliyor…`);
-    let candles;
-    try {
-      candles = await hbFetchHistoryCandles(hbInstId(symbol), okxBar, sinceMs - warmupMs, untilMs);
-    } catch (e) {
-      onProgress?.(`${symbol}: veri alınamadı, atlandı (${e.message})`);
-      continue;
-    }
-    if (candles.length < window + 5) {
-      onProgress?.(`${symbol}: yeterli geçmiş veri yok (${candles.length} mum), atlandı`);
-      continue;
-    }
-    onProgress?.(`${symbol}: taranıyor (${candles.length} mum)…`);
-    await hbSleep(0);
-    hbReplaySymbol(candles, symbol, strategy, window, learner, account);
-    await hbSleep(0);
-  }
-
+function hbBuildReport(account, learner, cfg) {
+  const { strategy, timeframe, symbols, sinceMs, untilMs, window } = cfg;
   const s = account.stats();
   const dd = hbComputeMaxDrawdown(account.history, account.startingBalance);
   const now = new Date();
@@ -589,10 +628,96 @@ async function runHbBacktest({
       max_same_direction: account.maxSameDirection, breakeven_r: account.breakevenR,
       partial_tp_r: account.partialTpR, partial_tp_fraction: account.partialTpFraction,
       trail_giveback_pct: account.trailGivebackPct, epsilon: learner.epsilon,
+      decay_alpha: learner.decayAlpha,
     },
     summary,
     leaderboard: learner.leaderboardRows(12),
     equity: hbBuildEquityCurve(account.history, account.startingBalance),
     trades: [...account.history].sort((a, b) => (a.close_time < b.close_time ? -1 : 1)).slice(-60),
   };
+}
+
+async function runHbBacktest({
+  strategy, timeframe, symbols, sinceMs, untilMs, window = 150,
+  balance = 10000, tradeMargin = 500, leverage = 1, maxOpen = 5, maxPortfolioRiskPct = 8,
+  maxSameDirection = 3, breakevenR = 1.0, partialTpR = 1.5, partialTpFraction = 0.5,
+  trailGivebackPct = 0.5, epsilon = 0.25, decayAlpha = HB_DEFAULT_DECAY_ALPHA, onProgress,
+}) {
+  const account = new HbPaperAccount({
+    startingBalance: balance, tradeMargin, maxOpenPositions: maxOpen, leverage,
+    maxPortfolioRiskPct, maxSameDirection, breakevenR, partialTpR, partialTpFraction, trailGivebackPct,
+  });
+  const learner = strategy === "vwap-adaptive"
+    ? new HbAdaptiveLearner("vwap", epsilon, decayAlpha)
+    : new HbLearner(strategy, epsilon);
+  const okxBar = HB_OKX_BAR[timeframe];
+  const warmupMs = HB_BAR_MS[timeframe] * window;
+
+  for (const symbol of symbols) {
+    onProgress?.(`${symbol}: OKX'ten veri çekiliyor…`);
+    let candles;
+    try {
+      candles = await hbFetchHistoryCandles(hbInstId(symbol), okxBar, sinceMs - warmupMs, untilMs);
+    } catch (e) {
+      onProgress?.(`${symbol}: veri alınamadı, atlandı (${e.message})`);
+      continue;
+    }
+    if (candles.length < window + 5) {
+      onProgress?.(`${symbol}: yeterli geçmiş veri yok (${candles.length} mum), atlandı`);
+      continue;
+    }
+    onProgress?.(`${symbol}: taranıyor (${candles.length} mum)…`);
+    await hbSleep(0);
+    hbReplaySymbol(candles, symbol, strategy, window, learner, account);
+    await hbSleep(0);
+  }
+
+  return hbBuildReport(account, learner, { strategy, timeframe, symbols, sinceMs, untilMs, window });
+}
+
+// İKİ learner'ı (eski: kümülatif ortalama / yeni: EWMA) AYNI mum dizisi üzerinde
+// oynatır -- fark sadece öğrenme mekanizmasından kaynaklanır, veriden değil.
+async function runHbCompareBacktest({
+  timeframe, symbols, sinceMs, untilMs, window = 150,
+  balance = 10000, tradeMargin = 500, leverage = 1, maxOpen = 5, maxPortfolioRiskPct = 8,
+  maxSameDirection = 3, breakevenR = 1.0, partialTpR = 1.5, partialTpFraction = 0.5,
+  trailGivebackPct = 0.5, epsilon = 0.25, decayAlpha = HB_DEFAULT_DECAY_ALPHA, onProgress,
+}) {
+  const accountCfg = {
+    startingBalance: balance, tradeMargin, maxOpenPositions: maxOpen, leverage,
+    maxPortfolioRiskPct, maxSameDirection, breakevenR, partialTpR, partialTpFraction, trailGivebackPct,
+  };
+  const accountOld = new HbPaperAccount({ ...accountCfg });
+  const accountNew = new HbPaperAccount({ ...accountCfg });
+  const learnerOld = new HbLearner("vwap", epsilon);
+  const learnerNew = new HbAdaptiveLearner("vwap", epsilon, decayAlpha);
+  const okxBar = HB_OKX_BAR[timeframe];
+  const warmupMs = HB_BAR_MS[timeframe] * window;
+
+  for (const symbol of symbols) {
+    onProgress?.(`${symbol}: OKX'ten veri çekiliyor…`);
+    let candles;
+    try {
+      candles = await hbFetchHistoryCandles(hbInstId(symbol), okxBar, sinceMs - warmupMs, untilMs);
+    } catch (e) {
+      onProgress?.(`${symbol}: veri alınamadı, atlandı (${e.message})`);
+      continue;
+    }
+    if (candles.length < window + 5) {
+      onProgress?.(`${symbol}: yeterli geçmiş veri yok (${candles.length} mum), atlandı`);
+      continue;
+    }
+    onProgress?.(`${symbol}: taranıyor (${candles.length} mum, eski learner)…`);
+    await hbSleep(0);
+    hbReplaySymbol(candles, symbol, "vwap", window, learnerOld, accountOld);
+    onProgress?.(`${symbol}: taranıyor (${candles.length} mum, adaptif learner)…`);
+    await hbSleep(0);
+    hbReplaySymbol(candles, symbol, "vwap", window, learnerNew, accountNew);
+    await hbSleep(0);
+  }
+
+  const cfg = { strategy: "vwap", timeframe, symbols, sinceMs, untilMs, window };
+  const reportOld = hbBuildReport(accountOld, learnerOld, cfg);
+  const reportNew = hbBuildReport(accountNew, learnerNew, { ...cfg, strategy: "vwap-adaptive" });
+  return { old: reportOld, adaptive: reportNew };
 }

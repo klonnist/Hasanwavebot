@@ -46,6 +46,7 @@ from vwap_detector import detect_vwap_signal, VwapParams
 from donchian_detector import detect_donchian_signal, DonchianParams
 from paper_account import PaperAccount
 from learner import Learner
+from adaptive_learner import AdaptiveLearner, DEFAULT_DECAY_ALPHA
 from main import POPULAR_COINS, normalize_symbol
 
 
@@ -78,7 +79,12 @@ def fetch_historical_ohlcv(exchange, symbol, timeframe, since_ms, until_ms, page
 
 
 def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, window,
-                   learner: Learner, account: PaperAccount, log_every: int = 500):
+                   learner, account: PaperAccount, log_every: int = 500):
+    # vwap-adaptive, VWAP dedektorunun AYNISINI kullanir -- sadece ogrenen
+    # ajan (learner) farkli (bkz. adaptive_learner.py). Bu yuzden tespit
+    # mantigi acisindan "vwap" ile ozdes davraniyoruz.
+    detect_strategy = "vwap" if strategy == "vwap-adaptive" else strategy
+
     df_full = fetch_historical_ohlcv(exchange, symbol, timeframe, since_ms, until_ms)
     if len(df_full) < window + 5:
         print(f"  {symbol}: yeterli gecmis veri yok ({len(df_full)} mum) -- atlaniyor.")
@@ -103,7 +109,7 @@ def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, win
             params = learner.select(symbol)
             direction = entry = tp = sl = None
 
-            if strategy == "wave":
+            if detect_strategy == "wave":
                 vol_pct = atr_pct(window_df)
                 effective_dev = max(params.deviation_pct * vol_pct, 0.05)
                 pivots = zigzag_pivots(window_df, deviation_pct=effective_dev)
@@ -111,7 +117,7 @@ def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, win
                 if setup is not None:
                     entry, tp, sl = build_signal_levels(setup, params, bar_close)
                     direction = setup["direction"]
-            elif strategy == "vwap":
+            elif detect_strategy == "vwap":
                 sig = detect_vwap_signal(window_df, params)
                 if sig is not None:
                     direction, entry, tp, sl = sig["direction"], sig["entry"], sig["tp"], sig["sl"]
@@ -273,7 +279,10 @@ def print_summary(account: PaperAccount, learner: Learner, symbols, strategy, si
 def main():
     parser = argparse.ArgumentParser(description="Elliott Wave / VWAP / Donchian botunu gecmis veride test eder (backtest)")
     parser.add_argument("--symbols", default=",".join(POPULAR_COINS))
-    parser.add_argument("--strategy", default="wave", choices=["wave", "vwap", "donchian"])
+    parser.add_argument("--strategy", default="wave", choices=["wave", "vwap", "donchian", "vwap-adaptive"],
+                         help="vwap-adaptive = VWAP dedektoru + zaman-agirlikli (EWMA) ogrenen ajan "
+                              "(bkz. adaptive_learner.py) -- learner.py'nin tum-zamanlar-ortalamasi "
+                              "yerine son islemlere daha fazla agirlik verir")
     parser.add_argument("--timeframe", default="4h")
     parser.add_argument("--market", default="swap", choices=["swap", "spot"])
     parser.add_argument("--from", dest="date_from", required=True, help="YYYY-MM-DD (UTC)")
@@ -290,6 +299,10 @@ def main():
     parser.add_argument("--partial-tp-fraction", type=float, default=0.5)
     parser.add_argument("--trail-giveback-pct", type=float, default=0.5)
     parser.add_argument("--epsilon", type=float, default=0.25)
+    parser.add_argument("--decay-alpha", type=float, default=DEFAULT_DECAY_ALPHA, dest="decay_alpha",
+                         help="Sadece --strategy vwap-adaptive icin: EWMA'nin sabit adim buyuklugu "
+                              "(0-1 arasi; buyudukce rejim degisimine daha hizli adapte olur, gurultuye "
+                              "daha duyarli olur)")
     parser.add_argument("--out-dir", default=None, help="Verilirse sonuc account/learner state buraya JSON olarak kaydedilir")
     parser.add_argument("--report-dir", default=None,
                          help="Verilirse panelin okudugu backtest raporu (ve index.json) buraya yazilir, "
@@ -314,7 +327,11 @@ def main():
         breakeven_r=args.breakeven_r, partial_tp_r=args.partial_tp_r,
         partial_tp_fraction=args.partial_tp_fraction, trail_giveback_pct=args.trail_giveback_pct,
     )
-    learner = Learner(state_path=learner_path, epsilon=args.epsilon, strategy=args.strategy)
+    if args.strategy == "vwap-adaptive":
+        learner = AdaptiveLearner(state_path=learner_path, epsilon=args.epsilon, strategy="vwap",
+                                   decay_alpha=args.decay_alpha)
+    else:
+        learner = Learner(state_path=learner_path, epsilon=args.epsilon, strategy=args.strategy)
 
     print(f"Backtest basliyor | strateji={args.strategy} | {len(symbols)} coin | "
           f"timeframe={args.timeframe} | pencere={args.window} mum")

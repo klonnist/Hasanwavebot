@@ -144,7 +144,8 @@ görünür (istatistiklere dahil edilmez, tamamlanmış bir işlem sayılmaz).
 | `wave_detector.py`   | Zigzag pivot tespiti + Elliott Wave Dalga 1-2-3 kurulum tespiti (strateji: `wave`) |
 | `vwap_detector.py`   | VWAP hesabı + ortalamaya dönüş kurulum tespiti (strateji: `vwap`)  |
 | `paper_account.py`   | Sanal bakiye, pozisyon açma/kapama, kademeli kâr alma, işlem geçmişi (JSON'a kaydeder) |
-| `learner.py`         | Parametre kombinasyonlarını deneyen öğrenen ajan (bandit)          |
+| `learner.py`         | Parametre kombinasyonlarını deneyen öğrenen ajan (bandit) — **canlı botun kullandığı**, tüm-zamanların kümülatif ortalamasını tutan versiyon |
+| `adaptive_learner.py`| `learner.py`'nin **zaman-ağırlıklı (EWMA)** varyantı — canlı botu etkilemez, bkz. aşağıdaki bölüm |
 | `main.py`            | Canlı tarama: tüm parçaları birleştiren ana döngü                   |
 | `backtest.py`        | Geçmiş veride "bu strateji ne kazandırırdı?" testi                  |
 
@@ -182,6 +183,53 @@ sıfırdan keşif dönemi yaşanmaz.
 (coin bazlı) ve `account_state.json` olarak saklanır; ajanı durdurup
 tekrar başlattığınızda hafızası kaybolmaz.
 
+## Zaman-ağırlıklı (adaptif) öğrenen ajan varyantı — `vwap-adaptive`
+
+`learner.py`'deki standart ajan, her parametre kombinasyonu için **tüm
+zamanların kümülatif ortalama ödülünü** tutar (`reward_sum / n`) — yeni bir
+işlem, o kombinasyon 5 kere mi 500 kere mi denenmiş olursa olsun eklendiği
+anda aynı ağırlıkla katılır. VWAP backtest'lerini yıl yıl incelerken bu,
+şu deseni doğuruyor: bazı yıllarda (örn. 2022) ajan yılın ilk aylarında iyi
+giden bir kombinasyona kilitleniyor; piyasa rejimi değişince bu kombinasyon
+artık işe yaramıyor ama ajan **geç fark ediyor**, çünkü eski başarılı dönem
+ortalamayı hâlâ yukarıda tutuyor — erken kazanç kazanılıp yılın geri
+kalanında geri veriliyor.
+
+[`adaptive_learner.py`](adaptive_learner.py), bandit literatüründe
+"non-stationary ortam" için standart teknik olan **sabit adım büyüklüklü
+üssel azalan ağırlıklı ortalama (EWMA)** kullanır
+(`Q(n+1) = Q(n) + α × (R(n) − Q(n))`, bkz. Sutton & Barto, böl. 2.5): en son
+işlemler, çok eski işlemlerden **daha fazla ağırlık** taşır, böylece rejim
+değişikliklerine çok daha hızlı adapte olunur. Deterministik bir örnekle:
+aynı kombinasyon 20 işlem boyunca kazandırıp (ödül +1) sonra rejim değişip
+20 işlem boyunca kaybettirdiğinde (ödül −1), eski ajanın ortalama skoru
+rejim değiştikten **19 işlem sonra** hâlâ pozitifken, yeni (EWMA) ajanın
+skoru sadece **3 işlem sonra** negatife dönüyor — yani ajan artık kötü
+çalışan kombinasyonu çok daha çabuk terk ediyor.
+
+Bu, **ayrı ve bağımsız bir varyanttır** — canlı botun kullandığı VWAP
+profili (`data/vwap/`, `learner.py`, `run-bot.yml`'deki vwap taraması)
+bundan hiç etkilenmez, olduğu gibi çalışmaya devam eder:
+
+```bash
+# Ayni VWAP dedektoru, ama EWMA (zaman-agirlikli) ogrenen ajanla:
+python backtest.py --strategy vwap-adaptive --timeframe 1d \
+    --from 2022-01-01 --to 2023-01-01 --decay-alpha 0.2
+```
+
+`--decay-alpha` (varsayılan `0.2`) EWMA'nın sabit adım büyüklüğüdür;
+büyüdükçe ajan rejim değişikliklerine daha hızlı adapte olur ama gürültüye
+de daha duyarlı hale gelir.
+
+**Panelde karşılaştırma:** [canlı panelin](https://klonnist.github.io/Hasanwavebot/)
+["VWAP (adaptif öğrenen)"](https://klonnist.github.io/Hasanwavebot/vwap-adaptive.html)
+sayfası, seçtiğiniz tarih aralığında **eski ve yeni ajanı aynı geçmiş mum
+verisi üzerinde** çalıştırıp bakiye eğrilerini, öğrenilen parametreleri ve
+işlem listelerini (coin/yön filtresiyle) yan yana gösterir — tarayıcınızda
+anında çalışır, repoya bir şey kaydetmez. Sonucu kalıcı olarak kaydetmek
+istersen [Actions → "Backtest calistir"](../../actions/workflows/backtest.yml)
+üzerinden `strateji: vwap-adaptive` seçip tetikleyebilirsin.
+
 ## Backtest -- "bu tarih aralığında ne kazandırırdı?"
 
 [`backtest.py`](backtest.py) aynı tespit mantığını, aynı sanal hesabı
@@ -214,7 +262,8 @@ ekler; [canlı panelin](https://klonnist.github.io/Hasanwavebot/)
 **Backtest** sekmesinde geçmiş tüm çalıştırmalar listelenir —
 "Detay" ile bakiye eğrisi, öğrenilen parametreler, işlem listesi ve
 kullanılan ayarlar görülebilir. (`--report-dir` bayrağı bunu yerelde
-de üretir.)
+de üretir.) İşlem tabloları (canlı "Son İşlemler" ve backtest raporundaki
+"İşlemler") **coin ve yön (BUY/SELL)** bazında filtrelenebilir.
 
 **Sınırlamalar** (canlı bottan farkı):
 - Mum **kapanış fiyatına** göre karar verir — bir mum içinde fiyatın
