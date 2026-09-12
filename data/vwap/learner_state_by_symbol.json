@@ -360,9 +360,9 @@
     "losses": 1
   },
   "[\"SOL/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 1,
-    "reward_sum": 0.0,
-    "wins": 1,
+    "n": 2,
+    "reward_sum": 1.154,
+    "wins": 2,
     "losses": 0
   },
   "[\"BNB/USDT:USDT\", 2.5, 0.5, 0.5]": {
@@ -408,9 +408,9 @@
     "losses": 2
   },
   "[\"ETH/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 1,
-    "reward_sum": 1.632,
-    "wins": 1,
+    "n": 2,
+    "reward_sum": 3.66,
+    "wins": 2,
     "losses": 0
   },
   "[\"BNB/USDT:USDT\", 2.0, 0.5, 0.5]": {
