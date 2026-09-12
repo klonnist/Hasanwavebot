@@ -18,10 +18,10 @@
     "losses": 1
   },
   "[\"ETH/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 1,
-    "reward_sum": 2.182,
+    "n": 2,
+    "reward_sum": 1.182,
     "wins": 1,
-    "losses": 0
+    "losses": 1
   },
   "[\"XRP/USDT:USDT\", 2.0, 1.0, 0.5]": {
     "n": 1,
