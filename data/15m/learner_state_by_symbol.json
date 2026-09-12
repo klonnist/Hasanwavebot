@@ -250,5 +250,11 @@
     "reward_sum": 1.31,
     "wins": 1,
     "losses": 0
+  },
+  "[\"AVAX/USDT:USDT\", 1.8, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": 2.047,
+    "wins": 1,
+    "losses": 0
   }
 }
