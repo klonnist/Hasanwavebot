@@ -192,10 +192,10 @@
     "losses": 1
   },
   "[\"NEAR/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 1,
-    "reward_sum": 1.161,
+    "n": 2,
+    "reward_sum": 0.16100000000000003,
     "wins": 1,
-    "losses": 0
+    "losses": 1
   },
   "[\"BTC/USDT:USDT\", 2.5, 1.0, 0.5]": {
     "n": 1,
