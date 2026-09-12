@@ -522,10 +522,10 @@
     "losses": 1
   },
   "[\"NEAR/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 1,
-    "reward_sum": 1.009,
+    "n": 2,
+    "reward_sum": 0.008999999999999897,
     "wins": 1,
-    "losses": 0
+    "losses": 1
   },
   "[\"ADA/USDT:USDT\", 2.5, 0.5, 0.5]": {
     "n": 1,
