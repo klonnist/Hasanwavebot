@@ -162,9 +162,9 @@
     "losses": 1
   },
   "[\"ETH/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 2,
-    "reward_sum": 0.3779999999999999,
-    "wins": 1,
+    "n": 3,
+    "reward_sum": 2.42,
+    "wins": 2,
     "losses": 1
   },
   "[\"BTC/USDT:USDT\", 2.0, 0.75, 0.5]": {
