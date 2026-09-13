@@ -96,10 +96,10 @@
     "losses": 0
   },
   "[\"NEAR/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 1,
-    "reward_sum": 1.858,
+    "n": 2,
+    "reward_sum": 0.8580000000000001,
     "wins": 1,
-    "losses": 0
+    "losses": 1
   },
   "[\"ETHFI/USDT:USDT\", 2.0, 0.5, 0.5]": {
     "n": 2,
@@ -588,6 +588,12 @@
     "losses": 1
   },
   "[\"AVAX/USDT:USDT\", 2.5, 1.0, 0.5]": {
+    "n": 1,
+    "reward_sum": -1.0,
+    "wins": 0,
+    "losses": 1
+  },
+  "[\"AVAX/USDT:USDT\", 1.5, 0.5, 0.5]": {
     "n": 1,
     "reward_sum": -1.0,
     "wins": 0,
