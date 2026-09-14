@@ -352,5 +352,11 @@
     "reward_sum": 0.49,
     "wins": 1,
     "losses": 0
+  },
+  "[\"PENGU/USDT:USDT\", 1.2, 1.272, 0.15]": {
+    "n": 1,
+    "reward_sum": 0.562,
+    "wins": 1,
+    "losses": 0
   }
 }
