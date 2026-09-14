@@ -6,10 +6,10 @@
     "losses": 0
   },
   "[\"AVAX/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 1,
-    "reward_sum": 2.703,
+    "n": 2,
+    "reward_sum": 1.7029999999999998,
     "wins": 1,
-    "losses": 0
+    "losses": 1
   },
   "[\"NEAR/USDT:USDT\", 1.5, 0.75, 0.5]": {
     "n": 1,
@@ -486,10 +486,10 @@
     "losses": 1
   },
   "[\"DOGE/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 1,
-    "reward_sum": 4.415,
+    "n": 2,
+    "reward_sum": 3.415,
     "wins": 1,
-    "losses": 0
+    "losses": 1
   },
   "[\"ADA/USDT:USDT\", 2.0, 1.0, 0.5]": {
     "n": 1,
@@ -552,9 +552,9 @@
     "losses": 1
   },
   "[\"ADA/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 2,
+    "n": 3,
     "reward_sum": 0.09800000000000009,
-    "wins": 1,
+    "wins": 2,
     "losses": 1
   },
   "[\"PENGU/USDT:USDT\", 2.5, 1.0, 0.5]": {
