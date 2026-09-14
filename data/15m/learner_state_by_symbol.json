@@ -340,5 +340,17 @@
     "reward_sum": -1.0,
     "wins": 0,
     "losses": 1
+  },
+  "[\"XRP/USDT:USDT\", 1.8, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": 0.399,
+    "wins": 1,
+    "losses": 0
+  },
+  "[\"LINK/USDT:USDT\", 1.2, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": 0.49,
+    "wins": 1,
+    "losses": 0
   }
 }
