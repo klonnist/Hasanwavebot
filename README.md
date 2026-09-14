@@ -62,6 +62,14 @@ Secret'lar tanımlı değilse bot hiçbir hata vermeden, bildirim göndermeden
 çalışmaya devam eder (yalnızca bir uyarı loglar) — yani bu özellik
 opsiyoneldir, kurulmadan da sistem normal çalışır.
 
+**Birden fazla kişiye göndermek:** `TELEGRAM_CHAT_ID` **virgülle ayrılmış
+birden fazla id** kabul eder (`111111111,222222222`) — her biri botla
+KENDİ özel sohbetinde bildirim alır (grup kurmaya gerek yok). Yeni bir
+kişi eklemek için: o kişi bota Telegram'dan bir mesaj göndersin (örn.
+"merhaba"), siz `getUpdates` linkini açıp o kişinin chat_id'sini bulun,
+sonra `TELEGRAM_CHAT_ID` secret'ını mevcut değerin sonuna virgülle
+ekleyerek güncelleyin.
+
 ## İki farklı strateji
 
 `--strategy` bayrağıyla seçilir; ikisi de aynı altyapıyı (veri çekme,
