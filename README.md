@@ -258,12 +258,15 @@ kullanılan ayarlar görülebilir. (`--report-dir` bayrağı bunu yerelde
 de üretir.)
 
 **Sınırlamalar** (canlı bottan farkı):
-- Mum **kapanış fiyatına** göre karar verir — bir mum içinde fiyatın
-  TP/SL'e değip geri dönmesi (intrabar iğne) yakalanmaz. Canlı bot
-  artık bunu yakalıyor (aşağıya bakın), backtest henüz yakalamıyor —
-  yani backtest sonuçları canlı botun gerçek davranışından biraz daha
-  iyimser olabilir (bir iğnenin gözden kaçırılıp SL'in "atlatılması"
-  ihtimali backtest'te daha yüksek).
+- TP/SL artık backtest'te de mumun **yüksek/düşük** değerlerine göre
+  kontrol ediliyor (canlı bottaki intrabar kontrolle aynı mantık —
+  aşağıya bakın), sadece kapanışa değil. Ama gerçek fiyatın o mum
+  içinde hangi sırayla hareket ettiğini (önce mi yukarı sonra mı aşağı
+  gitti) bilemeyiz, kötümser varsayımla önce SL yönü kontrol edilir.
+  Canlı bot 1 dakikalık mumlarla kontrol ederken backtest yalnızca
+  seçilen zaman diliminin (örn. 4 saatlik) kendi mumunu kullanır — bu
+  da daha geniş zaman dilimlerinde intrabar hareketin daha kaba bir
+  yaklaşıklıkla temsil edildiği anlamına gelir.
 - **Funding ücreti simüle edilmez** (sadece fiyat bazlı kâr/zarar).
 - `--window` (varsayılan 150 mum), her karar anında dedektöre verilen
   pencere boyutudur — canlı moddaki `--limit` ile aynı role sahiptir.

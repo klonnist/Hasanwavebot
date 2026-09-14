@@ -21,11 +21,14 @@ Kullanim
 
 ONEMLI SINIRLAMALAR
 --------------------
-- Canli bot gibi PERIYODIK (mum kapanisina gore) karar verir: bir mum
-  icinde fiyatin TP/SL seviyesine degip geri donmesi (intrabar iğne/wick)
-  yakalanmaz -- sadece kapanis fiyatlari kullanilir. Bu, canli botun
-  zaten 15 dakikada bir kontrol etme davranisina yakindir, ama gercek
-  sonuclar (ozellikle daha genis bantlarda) biraz farkli olabilir.
+- TP/SL, o mumun YUKSEK/DUSUK degerlerine gore kontrol edilir (canli
+  bottaki intrabar kontrolun ayni mantigi -- once aleyhte, sonra lehte uc),
+  ama gercek fiyatin o mum icinde HANGI SIRAYLA hareket ettigini (once mi
+  yukari, sonra mi asagi gitti) bilemeyiz -- kotumser varsayimla once SL
+  yonu kontrol edilir. Ayrica canli bot 1 dakikalik mumlarla kontrol
+  ederken, backtest sadece secilen zaman diliminin (orn. 4 saatlik)
+  kendi mumunu kullanir -- bu da daha genis zaman dilimlerinde intrabar
+  hareketin daha kaba bir yaklasiklikla temsil edilmesi anlamina gelir.
 - Funding ucreti SIMULE EDILMEZ (gecmis funding oran verisi cekmek ayri
   bir maliyet/karmasiklik gerektirir) -- sadece fiyat bazli kar/zarar.
 - Ayni anda calisan tek bir "ajan" gibi davranir: tum semboller sirayla,
@@ -46,7 +49,7 @@ from vwap_detector import detect_vwap_signal, VwapParams
 from donchian_detector import detect_donchian_signal, DonchianParams
 from paper_account import PaperAccount
 from learner import Learner
-from main import POPULAR_COINS, normalize_symbol
+from main import POPULAR_COINS, normalize_symbol, _candle_check_order
 
 
 def fetch_historical_ohlcv(exchange, symbol, timeframe, since_ms, until_ms, page_limit=300):
@@ -77,6 +80,13 @@ def fetch_historical_ohlcv(exchange, symbol, timeframe, since_ms, until_ms, page
     return df
 
 
+def _update_learner_on_close(result, symbol, learner: Learner):
+    if result is None or result["result"] not in ("TP", "SL"):
+        return
+    win = result["pnl"] >= 0
+    learner.update(symbol, tuple(result["param_key"]), reward=result["r_multiple"], win=win)
+
+
 def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, window,
                    learner: Learner, account: PaperAccount, log_every: int = 500):
     df_full = fetch_historical_ohlcv(exchange, symbol, timeframe, since_ms, until_ms)
@@ -88,6 +98,8 @@ def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, win
     for i in range(window, len(df_full)):
         window_df = df_full.iloc[i - window:i + 1].reset_index(drop=True)
         bar_close = float(window_df["close"].iloc[-1])
+        bar_high = float(window_df["high"].iloc[-1])
+        bar_low = float(window_df["low"].iloc[-1])
 
         # Hesabin "simdi"si, gercek saat degil o an oynatilan mumun zamani olsun --
         # boylece islem zaman damgalari (ve bakiye egrisi) test edilen tarihi gosterir.
@@ -95,10 +107,23 @@ def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, win
         account.now_fn = lambda ts=bar_ts: ts
 
         if account.has_open_position(symbol):
-            result = account.check_and_close(symbol, bar_close)
-            if result and result["result"] in ("TP", "SL"):
-                win = result["pnl"] >= 0
-                learner.update(symbol, tuple(result["param_key"]), reward=result["r_multiple"], win=win)
+            # Sadece kapanisa degil, mumun YUKSEK/DUSUK degerlerine de bakiyoruz --
+            # canli bottaki (main.py) intrabar TP/SL kontrolunun ayni mantigi:
+            # once aleyhte (SL'i tetikleyebilecek), sonra lehte (TP) uc kontrol edilir.
+            side = account.open_positions[symbol].side
+            adverse, favorable = _candle_check_order(side, bar_high, bar_low)
+
+            result = account.check_and_close(symbol, adverse)
+            _update_learner_on_close(result, symbol, learner)
+
+            if account.has_open_position(symbol):
+                result = account.check_and_close(symbol, favorable)
+                _update_learner_on_close(result, symbol, learner)
+
+            if account.has_open_position(symbol):
+                # Ne TP ne SL tetiklenmediyse, normal mark-to-market/yonetim
+                # (basabas/kismi/trailing ilerlemesi) icin kapanisla bir kez daha calistir.
+                account.check_and_close(symbol, bar_close)
         else:
             params = learner.select(symbol)
             direction = entry = tp = sl = None

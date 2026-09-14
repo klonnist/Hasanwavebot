@@ -470,17 +470,44 @@ class HbPaperAccount {
 
 // ---------------- backtest.py port ----------------
 
+function hbCandleCheckOrder(side, high, low) {
+  // Once ALEYHTE (SL'i tetikleyebilecek), sonra LEHTE (TP) uc -- ayni mumda
+  // ikisi de mumkunse kotumser (SL once) varsayimla kontrol edilmis olur.
+  // paper_account.py / main.py'deki _candle_check_order ile ayni mantik.
+  return side === "BUY" ? [low, high] : [high, low];
+}
+
+function hbUpdateLearnerOnClose(result, symbol, learner) {
+  if (!result || (result.result !== "TP" && result.result !== "SL")) return;
+  learner.update(symbol, result.param_key, result.r_multiple, result.pnl >= 0);
+}
+
 function hbReplaySymbol(candles, symbol, strategy, window, learner, account) {
   for (let i = window; i < candles.length; i++) {
     const windowDf = candles.slice(i - window, i + 1);
     const barClose = candles[i].close;
+    const barHigh = candles[i].high;
+    const barLow = candles[i].low;
     const barTs = candles[i].timestamp;
     account.nowFn = () => new Date(barTs);
 
     if (account.hasOpenPosition(symbol)) {
-      const result = account.checkAndClose(symbol, barClose);
-      if (result && (result.result === "TP" || result.result === "SL")) {
-        learner.update(symbol, result.param_key, result.r_multiple, result.pnl >= 0);
+      // Sadece kapanisa degil, mumun YUKSEK/DUSUK degerlerine de bakiyoruz --
+      // canli bottaki (main.py) ve Python backtest'teki intrabar TP/SL
+      // kontroluyle ayni mantik.
+      const side = account.openPositions.get(symbol).side;
+      const [adverse, favorable] = hbCandleCheckOrder(side, barHigh, barLow);
+
+      let result = account.checkAndClose(symbol, adverse);
+      hbUpdateLearnerOnClose(result, symbol, learner);
+
+      if (account.hasOpenPosition(symbol)) {
+        result = account.checkAndClose(symbol, favorable);
+        hbUpdateLearnerOnClose(result, symbol, learner);
+      }
+
+      if (account.hasOpenPosition(symbol)) {
+        account.checkAndClose(symbol, barClose);
       }
     } else {
       const params = learner.select(symbol);
