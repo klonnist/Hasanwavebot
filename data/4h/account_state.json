@@ -1,5 +1,5 @@
 {
-  "balance": 10202.7163122581,
+  "balance": 10150.64608358941,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -249,6 +249,27 @@
       "open_time": "2026-09-11T14:31:31+00:00",
       "close_time": "2026-09-13T14:39:15+00:00",
       "balance_after": 10202.448
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "SELL",
+      "entry": 1.3513,
+      "exit": 1.379445,
+      "result": "SL",
+      "pnl": -52.0702,
+      "final_leg_pnl": -52.0702,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        0.8,
+        1.272,
+        0.15
+      ],
+      "leverage": 5.0,
+      "funding_paid": -0.0046,
+      "open_time": "2026-09-13T14:39:15+00:00",
+      "close_time": "2026-09-14T05:41:29+00:00",
+      "balance_after": 10150.6461
     }
   ],
   "open_positions": {
@@ -271,9 +292,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-13T23:09:46+00:00",
       "funding_paid": -2.0076676989305,
-      "last_price": 77493.6,
-      "unrealized_pnl": 20.776,
-      "unrealized_r": 0.281,
+      "last_price": 77557.5,
+      "unrealized_pnl": 18.7317,
+      "unrealized_r": 0.254,
       "initial_sl": 80450.23999999999,
       "initial_risk_amount": 73.81467309931762,
       "breakeven_done": false,
@@ -299,9 +320,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-14T00:27:36+00:00",
       "funding_paid": -1.1094571673634999,
-      "last_price": 724.7,
-      "unrealized_pnl": -69.4937,
-      "unrealized_r": -0.311,
+      "last_price": 725.5,
+      "unrealized_pnl": -72.3302,
+      "unrealized_r": -0.323,
       "initial_sl": 768.1949999999999,
       "initial_risk_amount": 223.7094029215711,
       "breakeven_done": false,
@@ -327,39 +348,11 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-14T00:44:33+00:00",
       "funding_paid": 0.9071687574257501,
-      "last_price": 2510.1,
-      "unrealized_pnl": -58.164,
-      "unrealized_r": -0.307,
+      "last_price": 2514.65,
+      "unrealized_pnl": -53.7377,
+      "unrealized_r": -0.284,
       "initial_sl": 2375.1085000000003,
       "initial_risk_amount": 189.48427753717047,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
-    },
-    "XRP/USDT:USDT": {
-      "symbol": "XRP/USDT:USDT",
-      "side": "SELL",
-      "entry": 1.3513,
-      "tp": 1.3249824,
-      "sl": 1.379445,
-      "risk_amount": 52.07022866868957,
-      "size": 1850.0703026715016,
-      "param_key": [
-        0.8,
-        1.272,
-        0.15
-      ],
-      "open_time": "2026-09-13T14:39:15+00:00",
-      "leverage": 5.0,
-      "notional": 2500.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-09-13T22:39:15+00:00",
-      "funding_paid": -0.0046242815045,
-      "last_price": 1.376,
-      "unrealized_pnl": -45.6967,
-      "unrealized_r": -0.878,
-      "initial_sl": 1.379445,
-      "initial_risk_amount": 52.07022866868957,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
