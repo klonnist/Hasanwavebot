@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-09-14T11:06:50+00:00",
+  "ok": true,
+  "issues": [],
+  "profiles_checked": [
+    "15m",
+    "4h",
+    "1d",
+    "vwap",
+    "donchian"
+  ]
+}
