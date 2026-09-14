@@ -37,6 +37,31 @@ böylece sonuçları birbirinden bağımsız karşılaştırabilirsiniz:
 Sonuçlar [klonnist.github.io/Hasanwavebot](https://klonnist.github.io/Hasanwavebot/)
 adresindeki panelde sekmeler halinde canlı gösterilir.
 
+## Telegram bildirimleri (şu an sadece VWAP profili)
+
+`vwap` profili, her sinyal açılışında/kapanışında/kısmi kâr alımında
+[Telegram Bot API](https://core.telegram.org/bots/api) üzerinden bildirim
+gönderebilir (`telegram_notify.py`, `main.py --telegram-notify`). Diğer
+profiller (`wave`, `donchian`) şu an bildirim göndermiyor — istenirse
+`run-bot.yml`'deki ilgili adıma aynı `env:`/`--telegram-notify` eklenerek
+açılabilir.
+
+**Kurulum:**
+1. Telegram'da [@BotFather](https://t.me/BotFather)'a `/newbot` yazıp yeni
+   bir bot oluşturun; size verdiği **token**'ı not edin.
+2. Botunuzla bir kere konuşma başlatın (herhangi bir mesaj gönderin), sonra
+   tarayıcıda `https://api.telegram.org/bot<TOKEN>/getUpdates` adresini açıp
+   yanıttaki `"chat":{"id": ...}` değerini (**chat_id**) not edin — grup
+   sohbetine göndermek isterseniz botu gruba ekleyip aynı yöntemle grubun
+   (negatif) id'sini bulabilirsiniz.
+3. Repo ayarlarında **Settings → Secrets and variables → Actions → New
+   repository secret** ile iki secret ekleyin: `TELEGRAM_BOT_TOKEN` ve
+   `TELEGRAM_CHAT_ID`.
+
+Secret'lar tanımlı değilse bot hiçbir hata vermeden, bildirim göndermeden
+çalışmaya devam eder (yalnızca bir uyarı loglar) — yani bu özellik
+opsiyoneldir, kurulmadan da sistem normal çalışır.
+
 ## İki farklı strateji
 
 `--strategy` bayrağıyla seçilir; ikisi de aynı altyapıyı (veri çekme,
@@ -147,6 +172,7 @@ görünür (istatistiklere dahil edilmez, tamamlanmış bir işlem sayılmaz).
 | `learner.py`         | Parametre kombinasyonlarını deneyen öğrenen ajan (bandit)          |
 | `main.py`            | Canlı tarama: tüm parçaları birleştiren ana döngü                   |
 | `backtest.py`        | Geçmiş veride "bu strateji ne kazandırırdı?" testi                  |
+| `telegram_notify.py` | Sinyal bildirimlerini Telegram Bot API'ye gönderir (opsiyonel)       |
 
 ## Nasıl öğreniyor?
 
@@ -274,6 +300,7 @@ python main.py --strategy vwap --timeframe 15m
 | `--data-dir`       | Öğrenme/işlem geçmişi kayıt klasörü                                     | `./data`                     |
 | `--report-every`   | Kaç taramada bir özet rapor yazdırılsın                                 | `10`                         |
 | `--once`           | Tek tarama yap ve çık                                                   | kapalı                       |
+| `--telegram-notify` | Sinyal açılış/kapanış/kısmi kâr bildirimlerini Telegram'a gönder (bkz. yukarı) | kapalı            |
 
 ### Örnek çıktı
 

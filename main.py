@@ -40,6 +40,7 @@ from vwap_detector import detect_vwap_signal, VwapParams
 from donchian_detector import detect_donchian_signal, DonchianParams
 from paper_account import PaperAccount
 from learner import Learner
+from telegram_notify import send_telegram, telegram_enabled
 
 # Populer coinler (OKX'te USDT paritesi olan, yuksek islem hacimli basliklar).
 # Futures/swap modunda calisirken sembollere otomatik olarak ":USDT" eklenir.
@@ -119,7 +120,8 @@ STRATEGY_FINDERS = {
 }
 
 
-def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, account: PaperAccount, strategy: str):
+def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, account: PaperAccount, strategy: str,
+                       notify: bool = False):
     """Bu sembolde acik pozisyon yoksa secilen stratejiye gore yeni bir kurulum arar ve sanal islem acar."""
     if account.has_open_position(symbol) or not account.can_open_new():
         return
@@ -152,9 +154,18 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
     if pos:
         log(f">>> SANAL ISLEM ACILDI ({strategy}): {direction} {symbol} | entry={entry:.6f} "
             f"tp={tp:.6f} sl={sl:.6f} | kaldirac={pos.leverage}x margin={pos.margin:.2f} | {extra}")
+        if notify:
+            emoji = "📈" if direction == "BUY" else "📉"
+            send_telegram(
+                f"{emoji} <b>{strategy.upper()} SİNYAL AÇILDI</b>: {direction} {symbol}\n"
+                f"Giriş: {entry:.6f}\n"
+                f"TP: {tp:.6f} | SL: {sl:.6f}\n"
+                f"Kaldıraç: {pos.leverage:g}x | Margin: {pos.margin:.2f} USDT"
+            )
 
 
-def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount):
+def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount, strategy: str,
+                        notify: bool = False):
     """Bu sembolde acik pozisyon varsa funding'i isler, guncel fiyata gore
     anlik kar/zarari (mark-to-market) gunceller ve TP/SL kontrolu yapar."""
     if not account.has_open_position(symbol):
@@ -187,6 +198,12 @@ def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount
         log(f"~~~ KISMI KAR ALINDI: {result['side']} {symbol} | fiyat={result['exit']:.6f} "
             f"| kismi_pnl={result['pnl']} USDT | yeni bakiye={result['balance_after']} USDT "
             f"| kalan pozisyon trailing stop ile devam ediyor")
+        if notify:
+            send_telegram(
+                f"💰 <b>{strategy.upper()} KISMİ KÂR ALINDI</b>: {result['side']} {symbol}\n"
+                f"Fiyat: {result['exit']:.6f} | Kısmi K/Z: {result['pnl']:+.2f} USDT\n"
+                f"Kalan pozisyon trailing stop ile devam ediyor"
+            )
         return
 
     # Kazanma/kayip GERCEK pnl isaretine gore: trailing stop kar durumundayken
@@ -200,6 +217,16 @@ def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount
     log(f"<<< SANAL ISLEM KAPANDI: {sonuc_str}{partial_str} | {result['side']} {result['symbol']} "
         f"| toplam_pnl={result['pnl']} USDT | funding={result['funding_paid']} USDT | R={result['r_multiple']} "
         f"| yeni bakiye={result['balance_after']} USDT")
+    if notify:
+        emoji = "✅" if win else "❌"
+        partial_note = " (kısmi kâr alınmıştı)" if result.get("partial_taken") else ""
+        send_telegram(
+            f"{emoji} <b>{strategy.upper()} {'KAZANÇ' if win else 'KAYIP'}</b>{partial_note}: "
+            f"{result['side']} {result['symbol']}\n"
+            f"Giriş: {result['entry']:.6f} → Çıkış: {result['exit']:.6f}\n"
+            f"K/Z: {result['pnl']:+.2f} USDT | R: {result['r_multiple']:+.2f}\n"
+            f"Yeni bakiye: {result['balance_after']:.2f} USDT"
+        )
 
 
 def print_report(account: PaperAccount, learner: Learner, symbols):
@@ -217,13 +244,13 @@ def print_report(account: PaperAccount, learner: Learner, symbols):
     print("-" * 70)
 
 
-def run_cycle(exchange, symbols, timeframe, limit, learner, account, strategy):
+def run_cycle(exchange, symbols, timeframe, limit, learner, account, strategy, notify=False):
     for symbol in symbols:
         try:
             if account.has_open_position(symbol):
-                try_close_position(exchange, symbol, learner, account)
+                try_close_position(exchange, symbol, learner, account, strategy, notify=notify)
             else:
-                try_open_position(exchange, symbol, timeframe, limit, learner, account, strategy)
+                try_open_position(exchange, symbol, timeframe, limit, learner, account, strategy, notify=notify)
         except ccxt.NetworkError as e:
             log(f"{symbol}: ag hatasi, tekrar denenecek: {e}")
         except ccxt.ExchangeError as e:
@@ -267,6 +294,9 @@ def main():
     parser.add_argument("--data-dir", default="./data", help="Ogrenme/islem gecmisi kayit klasoru")
     parser.add_argument("--once", action="store_true", help="Tek tam tarama yap ve cik (debug icin)")
     parser.add_argument("--report-every", type=int, default=10, help="Kac taramada bir ozet rapor yazdirilsin")
+    parser.add_argument("--telegram-notify", action="store_true",
+                         help="Islem acilis/kapanis/kismi-kar sinyallerini Telegram'a gonder "
+                              "(TELEGRAM_BOT_TOKEN ve TELEGRAM_CHAT_ID ortam degiskenleri gerekir)")
     args = parser.parse_args()
 
     symbols = [normalize_symbol(s.strip(), args.market) for s in args.symbols.split(",") if s.strip()]
@@ -292,14 +322,18 @@ def main():
         f"| max_ayni_anda_pozisyon={args.max_open} | max_portfoy_riski=%{args.max_portfolio_risk_pct} "
         f"| max_ayni_yon={args.max_same_direction}")
 
+    if args.telegram_notify and not telegram_enabled():
+        log("UYARI: --telegram-notify verildi ama TELEGRAM_BOT_TOKEN/TELEGRAM_CHAT_ID tanimli degil, "
+            "bildirimler gonderilmeyecek.")
+
     if args.once:
-        run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account, args.strategy)
+        run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account, args.strategy, notify=args.telegram_notify)
         print_report(account, learner, symbols)
         return
 
     cycle = 0
     while True:
-        run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account, args.strategy)
+        run_cycle(exchange, symbols, args.timeframe, args.limit, learner, account, args.strategy, notify=args.telegram_notify)
         cycle += 1
         if cycle % args.report_every == 0:
             print_report(account, learner, symbols)
