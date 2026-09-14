@@ -13,7 +13,7 @@ Actions'in duzenli calisip calismadigini kontrol eder.
 Kullanim
 --------
     python health_check.py
-    python health_check.py --profiles vwap,donchian --hours 24
+    python health_check.py --profiles vwap,4h --hours 24
 
 Sorun bulunursa (varsa) Telegram'a bildirim gonderir (TELEGRAM_BOT_TOKEN/
 TELEGRAM_CHAT_ID tanimliysa) ve script sifir olmayan bir exit code ile
@@ -31,7 +31,7 @@ from data_feed import build_exchange
 from backtest import fetch_historical_ohlcv
 from telegram_notify import send_telegram, telegram_enabled
 
-DEFAULT_PROFILES = ["15m", "4h", "1d", "vwap", "donchian"]
+DEFAULT_PROFILES = ["15m", "4h", "1d", "vwap"]
 
 
 def _parse_iso(ts: str) -> datetime:

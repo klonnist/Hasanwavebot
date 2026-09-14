@@ -15,7 +15,6 @@ on:
         options:
           - wave
           - vwap
-          - donchian
       timeframe:
         description: "Mum araligi (15m, 1h, 4h, 1d ...)"
         required: true

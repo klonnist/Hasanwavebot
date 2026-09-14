@@ -42,7 +42,7 @@ adresindeki panelde sekmeler halinde canlı gösterilir.
 `vwap` profili, her sinyal açılışında/kapanışında/kısmi kâr alımında
 [Telegram Bot API](https://core.telegram.org/bots/api) üzerinden bildirim
 gönderebilir (`telegram_notify.py`, `main.py --telegram-notify`). Diğer
-profiller (`wave`, `donchian`) şu an bildirim göndermiyor — istenirse
+profiller (`15m`, `4h`, `1d`) şu an bildirim göndermiyor — istenirse
 `run-bot.yml`'deki ilgili adıma aynı `env:`/`--telegram-notify` eklenerek
 açılabilir.
 

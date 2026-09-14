@@ -37,7 +37,6 @@ import ccxt
 from data_feed import build_exchange, fetch_ohlcv, fetch_last_price, fetch_funding_rate
 from wave_detector import zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams
 from vwap_detector import detect_vwap_signal, VwapParams
-from donchian_detector import detect_donchian_signal, DonchianParams
 from paper_account import PaperAccount
 from learner import Learner
 from telegram_notify import send_telegram, telegram_enabled
@@ -115,21 +114,9 @@ def _find_vwap_setup(df, params: VwapParams, symbol, timeframe):
     return sig["direction"], sig["entry"], sig["tp"], sig["sl"], extra
 
 
-def _find_donchian_setup(df, params: DonchianParams, symbol, timeframe):
-    """Fiyatin son N mumun kanalini (en yuksek/en dusuk) kirdigi breakout kurulumunu arar (trend takip)."""
-    sig = detect_donchian_signal(df, params)
-    if sig is None:
-        log(f"{symbol} {timeframe} | period={params.channel_period} tp_x={params.tp_mult} -> gecerli Donchian kurulumu yok.")
-        return None
-    extra = (f"param(period={params.channel_period}, tp_x={params.tp_mult}) | "
-             f"ust={sig['upper']:.6f} alt={sig['lower']:.6f} genislik={sig['width']:.6f}")
-    return sig["direction"], sig["entry"], sig["tp"], sig["sl"], extra
-
-
 STRATEGY_FINDERS = {
     "wave": _find_wave_setup,
     "vwap": _find_vwap_setup,
-    "donchian": _find_donchian_setup,
 }
 
 
@@ -336,9 +323,8 @@ def main():
     parser = argparse.ArgumentParser(description="Elliott Wave Dalga-3 Ogrenen Ajan (OKX, SANAL/paper trading, coklu-coin)")
     parser.add_argument("--symbols", default=",".join(POPULAR_COINS),
                          help="Virgulle ayrilmis coin listesi, orn: BTC/USDT,ETH/USDT,SOL/USDT")
-    parser.add_argument("--strategy", default="wave", choices=["wave", "vwap", "donchian"],
-                         help="wave = Elliott Wave dalga-3 (trend takip), vwap = VWAP'a donus (mean-reversion), "
-                              "donchian = Donchian Channel breakout (trend takip)")
+    parser.add_argument("--strategy", default="wave", choices=["wave", "vwap"],
+                         help="wave = Elliott Wave dalga-3 (trend takip), vwap = VWAP'a donus (mean-reversion)")
     parser.add_argument("--timeframe", default="1h")
     parser.add_argument("--market", default="swap", choices=["swap", "spot"])
     parser.add_argument("--limit", type=int, default=300)

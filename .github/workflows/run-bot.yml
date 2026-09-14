@@ -41,9 +41,6 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python main.py --strategy vwap --timeframe 15m --leverage 10 --trade-margin 500 --data-dir ./data/vwap --once --telegram-notify
 
-      - name: Scan donchian (4h, Donchian Channel breakout, 5x kaldirac, islem basina 500 USDT teminat)
-        run: python main.py --strategy donchian --timeframe 4h --leverage 5 --trade-margin 500 --data-dir ./data/donchian --once
-
       - name: Commit updated state
         run: |
           git config user.name "github-actions[bot]"

@@ -133,7 +133,6 @@
   Veriler GitHub Actions tarafından her 15 dakikada bir güncellenir · repo:
   <a href="https://github.com/klonnist/Hasanwavebot" target="_blank">klonnist/Hasanwavebot</a>
   · her profil (3 Elliott Wave zaman dilimi + 1 VWAP ortalamaya dönüş) kendi ayrı sanal 10.000 USDT hesabıyla çalışır
-  · <a href="donchian.html">Donchian Channel breakout paneli →</a>
 </div>
 <div id="status">Yükleniyor…</div>
 
@@ -479,7 +478,7 @@ function renderBacktestList(runs) {
 function renderBacktestDetail(r, targetId = "bt-detail") {
   const el = document.getElementById(targetId);
   const s = r.summary, c = r.config;
-  const firstColLabel = { wave: "ATR×", vwap: "Bant×", donchian: "Periyot" }[c.strategy] || "ATR×";
+  const firstColLabel = { wave: "ATR×", vwap: "Bant×" }[c.strategy] || "ATR×";
 
   const cards = [
     { label: "Başlangıç", value: `${fmt(s.starting_balance)} USDT` },

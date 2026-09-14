@@ -16,9 +16,6 @@ Kullanim
     python backtest.py --strategy vwap --timeframe 15m \
         --from 2026-06-01 --to 2026-09-01 --out-dir ./backtest_out
 
-    python backtest.py --strategy donchian --timeframe 4h \
-        --from 2026-01-01 --to 2026-09-01 --report-dir ./data/backtests
-
 ONEMLI SINIRLAMALAR
 --------------------
 - TP/SL, o mumun YUKSEK/DUSUK degerlerine gore kontrol edilir (canli
@@ -46,7 +43,6 @@ import pandas as pd
 from data_feed import build_exchange
 from wave_detector import zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams
 from vwap_detector import detect_vwap_signal, VwapParams
-from donchian_detector import detect_donchian_signal, DonchianParams
 from paper_account import PaperAccount
 from learner import Learner
 from main import POPULAR_COINS, normalize_symbol, _candle_check_order
@@ -136,12 +132,8 @@ def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, win
                 if setup is not None:
                     entry, tp, sl = build_signal_levels(setup, params, bar_close)
                     direction = setup["direction"]
-            elif strategy == "vwap":
-                sig = detect_vwap_signal(window_df, params)
-                if sig is not None:
-                    direction, entry, tp, sl = sig["direction"], sig["entry"], sig["tp"], sig["sl"]
             else:
-                sig = detect_donchian_signal(window_df, params)
+                sig = detect_vwap_signal(window_df, params)
                 if sig is not None:
                     direction, entry, tp, sl = sig["direction"], sig["entry"], sig["tp"], sig["sl"]
 
@@ -182,7 +174,7 @@ def build_leaderboard_rows(learner: Learner, top_n: int = 12):
         if not s or s["n"] == 0:
             continue
         rows.append({
-            "first": key[0],          # wave: ATR carpani, vwap: bant carpani, donchian: kanal periyodu
+            "first": key[0],          # wave: ATR carpani, vwap: bant carpani
             "tp_mult": key[1],
             "n": s["n"],
             "win_rate": round(100 * s["wins"] / s["n"], 1),
@@ -296,9 +288,9 @@ def print_summary(account: PaperAccount, learner: Learner, symbols, strategy, si
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Elliott Wave / VWAP / Donchian botunu gecmis veride test eder (backtest)")
+    parser = argparse.ArgumentParser(description="Elliott Wave / VWAP botunu gecmis veride test eder (backtest)")
     parser.add_argument("--symbols", default=",".join(POPULAR_COINS))
-    parser.add_argument("--strategy", default="wave", choices=["wave", "vwap", "donchian"])
+    parser.add_argument("--strategy", default="wave", choices=["wave", "vwap"])
     parser.add_argument("--timeframe", default="4h")
     parser.add_argument("--market", default="swap", choices=["swap", "spot"])
     parser.add_argument("--from", dest="date_from", required=True, help="YYYY-MM-DD (UTC)")
