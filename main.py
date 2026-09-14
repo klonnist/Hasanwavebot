@@ -180,34 +180,17 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
             )
 
 
-def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount, strategy: str,
-                        notify: bool = False):
-    """Bu sembolde acik pozisyon varsa funding'i isler, guncel fiyata gore
-    anlik kar/zarari (mark-to-market) gunceller ve TP/SL kontrolu yapar."""
-    if not account.has_open_position(symbol):
-        return
+def _candle_check_order(side, high, low):
+    """Bir mum icinde once ALEYHTE (SL'i tetikleyebilecek), sonra LEHTE
+    (TP'yi tetikleyebilecek) ucu dondurur -- ayni mumda ikisi de mumkunse
+    kotumser (SL once) varsayimla kontrol edilmis olur."""
+    return (low, high) if side == "BUY" else (high, low)
 
-    try:
-        funding_rate = fetch_funding_rate(exchange, symbol)
-        account.accrue_funding(symbol, funding_rate)
-    except Exception as e:
-        log(f"{symbol}: funding orani alinamadi (atlaniyor): {e}")
 
-    last_price = fetch_last_price(exchange, symbol)
-    result = account.check_and_close(symbol, last_price)
-
+def _handle_close_event(result, symbol, strategy, learner: Learner, account: PaperAccount, notify: bool):
+    """check_and_close'dan donen tek bir olayi (None / PARTIAL_TP / TP / SL) isler:
+    loglar, ogrenen ajani gunceller, Telegram bildirimi gonderir."""
     if result is None:
-        pos = account.open_positions[symbol]
-        sign = "+" if pos.unrealized_pnl >= 0 else ""
-        durum = []
-        if pos.breakeven_done:
-            durum.append("basabas")
-        if pos.partial_tp_done:
-            durum.append("kismi-alindi+trailing")
-        durum_str = f" [{', '.join(durum)}]" if durum else ""
-        log(f"Pozisyon acik: {pos.side} {symbol} | entry={pos.entry:.6f} "
-            f"guncel={last_price:.6f} | anlik_kz={sign}{pos.unrealized_pnl:.2f} USDT (R={pos.unrealized_r:.2f}) "
-            f"| tp={pos.tp:.6f} sl={pos.sl:.6f}{durum_str}")
         return
 
     if result["result"] == "PARTIAL_TP":
@@ -245,6 +228,78 @@ def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount
             f"Sonuç  {result['pnl']:+.2f} USDT  ({pnl_pct:+.1f}%)\n\n"
             f"Yeni bakiye: {result['balance_after']:.2f} USDT"
         )
+
+
+def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount, strategy: str,
+                        notify: bool = False):
+    """Bu sembolde acik pozisyon varsa funding'i isler, TP/SL kontrolu yapar.
+
+    Taramalar arasi 15 dakika var; sadece "su anki" fiyata bakarsak, fiyat
+    bu surede TP/SL'e degip GERI DONMUS olsa bile (kisa surели bir "igne")
+    bunu hic gormeyiz -- gercek bir borsada stop emri o an tetiklenirdi.
+    Bunu onlemek icin son taramadan bu yana olusan 1 dakikalik mumlarin
+    HEPSININ yuksek/dusuk degerlerini sirayla kontrol ediyoruz, sadece son
+    kapanisi degil.
+    """
+    if not account.has_open_position(symbol):
+        return
+
+    try:
+        funding_rate = fetch_funding_rate(exchange, symbol)
+        account.accrue_funding(symbol, funding_rate)
+    except Exception as e:
+        log(f"{symbol}: funding orani alinamadi (atlaniyor): {e}")
+
+    side = account.open_positions[symbol].side
+    try:
+        candles = fetch_ohlcv(exchange, symbol, "1m", limit=20)
+    except Exception as e:
+        log(f"{symbol}: 1dk mum verisi alinamadi, sadece anlik fiyat kontrol edilecek: {e}")
+        candles = None
+
+    last_result = None
+    if candles is not None and len(candles) > 0:
+        for row in candles.itertuples():
+            if not account.has_open_position(symbol):
+                break
+            adverse, favorable = _candle_check_order(side, row.high, row.low)
+
+            r = account.check_and_close(symbol, adverse)
+            if r is not None:
+                _handle_close_event(r, symbol, strategy, learner, account, notify)
+                last_result = r
+            if r is not None and r["result"] in ("TP", "SL"):
+                continue  # pozisyon tamamen kapandi, bu mumda baska kontrole gerek yok
+
+            if account.has_open_position(symbol):
+                r2 = account.check_and_close(symbol, favorable)
+                if r2 is not None:
+                    _handle_close_event(r2, symbol, strategy, learner, account, notify)
+                    last_result = r2
+
+        if account.has_open_position(symbol):
+            last_close = float(candles["close"].iloc[-1])
+            r3 = account.check_and_close(symbol, last_close)
+            if r3 is not None:
+                _handle_close_event(r3, symbol, strategy, learner, account, notify)
+                last_result = r3
+    else:
+        last_price = fetch_last_price(exchange, symbol)
+        last_result = account.check_and_close(symbol, last_price)
+        _handle_close_event(last_result, symbol, strategy, learner, account, notify)
+
+    if account.has_open_position(symbol):
+        pos = account.open_positions[symbol]
+        sign = "+" if pos.unrealized_pnl >= 0 else ""
+        durum = []
+        if pos.breakeven_done:
+            durum.append("basabas")
+        if pos.partial_tp_done:
+            durum.append("kismi-alindi+trailing")
+        durum_str = f" [{', '.join(durum)}]" if durum else ""
+        log(f"Pozisyon acik: {pos.side} {symbol} | entry={pos.entry:.6f} "
+            f"guncel={pos.last_price:.6f} | anlik_kz={sign}{pos.unrealized_pnl:.2f} USDT (R={pos.unrealized_r:.2f}) "
+            f"| tp={pos.tp:.6f} sl={pos.sl:.6f}{durum_str}")
 
 
 def print_report(account: PaperAccount, learner: Learner, symbols):

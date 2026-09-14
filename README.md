@@ -132,6 +132,13 @@ olacak büyüklükte pozisyon açamaz.
 bakiyeden düşer/ekler — özellikle **1 Gün** profili gibi günlerce açık
 kalan pozisyonlarda bu maliyet artık gerçekçi şekilde hesaba katılıyor.
 
+**Intrabar TP/SL kontrolü:** Taramalar arası 15 dakika var; sadece "o anki"
+fiyata bakılsaydı, fiyat bu sürede TP/SL'e değip **geri dönmüş** olsa bile
+(kısa süreli bir "iğne") bu hiç görülmezdi — gerçek bir borsadaki stop
+emri ise o an tetiklenirdi. Bunu önlemek için her taramada son 1 dakikalık
+mumların TAMAMININ yüksek/düşük değerleri sırayla kontrol ediliyor, sadece
+son fiyat değil (`main.py:try_close_position`).
+
 **Anlık kâr/zarar (mark-to-market):** Bir pozisyon henüz TP/SL'e çarpmasa
 bile, her taramada güncel fiyata göre gerçekleşmemiş kâr/zararı hesaplanıp
 `account_state.json`'a kaydediliyor (`unrealized_pnl`, `unrealized_r`).
@@ -252,9 +259,11 @@ de üretir.)
 
 **Sınırlamalar** (canlı bottan farkı):
 - Mum **kapanış fiyatına** göre karar verir — bir mum içinde fiyatın
-  TP/SL'e değip geri dönmesi (intrabar iğne) yakalanmaz. Bu, canlı
-  botun zaten periyodik (15 dakikada bir) kontrol etme davranışına
-  yakındır, ama gerçek sonuçlar biraz farklı olabilir.
+  TP/SL'e değip geri dönmesi (intrabar iğne) yakalanmaz. Canlı bot
+  artık bunu yakalıyor (aşağıya bakın), backtest henüz yakalamıyor —
+  yani backtest sonuçları canlı botun gerçek davranışından biraz daha
+  iyimser olabilir (bir iğnenin gözden kaçırılıp SL'in "atlatılması"
+  ihtimali backtest'te daha yüksek).
 - **Funding ücreti simüle edilmez** (sadece fiyat bazlı kâr/zarar).
 - `--window` (varsayılan 150 mum), her karar anında dedektöre verilen
   pencere boyutudur — canlı moddaki `--limit` ile aynı role sahiptir.
