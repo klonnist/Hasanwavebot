@@ -70,6 +70,33 @@ kişi eklemek için: o kişi bota Telegram'dan bir mesaj göndersin (örn.
 sonra `TELEGRAM_CHAT_ID` secret'ını mevcut değerin sonuna virgülle
 ekleyerek güncelleyin.
 
+## Sağlık kontrolü — "sistem doğru çalışıyor mu?"
+
+[`health_check.py`](health_check.py), [`.github/workflows/health-check.yml`](.github/workflows/health-check.yml)
+üzerinden **her 6 saatte bir** otomatik çalışır ve üç şeyi denetler:
+
+1. **Hesap tutarlılığı** — negatif bakiye, bakiyeyi aşan margin, bozuk
+   TP/SL sıralaması gibi olmaması gereken durumlar.
+2. **İşlem doğrulaması** — son 48 saatte kapanan her işlemin `exit`
+   fiyatının, o zaman aralığında **gerçekten** OKX'te görülüp
+   görülmediğini geçmiş mum verisiyle tekrar kontrol eder. Bu, ETHFI/USDT
+   pozisyonunda elle bulunan bir hatayı (bkz. `main.py`'deki intrabar
+   TP/SL düzeltmesi) tam olarak nasıl fark ettiysek onun otomatik ve
+   sürekli hâlidir.
+3. **GitHub Actions sağlığı** — taramalar beklenen sıklıkta (~15dk)
+   çalışıyor mu, son çalıştırmalar başarılı mı.
+
+Sorun bulunursa Telegram'a bildirim gönderir (kurulu ise) ve iş (job)
+Actions sekmesinde **kırmızı/başarısız** görünür — yani hiçbir ek adıma
+gerek kalmadan sorunlar hem bildirimde hem de Actions listesinde görünür
+olur. Sorun yoksa "her şey yolunda" bildirimi gönderir. Sonuç ayrıca
+`data/health/latest.json`'a da kaydedilir.
+
+```bash
+# yerelde manuel calistirmak icin
+python health_check.py --hours 24
+```
+
 ## İki farklı strateji
 
 `--strategy` bayrağıyla seçilir; ikisi de aynı altyapıyı (veri çekme,
@@ -188,6 +215,7 @@ görünür (istatistiklere dahil edilmez, tamamlanmış bir işlem sayılmaz).
 | `main.py`            | Canlı tarama: tüm parçaları birleştiren ana döngü                   |
 | `backtest.py`        | Geçmiş veride "bu strateji ne kazandırırdı?" testi                  |
 | `telegram_notify.py` | Sinyal bildirimlerini Telegram Bot API'ye gönderir (opsiyonel)       |
+| `health_check.py`    | Hesap tutarlılığını ve son işlemleri gerçek piyasa verisiyle doğrular |
 
 ## Nasıl öğreniyor?
 
