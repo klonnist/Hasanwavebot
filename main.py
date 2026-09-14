@@ -74,6 +74,19 @@ def normalize_symbol(symbol: str, market: str) -> str:
     return symbol
 
 
+def _display_symbol(symbol: str) -> str:
+    """Bildirimlerde okunabilirlik icin swap sembolundeki tekrar eden
+    kisim atilir (orn. 'PENGU/USDT:USDT' -> 'PENGU/USDT')."""
+    return symbol.split(":")[0]
+
+
+def _leveraged_pct(entry: float, price: float, direction: str, leverage: float) -> float:
+    """Fiyat bu seviyeye ulasirsa, kaldirac sonrasi marjin uzerinden
+    kazanc/kayip yuzdesini dondurur (isaretli: + kazanc, - kayip)."""
+    raw = (price - entry) / entry if direction == "BUY" else (entry - price) / entry
+    return raw * 100 * leverage
+
+
 def _find_wave_setup(df, params: WaveParams, symbol, timeframe):
     """Elliott Wave Dalga-3 kurulumu arar (trend takip eden strateji)."""
     vol_pct = atr_pct(df)
@@ -156,11 +169,14 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
             f"tp={tp:.6f} sl={sl:.6f} | kaldirac={pos.leverage}x margin={pos.margin:.2f} | {extra}")
         if notify:
             emoji = "📈" if direction == "BUY" else "📉"
+            tp_pct = _leveraged_pct(entry, tp, direction, pos.leverage)
+            sl_pct = _leveraged_pct(entry, sl, direction, pos.leverage)
             send_telegram(
-                f"{emoji} <b>{strategy.upper()} SİNYAL AÇILDI</b>: {direction} {symbol}\n"
-                f"Giriş: {entry:.6f}\n"
-                f"TP: {tp:.6f} | SL: {sl:.6f}\n"
-                f"Kaldıraç: {pos.leverage:g}x | Margin: {pos.margin:.2f} USDT"
+                f"{emoji} <b>{direction} {_display_symbol(symbol)}</b>  ({strategy.upper()})\n\n"
+                f"Giriş  <code>{entry:.6f}</code>\n"
+                f"Hedef  <code>{tp:.6f}</code>   ({tp_pct:+.1f}%)\n"
+                f"Stop   <code>{sl:.6f}</code>   ({sl_pct:+.1f}%)\n\n"
+                f"{pos.leverage:g}x kaldıraç · {pos.margin:.0f} USDT marjin"
             )
 
 
@@ -200,8 +216,9 @@ def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount
             f"| kalan pozisyon trailing stop ile devam ediyor")
         if notify:
             send_telegram(
-                f"💰 <b>{strategy.upper()} KISMİ KÂR ALINDI</b>: {result['side']} {symbol}\n"
-                f"Fiyat: {result['exit']:.6f} | Kısmi K/Z: {result['pnl']:+.2f} USDT\n"
+                f"💰 <b>{result['side']} {_display_symbol(symbol)}</b> — kısmi kâr  ({strategy.upper()})\n\n"
+                f"Fiyat  <code>{result['exit']:.6f}</code>\n"
+                f"Kısmi K/Z  {result['pnl']:+.2f} USDT\n\n"
                 f"Kalan pozisyon trailing stop ile devam ediyor"
             )
         return
@@ -219,12 +236,13 @@ def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount
         f"| yeni bakiye={result['balance_after']} USDT")
     if notify:
         emoji = "✅" if win else "❌"
-        partial_note = " (kısmi kâr alınmıştı)" if result.get("partial_taken") else ""
+        partial_note = " · kısmi kâr sonrası" if result.get("partial_taken") else ""
+        pnl_pct = (result["pnl"] / account.trade_margin * 100) if account.trade_margin else 0.0
         send_telegram(
-            f"{emoji} <b>{strategy.upper()} {'KAZANÇ' if win else 'KAYIP'}</b>{partial_note}: "
-            f"{result['side']} {result['symbol']}\n"
-            f"Giriş: {result['entry']:.6f} → Çıkış: {result['exit']:.6f}\n"
-            f"K/Z: {result['pnl']:+.2f} USDT | R: {result['r_multiple']:+.2f}\n"
+            f"{emoji} <b>{result['side']} {_display_symbol(result['symbol'])}</b>{partial_note}  ({strategy.upper()})\n\n"
+            f"Giriş  <code>{result['entry']:.6f}</code>\n"
+            f"Çıkış  <code>{result['exit']:.6f}</code>\n"
+            f"Sonuç  {result['pnl']:+.2f} USDT  ({pnl_pct:+.1f}%)\n\n"
             f"Yeni bakiye: {result['balance_after']:.2f} USDT"
         )
 
