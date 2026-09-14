@@ -1,5 +1,5 @@
 {
-  "balance": 11634.05422201128,
+  "balance": 11592.325007120406,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -6002,92 +6002,70 @@
       "open_time": "2026-09-14T17:41:50+00:00",
       "close_time": "2026-09-14T18:12:12+00:00",
       "balance_after": 11634.0542
-    }
-  ],
-  "open_positions": {
-    "SOL/USDT:USDT": {
-      "symbol": "SOL/USDT:USDT",
-      "side": "SELL",
-      "entry": 102.87,
-      "tp": 101.77187062318345,
-      "sl": 103.50204134602095,
-      "risk_amount": 30.720392049234025,
-      "size": 48.6050354816759,
-      "param_key": [
-        2.5,
-        0.75,
-        0.5
-      ],
-      "open_time": "2026-09-14T17:26:12+00:00",
-      "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-09-14T17:26:12+00:00",
-      "funding_paid": 0.0,
-      "last_price": 103.03,
-      "unrealized_pnl": -7.7768,
-      "unrealized_r": -0.253,
-      "initial_sl": 103.50204134602095,
-      "initial_risk_amount": 30.720392049234025,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
     },
-    "ETHFI/USDT:USDT": {
-      "symbol": "ETHFI/USDT:USDT",
-      "side": "BUY",
-      "entry": 0.6516,
-      "tp": 0.675984024737228,
-      "sl": 0.6516,
-      "risk_amount": 32.831200038782036,
-      "size": 7673.4192756292205,
-      "param_key": [
-        2.5,
-        0.5,
-        0.5
-      ],
-      "open_time": "2026-09-14T17:41:50+00:00",
-      "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-09-14T17:41:50+00:00",
-      "funding_paid": 0.0,
-      "last_price": 0.6523,
-      "unrealized_pnl": 5.3714,
-      "unrealized_r": 0.164,
-      "initial_sl": 0.6473214380109459,
-      "initial_risk_amount": 32.831200038782036,
-      "breakeven_done": true,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
-    },
-    "BTC/USDT:USDT": {
+    {
       "symbol": "BTC/USDT:USDT",
       "side": "SELL",
       "entry": 78843.0,
-      "tp": 77518.38309642141,
-      "sl": 79016.59372386069,
-      "risk_amount": 11.008822841640077,
-      "size": 0.06341717083317479,
+      "exit": 79016.59372386069,
+      "result": "SL",
+      "pnl": -11.0088,
+      "final_leg_pnl": -11.0088,
+      "partial_taken": false,
+      "r_multiple": -1.0,
       "param_key": [
         1.5,
         1.0,
         0.5
       ],
-      "open_time": "2026-09-14T18:12:10+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-09-14T18:12:10+00:00",
       "funding_paid": 0.0,
-      "last_price": 78843.0,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 79016.59372386069,
-      "initial_risk_amount": 11.008822841640077,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
+      "open_time": "2026-09-14T18:12:10+00:00",
+      "close_time": "2026-09-14T18:32:36+00:00",
+      "balance_after": 11623.0454
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "SELL",
+      "entry": 102.87,
+      "exit": 103.50204134602095,
+      "result": "SL",
+      "pnl": -30.7204,
+      "final_leg_pnl": -30.7204,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.5,
+        0.75,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-14T17:26:12+00:00",
+      "close_time": "2026-09-14T18:32:37+00:00",
+      "balance_after": 11592.325
+    },
+    {
+      "symbol": "ETHFI/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.6516,
+      "exit": 0.6516,
+      "result": "SL",
+      "pnl": 0.0,
+      "final_leg_pnl": 0.0,
+      "partial_taken": false,
+      "r_multiple": 0.0,
+      "param_key": [
+        2.5,
+        0.5,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-14T17:41:50+00:00",
+      "close_time": "2026-09-14T18:32:39+00:00",
+      "balance_after": 11592.325
     }
-  }
+  ],
+  "open_positions": {}
 }
