@@ -34,5 +34,17 @@
     "reward_sum": 1.603,
     "wins": 1,
     "losses": 0
+  },
+  "[\"BTC/USDT:USDT\", 0.8, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.526,
+    "wins": 1,
+    "losses": 0
+  },
+  "[\"ETH/USDT:USDT\", 1.2, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": -1.0,
+    "wins": 0,
+    "losses": 1
   }
 }

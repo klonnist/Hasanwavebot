@@ -84,10 +84,10 @@
     "losses": 2
   },
   "[\"LINK/USDT:USDT\", 1.5, 0.5, 0.5]": {
-    "n": 1,
-    "reward_sum": -1.0,
+    "n": 2,
+    "reward_sum": -2.0,
     "wins": 0,
-    "losses": 1
+    "losses": 2
   },
   "[\"ETHFI/USDT:USDT\", 1.5, 0.75, 0.5]": {
     "n": 2,
@@ -162,9 +162,9 @@
     "losses": 1
   },
   "[\"ETH/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 10,
+    "n": 11,
     "reward_sum": 5.703,
-    "wins": 6,
+    "wins": 7,
     "losses": 4
   },
   "[\"BTC/USDT:USDT\", 2.0, 0.75, 0.5]": {
@@ -486,10 +486,10 @@
     "losses": 1
   },
   "[\"DOGE/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 2,
-    "reward_sum": 3.415,
+    "n": 3,
+    "reward_sum": 2.415,
     "wins": 1,
-    "losses": 1
+    "losses": 2
   },
   "[\"ADA/USDT:USDT\", 2.0, 1.0, 0.5]": {
     "n": 1,
