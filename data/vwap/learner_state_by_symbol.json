@@ -600,10 +600,10 @@
     "losses": 1
   },
   "[\"DOGE/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 2,
-    "reward_sum": 1.117,
+    "n": 3,
+    "reward_sum": 0.11699999999999999,
     "wins": 1,
-    "losses": 1
+    "losses": 2
   },
   "[\"DOGE/USDT:USDT\", 1.5, 0.5, 0.5]": {
     "n": 1,
