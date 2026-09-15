@@ -556,5 +556,17 @@
     "reward_sum": 0.0,
     "wins": 1,
     "losses": 0
+  },
+  "[\"ETH/USDT:USDT\", 1.8, 1.618, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.031,
+    "wins": 1,
+    "losses": 0
+  },
+  "[\"XRP/USDT:USDT\", 1.8, 1.618, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.606,
+    "wins": 1,
+    "losses": 0
   }
 }
