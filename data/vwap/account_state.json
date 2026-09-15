@@ -1,5 +1,5 @@
 {
-  "balance": 12205.400854137552,
+  "balance": 12239.684656552807,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -7539,33 +7539,54 @@
       "open_time": "2026-09-15T12:35:24+00:00",
       "close_time": "2026-09-15T13:32:51+00:00",
       "balance_after": 12205.4009
-    }
-  ],
-  "open_positions": {
-    "AVAX/USDT:USDT": {
+    },
+    {
       "symbol": "AVAX/USDT:USDT",
       "side": "SELL",
       "entry": 7.563,
-      "tp": 7.511142320466684,
-      "sl": 7.601639215185288,
-      "risk_amount": 25.544899633272593,
-      "size": 661.1133148221605,
+      "exit": 7.511142320466684,
+      "result": "TP",
+      "pnl": 34.2838,
+      "final_leg_pnl": 34.2838,
+      "partial_taken": false,
+      "r_multiple": 1.342,
       "param_key": [
         2.5,
         0.5,
         0.5
       ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
       "open_time": "2026-09-15T13:32:49+00:00",
+      "close_time": "2026-09-15T13:54:05+00:00",
+      "balance_after": 12239.6847
+    }
+  ],
+  "open_positions": {
+    "ETHFI/USDT:USDT": {
+      "symbol": "ETHFI/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.6103,
+      "tp": 0.6859378783619645,
+      "sl": 0.607861954151919,
+      "risk_amount": 19.974159004431744,
+      "size": 8192.692118630182,
+      "param_key": [
+        2.0,
+        1.0,
+        0.5
+      ],
+      "open_time": "2026-09-15T13:54:06+00:00",
       "leverage": 10.0,
       "notional": 5000.0,
       "margin": 500.0,
-      "last_funding_time": "2026-09-15T13:32:49+00:00",
+      "last_funding_time": "2026-09-15T13:54:06+00:00",
       "funding_paid": 0.0,
-      "last_price": 7.563,
+      "last_price": 0.6103,
       "unrealized_pnl": 0.0,
       "unrealized_r": 0.0,
-      "initial_sl": 7.601639215185288,
-      "initial_risk_amount": 25.544899633272593,
+      "initial_sl": 0.607861954151919,
+      "initial_risk_amount": 19.974159004431744,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0

@@ -490,5 +490,29 @@
     "reward_sum": 0.0,
     "wins": 1,
     "losses": 0
+  },
+  "[\"BTC/USDT:USDT\", 2.5, 1.618, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.892,
+    "wins": 1,
+    "losses": 0
+  },
+  "[\"ETH/USDT:USDT\", 1.2, 1.272, 0.15]": {
+    "n": 1,
+    "reward_sum": 0.95,
+    "wins": 1,
+    "losses": 0
+  },
+  "[\"SOL/USDT:USDT\", 1.8, 1.618, 0.15]": {
+    "n": 1,
+    "reward_sum": -1.0,
+    "wins": 0,
+    "losses": 1
+  },
+  "[\"BNB/USDT:USDT\", 1.8, 1.272, 0.15]": {
+    "n": 1,
+    "reward_sum": -1.0,
+    "wins": 0,
+    "losses": 1
   }
 }
