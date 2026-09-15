@@ -568,5 +568,11 @@
     "reward_sum": 1.606,
     "wins": 1,
     "losses": 0
+  },
+  "[\"LINK/USDT:USDT\", 0.8, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.576,
+    "wins": 1,
+    "losses": 0
   }
 }
