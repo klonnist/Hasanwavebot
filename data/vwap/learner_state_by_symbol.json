@@ -42,10 +42,10 @@
     "losses": 0
   },
   "[\"PENGU/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 1,
-    "reward_sum": 1.372,
+    "n": 2,
+    "reward_sum": 0.3720000000000001,
     "wins": 1,
-    "losses": 0
+    "losses": 1
   },
   "[\"BTC/USDT:USDT\", 1.5, 1.0, 0.5]": {
     "n": 6,
@@ -564,9 +564,9 @@
     "losses": 1
   },
   "[\"BNB/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 5,
-    "reward_sum": 1.6840000000000002,
-    "wins": 2,
+    "n": 6,
+    "reward_sum": 3.208,
+    "wins": 3,
     "losses": 3
   },
   "[\"ADA/USDT:USDT\", 1.5, 1.0, 0.5]": {
