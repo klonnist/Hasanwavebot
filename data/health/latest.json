@@ -1,7 +1,9 @@
 {
-  "checked_at": "2026-09-15T12:14:37+00:00",
-  "ok": true,
-  "issues": [],
+  "checked_at": "2026-09-15T18:12:13+00:00",
+  "ok": false,
+  "issues": [
+    "[vwap] ETHFI/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.596100) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-15T14:58:08+00:00 -> 2026-09-15T15:15:49+00:00)"
+  ],
   "profiles_checked": [
     "15m",
     "4h",
