@@ -6,10 +6,10 @@
     "losses": 1
   },
   "[\"AVAX/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 2,
-    "reward_sum": 1.7029999999999998,
+    "n": 3,
+    "reward_sum": 0.7029999999999998,
     "wins": 1,
-    "losses": 1
+    "losses": 2
   },
   "[\"NEAR/USDT:USDT\", 1.5, 0.75, 0.5]": {
     "n": 1,
@@ -264,10 +264,10 @@
     "losses": 1
   },
   "[\"BNB/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 2,
-    "reward_sum": 0.6739999999999999,
+    "n": 3,
+    "reward_sum": -0.32600000000000007,
     "wins": 1,
-    "losses": 1
+    "losses": 2
   },
   "[\"AVAX/USDT:USDT\", 2.0, 0.5, 0.5]": {
     "n": 2,
