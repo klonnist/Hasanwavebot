@@ -473,6 +473,25 @@ function hbReplaySymbol(candles, symbol, strategy, window, learner, account) {
   }
 }
 
+function hbBuildSymbolRows(history) {
+  const completed = history.filter(t => t.result === "TP" || t.result === "SL");
+  const bySymbol = new Map();
+  for (const t of completed) {
+    const s = bySymbol.get(t.symbol) || { n: 0, wins: 0, pnl: 0 };
+    s.n += 1;
+    if (t.pnl >= 0) s.wins += 1;
+    s.pnl += t.pnl;
+    bySymbol.set(t.symbol, s);
+  }
+  const rows = [...bySymbol.entries()].map(([symbol, s]) => ({
+    symbol, n: s.n, wins: s.wins, losses: s.n - s.wins,
+    win_rate: s.n ? hbRound((100 * s.wins) / s.n, 1) : 0,
+    total_pnl: hbRound(s.pnl, 2),
+  }));
+  rows.sort((a, b) => b.total_pnl - a.total_pnl);
+  return rows;
+}
+
 function hbComputeMaxDrawdown(history, startingBalance) {
   if (!history.length) return 0;
   const ordered = [...history].sort((a, b) => (a.close_time < b.close_time ? -1 : 1));
@@ -559,7 +578,8 @@ async function runHbBacktest({
     },
     summary,
     leaderboard: learner.leaderboardRows(12),
+    by_symbol: hbBuildSymbolRows(account.history),
     equity: hbBuildEquityCurve(account.history, account.startingBalance),
-    trades: [...account.history].sort((a, b) => (a.close_time < b.close_time ? -1 : 1)).slice(-60),
+    trades: [...account.history].sort((a, b) => (a.close_time < b.close_time ? -1 : 1)).slice(-500),
   };
 }

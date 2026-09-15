@@ -184,6 +184,31 @@ def build_leaderboard_rows(learner: Learner, top_n: int = 12):
     return rows[:top_n]
 
 
+def build_symbol_rows(history):
+    """Kapanan (TP/SL) islemleri sembole gore gruplar -- coin bazli islem
+    sayisi/kazanma orani/toplam kar-zarar. Trade listesi ne kadar kesilirse
+    kesilsin (bkz. write_report), bu TUM history'den hesaplandigi icin
+    her zaman tam ve dogrudur."""
+    completed = [t for t in history if t["result"] in ("TP", "SL")]
+    by_symbol = {}
+    for t in completed:
+        s = by_symbol.setdefault(t["symbol"], {"n": 0, "wins": 0, "pnl": 0.0})
+        s["n"] += 1
+        if t["pnl"] >= 0:
+            s["wins"] += 1
+        s["pnl"] += t["pnl"]
+    rows = [
+        {
+            "symbol": sym, "n": s["n"], "wins": s["wins"], "losses": s["n"] - s["wins"],
+            "win_rate": round(100 * s["wins"] / s["n"], 1) if s["n"] else 0.0,
+            "total_pnl": round(s["pnl"], 2),
+        }
+        for sym, s in by_symbol.items()
+    ]
+    rows.sort(key=lambda r: r["total_pnl"], reverse=True)
+    return rows
+
+
 def build_equity_curve(history, starting_balance, max_points: int = 300):
     """Kapanan her islemden sonraki bakiyeyi zaman sirasinda dizer.
     Cok fazla nokta varsa dosya sismesin diye seyreltir."""
@@ -237,8 +262,11 @@ def write_report(report_dir, account: PaperAccount, learner: Learner, symbols, a
         },
         "summary": summary,
         "leaderboard": build_leaderboard_rows(learner),
+        "by_symbol": build_symbol_rows(account.history),
         "equity": build_equity_curve(account.history, account.starting_balance),
-        "trades": sorted(account.history, key=lambda t: t["close_time"])[-60:],
+        # Not: bu liste sadece TARAMA icin -- coin bazli win/loss/$ rakamlari
+        # yukaridaki "by_symbol" TUM history'den hesaplaniyor, bu kesilmeden.
+        "trades": sorted(account.history, key=lambda t: t["close_time"])[-500:],
     }
 
     with open(os.path.join(report_dir, f"{run_id}.json"), "w") as f:

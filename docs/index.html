@@ -124,6 +124,17 @@
   details.bt-advanced summary { cursor: pointer; color: var(--muted); font-size: 12px; margin-bottom: 10px; }
   .bt-progress { color: var(--muted); font-size: 12.5px; margin-top: 8px; min-height: 18px; }
   .bt-error { color: var(--red); font-size: 12.5px; margin-top: 8px; }
+
+  .hist-controls { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+  .hist-filter {
+    background: #0e1219; border: 1px solid var(--panel-border); color: var(--text);
+    border-radius: 6px; padding: 6px 10px; font-size: 12.5px; color-scheme: dark;
+  }
+  .hist-toggle-btn {
+    background: transparent; border: 1px solid var(--accent); color: var(--accent);
+    padding: 5px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;
+  }
+  .hist-toggle-btn:hover { background: var(--accent); color: #0b0f14; }
 </style>
 </head>
 <body>
@@ -233,9 +244,62 @@ function renderSideStats(p, account) {
   `;
 }
 
+function computeSymbolStats(account) {
+  const completed = (account.history || []).filter(t => t.result === "TP" || t.result === "SL");
+  const bySymbol = {};
+  for (const t of completed) {
+    const s = bySymbol[t.symbol] || (bySymbol[t.symbol] = { n: 0, wins: 0, pnl: 0 });
+    s.n += 1;
+    if (t.pnl >= 0) s.wins += 1;
+    s.pnl += t.pnl;
+  }
+  return Object.entries(bySymbol)
+    .map(([symbol, s]) => ({
+      symbol, n: s.n, wins: s.wins, losses: s.n - s.wins,
+      winRate: s.n ? 100 * s.wins / s.n : 0, pnl: s.pnl,
+    }))
+    .sort((a, b) => b.pnl - a.pnl);
+}
+
+function renderSymbolStats(p, account) {
+  const el = document.getElementById(`sym-${p.key}`);
+  const rows = computeSymbolStats(account);
+  if (rows.length === 0) {
+    el.innerHTML = `<div class="empty">Henüz kapanmış işlem yok.</div>`;
+    return;
+  }
+  el.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Coin</th><th>İşlem</th><th>Kazanan</th><th>Kaybeden</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td>${r.symbol}</td>
+            <td>${r.n}</td>
+            <td class="pos">${r.wins}</td>
+            <td class="neg">${r.losses}</td>
+            <td>%${fmt(r.winRate, 1)}</td>
+            <td class="${pnlClass(r.pnl)}">${r.pnl >= 0 ? "+" : ""}${fmt(r.pnl)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
 function buildProfileSkeleton(p) {
   return `
     <div class="cards" id="cards-${p.key}"></div>
+    <section>
+      <h2>Coin Bazlı Performans</h2>
+      <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
+        Hangi coinde daha çok kazandığını/kaybettiğini burada kıyaslayabilirsin — aşağıdaki coin filtresi
+        "Son İşlemler" tablosunu da bu coine göre daraltır.
+      </div>
+      <div class="table-wrap" id="sym-${p.key}"></div>
+    </section>
     <section>
       <h2>Yön Bazlı Performans (BUY vs SELL)</h2>
       <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
@@ -253,6 +317,10 @@ function buildProfileSkeleton(p) {
       <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
         "KISMİ AL" satırları pozisyon henüz kapanmadan alınan kısmi kârı gösterir (istatistiklere dahil edilmez) ·
         K/Z yanındaki * işareti, o işlemde kısmi kâr alınıp kalanının trailing stop ile devam ettiğini belirtir
+      </div>
+      <div class="hist-controls">
+        <select class="hist-filter" id="coin-filter-${p.key}"></select>
+        <button type="button" class="hist-toggle-btn" id="hist-toggle-${p.key}"></button>
       </div>
       <div class="table-wrap" id="hist-${p.key}"></div>
     </section>
@@ -322,11 +390,40 @@ function renderOpenPositions(p, account) {
   `;
 }
 
+const HIST_STATE = {};       // p.key -> { coin: "__all__", showAll: false }
+const HIST_DEFAULT_LIMIT = 30;
+
 function renderHistory(p, account) {
-  const history = [...(account.history || [])].reverse().slice(0, 30);
+  const state = HIST_STATE[p.key] || (HIST_STATE[p.key] = { coin: "__all__", showAll: false });
+  const full = [...(account.history || [])].reverse();
+  const symbols = [...new Set((account.history || []).map(t => t.symbol))].sort();
+
+  const filterEl = document.getElementById(`coin-filter-${p.key}`);
+  if (filterEl) {
+    filterEl.innerHTML = `<option value="__all__">Tüm coinler (${symbols.length})</option>` +
+      symbols.map(s => `<option value="${s}">${s}</option>`).join("");
+    if (!symbols.includes(state.coin)) state.coin = "__all__";
+    filterEl.value = state.coin;
+  }
+
+  const filtered = state.coin === "__all__" ? full : full.filter(t => t.symbol === state.coin);
+  const history = state.showAll ? filtered : filtered.slice(0, HIST_DEFAULT_LIMIT);
+
+  const toggleBtn = document.getElementById(`hist-toggle-${p.key}`);
+  if (toggleBtn) {
+    if (filtered.length <= HIST_DEFAULT_LIMIT) {
+      toggleBtn.hidden = true;
+    } else {
+      toggleBtn.hidden = false;
+      toggleBtn.textContent = state.showAll
+        ? `Son ${HIST_DEFAULT_LIMIT}'i göster`
+        : `Tümünü göster (${filtered.length})`;
+    }
+  }
+
   const el = document.getElementById(`hist-${p.key}`);
   if (history.length === 0) {
-    el.innerHTML = `<div class="empty">Henüz kapanmış işlem yok.</div>`;
+    el.innerHTML = `<div class="empty">${state.coin === "__all__" ? "Henüz kapanmış işlem yok." : "Bu coin için henüz kapanmış işlem yok."}</div>`;
     return;
   }
   el.innerHTML = `
@@ -475,6 +572,80 @@ function renderBacktestList(runs) {
   });
 }
 
+function computeSymbolRowsFromTrades(trades) {
+  const completed = (trades || []).filter(t => t.result === "TP" || t.result === "SL");
+  const bySymbol = {};
+  for (const t of completed) {
+    const s = bySymbol[t.symbol] || (bySymbol[t.symbol] = { n: 0, wins: 0, pnl: 0 });
+    s.n += 1;
+    if (t.pnl >= 0) s.wins += 1;
+    s.pnl += t.pnl;
+  }
+  return Object.entries(bySymbol)
+    .map(([symbol, s]) => ({
+      symbol, n: s.n, wins: s.wins, losses: s.n - s.wins,
+      win_rate: s.n ? 100 * s.wins / s.n : 0, total_pnl: s.pnl,
+    }))
+    .sort((a, b) => b.total_pnl - a.total_pnl);
+}
+
+function buildSymbolPerfTable(rows) {
+  if (!rows || rows.length === 0) {
+    return `<div class="empty">Kapanmış işlem yok.</div>`;
+  }
+  return `
+    <table>
+      <thead><tr>
+        <th>Coin</th><th>İşlem</th><th>Kazanan</th><th>Kaybeden</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th>
+      </tr></thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td>${r.symbol}</td>
+            <td>${r.n}</td>
+            <td class="pos">${r.wins}</td>
+            <td class="neg">${r.losses}</td>
+            <td>%${fmt(r.win_rate, 1)}</td>
+            <td class="${pnlClass(r.total_pnl)}">${r.total_pnl >= 0 ? "+" : ""}${fmt(r.total_pnl)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function buildTradesTable(trades) {
+  if (!trades || trades.length === 0) {
+    return `<div class="empty">İşlem yok.</div>`;
+  }
+  const rows = trades.map(t => {
+    const isPartial = t.result === "PARTIAL_TP";
+    const profitable = t.pnl >= 0;
+    let label, cls;
+    if (isPartial) { label = "KISMİ AL"; cls = ""; }
+    else if (t.result === "TP") { label = "KAZANÇ"; cls = "pos"; }
+    else { label = profitable ? "KAZANÇ (trailing)" : "KAYIP"; cls = profitable ? "pos" : "neg"; }
+    return `
+      <tr class="${isPartial ? "partial-row" : ""}">
+        <td>${t.symbol}</td>
+        <td class="side-${(t.side || "").toLowerCase()}">${t.side}</td>
+        <td class="${cls}">${label}</td>
+        <td>${fmt(t.entry, 4)}</td>
+        <td>${fmt(t.exit, 4)}</td>
+        <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}</td>
+        <td class="${pnlClass(t.r_multiple)}">${fmt(t.r_multiple, 2)}</td>
+        <td>${fmtTime(t.close_time)}</td>
+      </tr>
+    `;
+  }).join("");
+  return `
+    <table>
+      <thead><tr><th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>K/Z (USDT)</th><th>R</th><th>Kapanış</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
 function renderBacktestDetail(r, targetId = "bt-detail") {
   const el = document.getElementById(targetId);
   const s = r.summary, c = r.config;
@@ -500,26 +671,13 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
     </tr>
   `).join("");
 
-  const tradeRows = [...(r.trades || [])].reverse().map(t => {
-    const isPartial = t.result === "PARTIAL_TP";
-    const profitable = t.pnl >= 0;
-    let label, cls;
-    if (isPartial) { label = "KISMİ AL"; cls = ""; }
-    else if (t.result === "TP") { label = "KAZANÇ"; cls = "pos"; }
-    else { label = profitable ? "KAZANÇ (trailing)" : "KAYIP"; cls = profitable ? "pos" : "neg"; }
-    return `
-      <tr class="${isPartial ? "partial-row" : ""}">
-        <td>${t.symbol}</td>
-        <td class="side-${(t.side || "").toLowerCase()}">${t.side}</td>
-        <td class="${cls}">${label}</td>
-        <td>${fmt(t.entry, 4)}</td>
-        <td>${fmt(t.exit, 4)}</td>
-        <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}</td>
-        <td class="${pnlClass(t.r_multiple)}">${fmt(t.r_multiple, 2)}</td>
-        <td>${fmtTime(t.close_time)}</td>
-      </tr>
-    `;
-  }).join("");
+  // by_symbol yoksa (eski rapor dosyalari) elimizdeki (kesilmis olabilecek) trade
+  // listesinden hesapliyoruz -- yeni raporlarda TUM history'den geldigi icin tam dogru.
+  const bySymbolRows = r.by_symbol || computeSymbolRowsFromTrades(r.trades);
+  const allTrades = [...(r.trades || [])].reverse();
+  const filterSymbols = (bySymbolRows.length ? bySymbolRows.map(x => x.symbol) : [...new Set(allTrades.map(t => t.symbol))]).sort();
+  const symbolFilterOptions = `<option value="__all__">Tüm coinler (${filterSymbols.length})</option>` +
+    filterSymbols.map(sym => `<option value="${sym}">${sym}</option>`).join("");
 
   el.innerHTML = `
     <div class="cards">
@@ -547,13 +705,20 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
     </section>
 
     <section>
-      <h2>İşlemler (son ${(r.trades || []).length})</h2>
-      <div class="table-wrap">
-        ${tradeRows ? `<table>
-          <thead><tr><th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>K/Z (USDT)</th><th>R</th><th>Kapanış</th></tr></thead>
-          <tbody>${tradeRows}</tbody>
-        </table>` : `<div class="empty">İşlem yok.</div>`}
+      <h2>Coin Bazlı Performans</h2>
+      <div style="color:var(--muted);font-size:11px;margin-bottom:8px;">
+        Hangi coinde daha çok kazandırdığını/kaybettirdiğini burada kıyaslayabilirsin — TÜM işlemlerden hesaplanır,
+        aşağıdaki işlem tablosu ne kadar kısaltılmış olursa olsun bu rakamlar tamdır.
       </div>
+      <div class="table-wrap">${buildSymbolPerfTable(bySymbolRows)}</div>
+    </section>
+
+    <section>
+      <h2>İşlemler (son ${(r.trades || []).length})</h2>
+      <div class="hist-controls">
+        <select class="hist-filter bt-symbol-filter">${symbolFilterOptions}</select>
+      </div>
+      <div class="table-wrap bt-trades-wrap">${buildTradesTable(allTrades)}</div>
     </section>
 
     <section>
@@ -571,6 +736,16 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
       </div>
     </section>
   `;
+
+  const symbolFilterEl = el.querySelector(".bt-symbol-filter");
+  const tradesWrapEl = el.querySelector(".bt-trades-wrap");
+  if (symbolFilterEl && tradesWrapEl) {
+    symbolFilterEl.addEventListener("change", () => {
+      const val = symbolFilterEl.value;
+      const filtered = val === "__all__" ? allTrades : allTrades.filter(t => t.symbol === val);
+      tradesWrapEl.innerHTML = buildTradesTable(filtered);
+    });
+  }
 }
 
 async function openBacktestDetail(file) {
@@ -599,16 +774,35 @@ async function loadBacktests() {
   }
 }
 
+const PROFILE_CACHE = {}; // p.key -> latest account (coin filtresi/"tumunu goster" yeniden render icin)
+
 async function loadProfile(p) {
   const [account, learner] = await Promise.all([
     fetchJson(`${p.dir}/account_state.json`).catch(() => ({ balance: 10000, history: [], open_positions: {} })),
     fetchJson(`${p.dir}/learner_state.json`).catch(() => ({})),
   ]);
+  PROFILE_CACHE[p.key] = account;
   renderCards(p, computeStats(account));
+  renderSymbolStats(p, account);
   renderSideStats(p, account);
   renderOpenPositions(p, account);
   renderHistory(p, account);
   renderLeaderboard(p, learner);
+}
+
+function setupHistoryControls(p) {
+  const filterEl = document.getElementById(`coin-filter-${p.key}`);
+  const toggleBtn = document.getElementById(`hist-toggle-${p.key}`);
+  const state = HIST_STATE[p.key] || (HIST_STATE[p.key] = { coin: "__all__", showAll: false });
+  filterEl.addEventListener("change", () => {
+    state.coin = filterEl.value;
+    state.showAll = false;
+    if (PROFILE_CACHE[p.key]) renderHistory(p, PROFILE_CACHE[p.key]);
+  });
+  toggleBtn.addEventListener("click", () => {
+    state.showAll = !state.showAll;
+    if (PROFILE_CACHE[p.key]) renderHistory(p, PROFILE_CACHE[p.key]);
+  });
 }
 
 function buildBacktestSkeleton() {
@@ -824,6 +1018,8 @@ function initTabs() {
       ${buildProfileSkeleton(p)}
     </div>
   `).join("") + `<div class="profile" id="profile-backtest">${buildBacktestSkeleton()}</div>`;
+
+  PROFILES.forEach(setupHistoryControls);
 
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.addEventListener("click", () => {
