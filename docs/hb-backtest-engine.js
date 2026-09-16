@@ -204,6 +204,7 @@ const HB_VWAP_BAND_MULTS = [1.5, 2.0, 2.5];
 const HB_VWAP_TP_MULTS = [0.5, 0.75, 1.0];
 const HB_VWAP_SL_MULT = 0.5;
 const HB_MIN_SYMBOL_SAMPLES = 3;
+const HB_MIN_RELIABLE_N = 5; // bunun altinda n istatistiksel olarak neredeyse anlamsiz
 
 function hbBuildWaveGrid() {
   return HB_WAVE_DEVIATIONS.flatMap(dev => HB_WAVE_TP_MULTS.map(tp => ({
@@ -243,11 +244,16 @@ class HbLearner {
     for (const p of this.grid) { const s = scoreOf(p); if (s > bestScore) { bestScore = s; best = p; } }
     return best;
   }
-  update(symbol, keyArr, reward, win) {
+  update(symbol, keyArr, reward, outcome) {
+    // outcome: "win" (pnl>0) / "breakeven" (pnl==0) / "loss" (pnl<0) -- basabas
+    // ne kazanc ne kayiptir, ayri kovada tutulur (bkz. paper_account.py stats()).
     const key = JSON.stringify(keyArr);
     for (const [map, k] of [[this.stats, key], [this.symbolStats, `${symbol}|${key}`]]) {
-      const s = map.get(k) || { n: 0, rewardSum: 0, wins: 0, losses: 0 };
-      s.n++; s.rewardSum += reward; win ? s.wins++ : s.losses++;
+      const s = map.get(k) || { n: 0, rewardSum: 0, wins: 0, breakeven: 0, losses: 0 };
+      s.n++; s.rewardSum += reward;
+      if (outcome === "win") s.wins++;
+      else if (outcome === "breakeven") s.breakeven++;
+      else s.losses++;
       map.set(k, s);
     }
   }
@@ -259,7 +265,8 @@ class HbLearner {
       if (!s || s.n === 0) continue;
       rows.push({
         first: hbParamKey(p, this.strategy)[0], tp_mult: p.tpMult, n: s.n,
-        win_rate: hbRound((100 * s.wins) / s.n, 1), avg_r: hbRound(s.rewardSum / s.n, 3),
+        win_rate: hbRound((100 * s.wins) / s.n, 1), breakeven: s.breakeven || 0,
+        avg_r: hbRound(s.rewardSum / s.n, 3), low_n: s.n < HB_MIN_RELIABLE_N,
       });
     }
     rows.sort((a, b) => b.avg_r - a.avg_r);
@@ -400,11 +407,13 @@ class HbPaperAccount {
     const realizedPnl = hbRound(this.balance - this.startingBalance, 2);
     const completed = this.history.filter(t => t.result === "TP" || t.result === "SL");
     if (!completed.length) {
-      return { trades: 0, win_rate: 0, total_pnl: realizedPnl, balance: hbRound(this.balance, 2), open_positions: this.openPositions.size, unrealized_pnl: unrealizedPnl };
+      return { trades: 0, win_rate: 0, breakeven: 0, total_pnl: realizedPnl, balance: hbRound(this.balance, 2), open_positions: this.openPositions.size, unrealized_pnl: unrealizedPnl };
     }
-    const wins = completed.filter(t => t.pnl >= 0).length;
+    // pnl>0 kazanc, pnl==0 basabas (ne kazanc ne kayip), pnl<0 kayip.
+    const wins = completed.filter(t => t.pnl > 0).length;
+    const breakeven = completed.filter(t => t.pnl === 0).length;
     return {
-      trades: completed.length, win_rate: hbRound((100 * wins) / completed.length, 1),
+      trades: completed.length, win_rate: hbRound((100 * wins) / completed.length, 1), breakeven,
       total_pnl: realizedPnl, balance: hbRound(this.balance, 2),
       open_positions: this.openPositions.size, unrealized_pnl: unrealizedPnl,
     };
@@ -422,7 +431,8 @@ function hbCandleCheckOrder(side, high, low) {
 
 function hbUpdateLearnerOnClose(result, symbol, learner) {
   if (!result || (result.result !== "TP" && result.result !== "SL")) return;
-  learner.update(symbol, result.param_key, result.r_multiple, result.pnl >= 0);
+  const outcome = result.pnl > 0 ? "win" : result.pnl === 0 ? "breakeven" : "loss";
+  learner.update(symbol, result.param_key, result.r_multiple, outcome);
 }
 
 function hbReplaySymbol(candles, symbol, strategy, window, learner, account) {
@@ -477,16 +487,17 @@ function hbBuildSymbolRows(history) {
   const completed = history.filter(t => t.result === "TP" || t.result === "SL");
   const bySymbol = new Map();
   for (const t of completed) {
-    const s = bySymbol.get(t.symbol) || { n: 0, wins: 0, pnl: 0 };
+    const s = bySymbol.get(t.symbol) || { n: 0, wins: 0, breakeven: 0, pnl: 0 };
     s.n += 1;
-    if (t.pnl >= 0) s.wins += 1;
+    if (t.pnl > 0) s.wins += 1;
+    else if (t.pnl === 0) s.breakeven += 1;
     s.pnl += t.pnl;
     bySymbol.set(t.symbol, s);
   }
   const rows = [...bySymbol.entries()].map(([symbol, s]) => ({
-    symbol, n: s.n, wins: s.wins, losses: s.n - s.wins,
+    symbol, n: s.n, wins: s.wins, breakeven: s.breakeven, losses: s.n - s.wins - s.breakeven,
     win_rate: s.n ? hbRound((100 * s.wins) / s.n, 1) : 0,
-    total_pnl: hbRound(s.pnl, 2),
+    total_pnl: hbRound(s.pnl, 2), low_n: s.n < HB_MIN_RELIABLE_N,
   }));
   rows.sort((a, b) => b.total_pnl - a.total_pnl);
   return rows;
@@ -562,7 +573,8 @@ async function runHbBacktest({
     final_balance: s.balance,
     total_pnl: s.total_pnl,
     total_pnl_pct: account.startingBalance ? hbRound((100 * s.total_pnl) / account.startingBalance, 2) : 0,
-    trades: s.trades, win_rate: s.win_rate, max_drawdown_pct: hbRound(dd, 2), open_at_end: s.open_positions,
+    trades: s.trades, win_rate: s.win_rate, breakeven: s.breakeven || 0,
+    max_drawdown_pct: hbRound(dd, 2), open_at_end: s.open_positions,
   };
 
   return {

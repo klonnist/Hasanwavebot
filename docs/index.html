@@ -135,6 +135,12 @@
     padding: 5px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;
   }
   .hist-toggle-btn:hover { background: var(--accent); color: #0b0f14; }
+
+  tr.low-n { opacity: .55; }
+  .n-warn {
+    display: inline-block; font-size: 9.5px; color: var(--muted); border: 1px solid var(--panel-border);
+    border-radius: 4px; padding: 1px 5px; margin-left: 4px; text-transform: uppercase; letter-spacing: .03em;
+  }
 </style>
 </head>
 <body>
@@ -195,28 +201,35 @@ function computeStats(account) {
   // trailing stop ile devam ediyor) -- islem sayisi/kazanma oranindan haric.
   const completed = history.filter(t => t.result === "TP" || t.result === "SL");
   if (completed.length === 0) {
-    return { trades: 0, win_rate: 0, ...base };
+    return { trades: 0, win_rate: 0, breakeven: 0, ...base };
   }
-  // Kazanma/kayip GERCEK pnl isaretine gore: trailing stop kar durumundayken
-  // tetiklenirse (result "SL" olsa bile) bu hala bir kazanctir.
-  const wins = completed.filter(t => t.pnl >= 0).length;
+  // Kazanma/kayip/basabas GERCEK pnl isaretine gore: pnl>0 kazanc, pnl==0
+  // basabas (SL tam basabas seviyesinden vurulmus -- ne kazandirdi ne
+  // kaybettirdi, "kazanc" sayilirsa kazanma orani yaniltici sisirilir),
+  // pnl<0 kayip. "SL" etiketi sadece hangi fiyat seviyesine carptigini gosterir.
+  const wins = completed.filter(t => t.pnl > 0).length;
+  const breakeven = completed.filter(t => t.pnl === 0).length;
   return {
     trades: completed.length,
     win_rate: 100 * wins / completed.length,
+    breakeven,
     ...base,
   };
 }
 
+const LOW_N_THRESHOLD = 5; // bunun altinda n istatistiksel olarak neredeyse anlamsiz
+
 function computeSideStats(account) {
   const history = account.history || [];
   const completed = history.filter(t => t.result === "TP" || t.result === "SL");
-  const sides = { BUY: { n: 0, wins: 0, pnl: 0 }, SELL: { n: 0, wins: 0, pnl: 0 } };
+  const sides = { BUY: { n: 0, wins: 0, breakeven: 0, pnl: 0 }, SELL: { n: 0, wins: 0, breakeven: 0, pnl: 0 } };
   for (const t of completed) {
     const s = sides[t.side];
     if (!s) continue;
     s.n += 1;
     s.pnl += t.pnl;
-    if (t.pnl >= 0) s.wins += 1;
+    if (t.pnl > 0) s.wins += 1;
+    else if (t.pnl === 0) s.breakeven += 1;
   }
   return sides;
 }
@@ -228,17 +241,18 @@ function renderSideStats(p, account) {
     const s = sides[side];
     const winRate = s.n ? 100 * s.wins / s.n : 0;
     return `
-      <tr>
+      <tr class="${s.n && s.n < LOW_N_THRESHOLD ? "low-n" : ""}">
         <td class="side-${side.toLowerCase()}">${side}</td>
         <td>${s.n}</td>
         <td>${s.n ? `%${fmt(winRate, 1)}` : "-"}</td>
+        <td>${s.breakeven || 0}</td>
         <td class="${pnlClass(s.pnl)}">${s.n ? `${s.pnl >= 0 ? "+" : ""}${fmt(s.pnl)}` : "-"}</td>
       </tr>
     `;
   }).join("");
   el.innerHTML = `
     <table>
-      <thead><tr><th>Yön</th><th>İşlem</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th></tr></thead>
+      <thead><tr><th>Yön</th><th>İşlem</th><th>Kazanma Oranı</th><th>Başabaş</th><th>Toplam K/Z (USDT)</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   `;
@@ -248,15 +262,16 @@ function computeSymbolStats(account) {
   const completed = (account.history || []).filter(t => t.result === "TP" || t.result === "SL");
   const bySymbol = {};
   for (const t of completed) {
-    const s = bySymbol[t.symbol] || (bySymbol[t.symbol] = { n: 0, wins: 0, pnl: 0 });
+    const s = bySymbol[t.symbol] || (bySymbol[t.symbol] = { n: 0, wins: 0, breakeven: 0, pnl: 0 });
     s.n += 1;
-    if (t.pnl >= 0) s.wins += 1;
+    if (t.pnl > 0) s.wins += 1;
+    else if (t.pnl === 0) s.breakeven += 1;
     s.pnl += t.pnl;
   }
   return Object.entries(bySymbol)
     .map(([symbol, s]) => ({
-      symbol, n: s.n, wins: s.wins, losses: s.n - s.wins,
-      winRate: s.n ? 100 * s.wins / s.n : 0, pnl: s.pnl,
+      symbol, n: s.n, wins: s.wins, breakeven: s.breakeven, losses: s.n - s.wins - s.breakeven,
+      winRate: s.n ? 100 * s.wins / s.n : 0, pnl: s.pnl, lowN: s.n < LOW_N_THRESHOLD,
     }))
     .sort((a, b) => b.pnl - a.pnl);
 }
@@ -271,14 +286,15 @@ function renderSymbolStats(p, account) {
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th>Coin</th><th>İşlem</th><th>Kazanan</th><th>Kaybeden</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th>
+        <th>Coin</th><th>İşlem</th><th>Kazanan</th><th>Başabaş</th><th>Kaybeden</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th>
       </tr></thead>
       <tbody>
         ${rows.map(r => `
-          <tr>
-            <td>${r.symbol}</td>
+          <tr class="${r.lowN ? "low-n" : ""}" ${r.lowN ? `title="Az veri (n=${r.n}) — bu satırdaki sonuç istatistiksel olarak henüz güvenilir değil"` : ""}>
+            <td>${r.symbol}${r.lowN ? ` <span class="n-warn">az veri</span>` : ""}</td>
             <td>${r.n}</td>
             <td class="pos">${r.wins}</td>
+            <td>${r.breakeven}</td>
             <td class="neg">${r.losses}</td>
             <td>%${fmt(r.winRate, 1)}</td>
             <td class="${pnlClass(r.pnl)}">${r.pnl >= 0 ? "+" : ""}${fmt(r.pnl)}</td>
@@ -338,6 +354,7 @@ function renderCards(p, stats) {
     { label: "Anlık K/Z", value: `${stats.unrealized_pnl >= 0 ? "+" : ""}${fmt(stats.unrealized_pnl)} USDT`, cls: pnlClass(stats.unrealized_pnl) },
     { label: "Funding Maliyeti", value: `${stats.funding_total >= 0 ? "-" : "+"}${fmt(Math.abs(stats.funding_total))} USDT`, cls: stats.funding_total > 0 ? "neg" : "pos" },
     { label: "Kazanma Oranı", value: `%${fmt(stats.win_rate, 1)}` },
+    { label: "Başabaş", value: stats.breakeven || 0 },
     { label: "Toplam İşlem", value: stats.trades },
     { label: "Açık Pozisyon", value: stats.open_positions },
     { label: "Kaldıraç", value: p.leverage },
@@ -434,13 +451,16 @@ function renderHistory(p, account) {
       <tbody>
         ${history.map(t => {
           const isPartial = t.result === "PARTIAL_TP";
-          // Kazanma/kayip GERCEK pnl isaretine gore: trailing stop kar durumundayken
-          // tetiklenirse (result "SL" olsa bile) bu hala bir kazanctir.
-          const profitable = t.pnl >= 0;
+          // Kazanma/kayip/basabas GERCEK pnl isaretine gore: trailing stop kar
+          // durumundayken tetiklenirse (result "SL" olsa bile) bu bir kazanctir;
+          // ama SL tam basabas seviyesinden (pnl==0) tetiklenmisse bu "trailing"
+          // hic calismamis demektir -- ne kazanc ne kayip, ayri etiketlenir.
           let sonucLabel, sonucCls;
           if (isPartial) { sonucLabel = "KISMİ AL"; sonucCls = ""; }
           else if (t.result === "TP") { sonucLabel = "KAZANÇ"; sonucCls = "pos"; }
-          else { sonucLabel = profitable ? "KAZANÇ (trailing)" : "KAYIP"; sonucCls = profitable ? "pos" : "neg"; }
+          else if (t.pnl > 0) { sonucLabel = "KAZANÇ (trailing)"; sonucCls = "pos"; }
+          else if (t.pnl === 0) { sonucLabel = "BAŞABAŞ"; sonucCls = ""; }
+          else { sonucLabel = "KAYIP"; sonucCls = "neg"; }
           return `
           <tr class="${isPartial ? "partial-row" : ""}">
             <td>${t.symbol}</td>
@@ -464,7 +484,10 @@ function renderHistory(p, account) {
 function renderLeaderboard(p, learner) {
   const rows = Object.entries(learner || {}).map(([key, s]) => {
     const [dev, tp, sl] = JSON.parse(key);
-    return { dev, tp, sl, n: s.n, winRate: s.n ? 100 * s.wins / s.n : 0, avgR: s.n ? s.reward_sum / s.n : 0 };
+    return {
+      dev, tp, sl, n: s.n, winRate: s.n ? 100 * s.wins / s.n : 0,
+      breakeven: s.breakeven || 0, avgR: s.n ? s.reward_sum / s.n : 0, lowN: s.n < LOW_N_THRESHOLD,
+    };
   }).filter(r => r.n > 0).sort((a, b) => b.avgR - a.avgR);
 
   const el = document.getElementById(`lb-${p.key}`);
@@ -476,15 +499,16 @@ function renderLeaderboard(p, learner) {
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th>${firstColLabel}</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Ort. R</th>
+        <th>${firstColLabel}</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Başabaş</th><th>Ort. R</th>
       </tr></thead>
       <tbody>
         ${rows.map(r => `
-          <tr>
-            <td>${fmt(r.dev, 1)}</td>
+          <tr class="${r.lowN ? "low-n" : ""}" ${r.lowN ? `title="Az veri (n=${r.n}) — bu satırdaki sonuç istatistiksel olarak henüz güvenilir değil"` : ""}>
+            <td>${fmt(r.dev, 1)}${r.lowN ? ` <span class="n-warn">az veri</span>` : ""}</td>
             <td>${fmt(r.tp, 3)}</td>
             <td>${r.n}</td>
             <td>%${fmt(r.winRate, 1)}</td>
+            <td>${r.breakeven}</td>
             <td class="${pnlClass(r.avgR)}">${fmt(r.avgR, 2)}</td>
           </tr>
         `).join("")}
@@ -576,15 +600,16 @@ function computeSymbolRowsFromTrades(trades) {
   const completed = (trades || []).filter(t => t.result === "TP" || t.result === "SL");
   const bySymbol = {};
   for (const t of completed) {
-    const s = bySymbol[t.symbol] || (bySymbol[t.symbol] = { n: 0, wins: 0, pnl: 0 });
+    const s = bySymbol[t.symbol] || (bySymbol[t.symbol] = { n: 0, wins: 0, breakeven: 0, pnl: 0 });
     s.n += 1;
-    if (t.pnl >= 0) s.wins += 1;
+    if (t.pnl > 0) s.wins += 1;
+    else if (t.pnl === 0) s.breakeven += 1;
     s.pnl += t.pnl;
   }
   return Object.entries(bySymbol)
     .map(([symbol, s]) => ({
-      symbol, n: s.n, wins: s.wins, losses: s.n - s.wins,
-      win_rate: s.n ? 100 * s.wins / s.n : 0, total_pnl: s.pnl,
+      symbol, n: s.n, wins: s.wins, breakeven: s.breakeven, losses: s.n - s.wins - s.breakeven,
+      win_rate: s.n ? 100 * s.wins / s.n : 0, total_pnl: s.pnl, low_n: s.n < LOW_N_THRESHOLD,
     }))
     .sort((a, b) => b.total_pnl - a.total_pnl);
 }
@@ -596,14 +621,15 @@ function buildSymbolPerfTable(rows) {
   return `
     <table>
       <thead><tr>
-        <th>Coin</th><th>İşlem</th><th>Kazanan</th><th>Kaybeden</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th>
+        <th>Coin</th><th>İşlem</th><th>Kazanan</th><th>Başabaş</th><th>Kaybeden</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th>
       </tr></thead>
       <tbody>
         ${rows.map(r => `
-          <tr>
-            <td>${r.symbol}</td>
+          <tr class="${r.low_n ? "low-n" : ""}" ${r.low_n ? `title="Az veri (n=${r.n}) — bu satırdaki sonuç istatistiksel olarak henüz güvenilir değil"` : ""}>
+            <td>${r.symbol}${r.low_n ? ` <span class="n-warn">az veri</span>` : ""}</td>
             <td>${r.n}</td>
             <td class="pos">${r.wins}</td>
+            <td>${r.breakeven || 0}</td>
             <td class="neg">${r.losses}</td>
             <td>%${fmt(r.win_rate, 1)}</td>
             <td class="${pnlClass(r.total_pnl)}">${r.total_pnl >= 0 ? "+" : ""}${fmt(r.total_pnl)}</td>
@@ -620,11 +646,12 @@ function buildTradesTable(trades) {
   }
   const rows = trades.map(t => {
     const isPartial = t.result === "PARTIAL_TP";
-    const profitable = t.pnl >= 0;
     let label, cls;
     if (isPartial) { label = "KISMİ AL"; cls = ""; }
     else if (t.result === "TP") { label = "KAZANÇ"; cls = "pos"; }
-    else { label = profitable ? "KAZANÇ (trailing)" : "KAYIP"; cls = profitable ? "pos" : "neg"; }
+    else if (t.pnl > 0) { label = "KAZANÇ (trailing)"; cls = "pos"; }
+    else if (t.pnl === 0) { label = "BAŞABAŞ"; cls = ""; }
+    else { label = "KAYIP"; cls = "neg"; }
     return `
       <tr class="${isPartial ? "partial-row" : ""}">
         <td>${t.symbol}</td>
@@ -658,15 +685,17 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
     { label: "Getiri", value: `${s.total_pnl_pct >= 0 ? "+" : ""}${fmt(s.total_pnl_pct, 1)}%`, cls: pnlClass(s.total_pnl_pct) },
     { label: "İşlem", value: s.trades },
     { label: "Kazanma Oranı", value: `%${fmt(s.win_rate, 1)}` },
+    { label: "Başabaş", value: s.breakeven || 0 },
     { label: "Max Drawdown", value: `%${fmt(s.max_drawdown_pct, 1)}`, cls: "neg" },
   ];
 
   const lbRows = (r.leaderboard || []).map(row => `
-    <tr>
-      <td>${fmt(row.first, 1)}</td>
+    <tr class="${row.low_n ? "low-n" : ""}" ${row.low_n ? `title="Az veri (n=${row.n}) — bu satırdaki sonuç istatistiksel olarak henüz güvenilir değil"` : ""}>
+      <td>${fmt(row.first, 1)}${row.low_n ? ` <span class="n-warn">az veri</span>` : ""}</td>
       <td>${fmt(row.tp_mult, 3)}</td>
       <td>${row.n}</td>
       <td>%${fmt(row.win_rate, 1)}</td>
+      <td>${row.breakeven || 0}</td>
       <td class="${pnlClass(row.avg_r)}">${fmt(row.avg_r, 2)}</td>
     </tr>
   `).join("");
@@ -698,7 +727,7 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
       <h2>Bu Testte Öğrenilen En İyi Parametreler</h2>
       <div class="table-wrap">
         ${lbRows ? `<table>
-          <thead><tr><th>${firstColLabel}</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Ort. R</th></tr></thead>
+          <thead><tr><th>${firstColLabel}</th><th>TP Çarpanı</th><th>Deneme</th><th>Kazanma Oranı</th><th>Başabaş</th><th>Ort. R</th></tr></thead>
           <tbody>${lbRows}</tbody>
         </table>` : `<div class="empty">Yeterli veri yok.</div>`}
       </div>

@@ -122,18 +122,30 @@ class Learner:
 
         return max(self.grid, key=score)
 
-    def update(self, symbol: str, key: tuple, reward: float, win: bool):
+    def update(self, symbol: str, key: tuple, reward: float, outcome: str):
+        """outcome: 'win' (pnl>0) / 'breakeven' (pnl==0) / 'loss' (pnl<0).
+
+        Basabas islemler ne kazandirir ne kaybettirir -- 'kazanc' sayilirsa
+        (eski davranis) win_rate yaniltici sekilde sisiyor, 'kayip' sayilirsa
+        da tam tersi yonde yaniltici olur. Bu yuzden ayri bir kova.
+        """
         for stats_dict, k in ((self.stats, key), (self.symbol_stats, (symbol, key))):
-            s = stats_dict.setdefault(k, {"n": 0, "reward_sum": 0.0, "wins": 0, "losses": 0})
+            s = stats_dict.setdefault(k, {"n": 0, "reward_sum": 0.0, "wins": 0, "breakeven": 0, "losses": 0})
+            # Eski (bu alan eklenmeden once kaydedilmis) kayitlarda "breakeven" olmayabilir.
+            s.setdefault("breakeven", 0)
             s["n"] += 1
             s["reward_sum"] += reward
-            if win:
+            if outcome == "win":
                 s["wins"] += 1
+            elif outcome == "breakeven":
+                s["breakeven"] += 1
             else:
                 s["losses"] += 1
         self._save()
 
     # ---------------- reporting ----------------
+    MIN_RELIABLE_N = 5  # bunun altinda n istatistiksel olarak neredeyse anlamsiz -- ayri isaretlenir
+
     def leaderboard(self, top_n: int = 5) -> str:
         rows = []
         for p in self.grid:
@@ -143,12 +155,13 @@ class Learner:
                 continue
             avg_r = s["reward_sum"] / s["n"]
             win_rate = 100 * s["wins"] / s["n"]
-            rows.append((avg_r, win_rate, s["n"], p))
+            rows.append((avg_r, win_rate, s["n"], s.get("breakeven", 0), p))
 
         rows.sort(key=lambda r: r[0], reverse=True)
         first_col = {"wave": "atr_x", "vwap": "band_x"}[self.strategy]
-        lines = [f"{first_col:>6} {'tp_x':>6} {'n':>4} {'winrate':>8} {'avgR':>7}"]
-        for avg_r, win_rate, n, p in rows[:top_n]:
+        lines = [f"{first_col:>6} {'tp_x':>6} {'n':>4} {'winrate':>8} {'basabas':>8} {'avgR':>7}"]
+        for avg_r, win_rate, n, breakeven, p in rows[:top_n]:
             first_val = p.key()[0]  # deviation_pct (wave) / band_mult (vwap)
-            lines.append(f"{first_val:>6.1f} {p.tp_mult:>6.3f} {n:>4} {win_rate:>7.1f}% {avg_r:>7.2f}")
+            flag = "  (az veri)" if n < self.MIN_RELIABLE_N else ""
+            lines.append(f"{first_val:>6.1f} {p.tp_mult:>6.3f} {n:>4} {win_rate:>7.1f}% {breakeven:>8} {avg_r:>7.2f}{flag}")
         return "\n".join(lines) if len(lines) > 1 else "Henuz yeterli veri yok."

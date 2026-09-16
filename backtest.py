@@ -79,8 +79,13 @@ def fetch_historical_ohlcv(exchange, symbol, timeframe, since_ms, until_ms, page
 def _update_learner_on_close(result, symbol, learner: Learner):
     if result is None or result["result"] not in ("TP", "SL"):
         return
-    win = result["pnl"] >= 0
-    learner.update(symbol, tuple(result["param_key"]), reward=result["r_multiple"], win=win)
+    if result["pnl"] > 0:
+        outcome = "win"
+    elif result["pnl"] == 0:
+        outcome = "breakeven"
+    else:
+        outcome = "loss"
+    learner.update(symbol, tuple(result["param_key"]), reward=result["r_multiple"], outcome=outcome)
 
 
 def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, window,
@@ -178,7 +183,9 @@ def build_leaderboard_rows(learner: Learner, top_n: int = 12):
             "tp_mult": key[1],
             "n": s["n"],
             "win_rate": round(100 * s["wins"] / s["n"], 1),
+            "breakeven": s.get("breakeven", 0),
             "avg_r": round(s["reward_sum"] / s["n"], 3),
+            "low_n": s["n"] < Learner.MIN_RELIABLE_N,
         })
     rows.sort(key=lambda r: r["avg_r"], reverse=True)
     return rows[:top_n]
@@ -188,20 +195,25 @@ def build_symbol_rows(history):
     """Kapanan (TP/SL) islemleri sembole gore gruplar -- coin bazli islem
     sayisi/kazanma orani/toplam kar-zarar. Trade listesi ne kadar kesilirse
     kesilsin (bkz. write_report), bu TUM history'den hesaplandigi icin
-    her zaman tam ve dogrudur."""
+    her zaman tam ve dogrudur. Basabas (pnl==0) islemler ne kazanca ne
+    kayba sayilir, ayri bir kovada tutulur (bkz. paper_account.stats)."""
     completed = [t for t in history if t["result"] in ("TP", "SL")]
     by_symbol = {}
     for t in completed:
-        s = by_symbol.setdefault(t["symbol"], {"n": 0, "wins": 0, "pnl": 0.0})
+        s = by_symbol.setdefault(t["symbol"], {"n": 0, "wins": 0, "breakeven": 0, "pnl": 0.0})
         s["n"] += 1
-        if t["pnl"] >= 0:
+        if t["pnl"] > 0:
             s["wins"] += 1
+        elif t["pnl"] == 0:
+            s["breakeven"] += 1
         s["pnl"] += t["pnl"]
     rows = [
         {
-            "symbol": sym, "n": s["n"], "wins": s["wins"], "losses": s["n"] - s["wins"],
+            "symbol": sym, "n": s["n"], "wins": s["wins"], "breakeven": s["breakeven"],
+            "losses": s["n"] - s["wins"] - s["breakeven"],
             "win_rate": round(100 * s["wins"] / s["n"], 1) if s["n"] else 0.0,
             "total_pnl": round(s["pnl"], 2),
+            "low_n": s["n"] < Learner.MIN_RELIABLE_N,
         }
         for sym, s in by_symbol.items()
     ]
@@ -242,6 +254,7 @@ def write_report(report_dir, account: PaperAccount, learner: Learner, symbols, a
         "total_pnl_pct": round(100 * s["total_pnl"] / account.starting_balance, 2) if account.starting_balance else 0.0,
         "trades": s["trades"],
         "win_rate": s["win_rate"],
+        "breakeven": s["breakeven"],
         "max_drawdown_pct": round(dd, 2),
         "open_at_end": s["open_positions"],
     }
@@ -306,7 +319,7 @@ def print_summary(account: PaperAccount, learner: Learner, symbols, strategy, si
     print(f"Baslangic bakiye : {account.starting_balance:.2f} USDT")
     print(f"Bitis bakiye     : {s['balance']:.2f} USDT")
     print(f"Toplam K/Z       : {s['total_pnl']:+.2f} USDT ({100 * s['total_pnl'] / account.starting_balance:+.1f}%)")
-    print(f"Toplam islem     : {s['trades']}  |  Kazanma orani: %{s['win_rate']:.1f}")
+    print(f"Toplam islem     : {s['trades']}  |  Kazanma orani: %{s['win_rate']:.1f}  |  Basabas: {s['breakeven']}")
     print(f"Maksimum drawdown: %{dd:.1f}")
     print(f"Kapanista acik kalan pozisyon: {s['open_positions']}")
     print("-" * 72)

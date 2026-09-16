@@ -193,19 +193,26 @@ def _handle_close_event(result, symbol, strategy, learner: Learner, account: Pap
             )
         return
 
-    # Kazanma/kayip GERCEK pnl isaretine gore: trailing stop kar durumundayken
-    # tetiklenirse (result=="SL" olsa bile) bu hala bir kazanctir.
-    win = result["pnl"] >= 0
-    learner.update(result["symbol"], tuple(result["param_key"]), reward=result["r_multiple"], win=win)
+    # Kazanma/kayip/basabas GERCEK pnl isaretine gore: trailing stop kar
+    # durumundayken tetiklenirse (result=="SL" olsa bile) bu bir kazanctir; ama
+    # SL tam basabas seviyesinden (pnl==0) tetiklenirse bu ne kazanc ne kayiptir --
+    # "kazanc" sayilirsa kazanma orani yaniltici sekilde sisirilmis olur.
+    if result["pnl"] > 0:
+        outcome = "win"
+    elif result["pnl"] == 0:
+        outcome = "breakeven"
+    else:
+        outcome = "loss"
+    learner.update(result["symbol"], tuple(result["param_key"]), reward=result["r_multiple"], outcome=outcome)
 
-    sonuc_str = "KAZANC" if win else "KAYIP"
+    sonuc_str = {"win": "KAZANC", "breakeven": "BASABAS", "loss": "KAYIP"}[outcome]
     sonuc_str += f" ({result['result']})"
     partial_str = " (kismi kar alinmisti)" if result.get("partial_taken") else ""
     log(f"<<< SANAL ISLEM KAPANDI: {sonuc_str}{partial_str} | {result['side']} {result['symbol']} "
         f"| toplam_pnl={result['pnl']} USDT | funding={result['funding_paid']} USDT | R={result['r_multiple']} "
         f"| yeni bakiye={result['balance_after']} USDT")
     if notify:
-        emoji = "✅" if win else "❌"
+        emoji = {"win": "✅", "breakeven": "➖", "loss": "❌"}[outcome]
         partial_note = " · kısmi kâr sonrası" if result.get("partial_taken") else ""
         pnl_pct = (result["pnl"] / account.trade_margin * 100) if account.trade_margin else 0.0
         send_telegram(
@@ -293,7 +300,7 @@ def print_report(account: PaperAccount, learner: Learner, symbols):
     s = account.stats()
     print("-" * 70)
     print(f"SANAL HESAP OZETI  | izlenen_coin={len(symbols)} acik_pozisyon={s['open_positions']} "
-          f"islem={s['trades']} kazanma_orani=%{s['win_rate']} toplam_pnl={s['total_pnl']} "
+          f"islem={s['trades']} kazanma_orani=%{s['win_rate']} basabas={s['breakeven']} toplam_pnl={s['total_pnl']} "
           f"anlik_kz={s['unrealized_pnl']} funding_maliyeti={s['funding_total']} "
           f"bakiye={s['balance']} USDT")
     if account.open_positions:

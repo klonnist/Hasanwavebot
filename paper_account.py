@@ -321,17 +321,20 @@ class PaperAccount:
         completed = [t for t in self.history if t["result"] in ("TP", "SL")]
         if not completed:
             return {
-                "trades": 0, "win_rate": 0.0, "total_pnl": realized_pnl,
+                "trades": 0, "win_rate": 0.0, "breakeven": 0, "total_pnl": realized_pnl,
                 "balance": round(self.balance, 2), "open_positions": len(self.open_positions),
                 "unrealized_pnl": unrealized_pnl, "funding_total": funding_total,
             }
-        # Kazanma/kayip GERCEK pnl isaretine gore belirlenir -- trailing stop
-        # kar durumundayken tetiklenirse (sonuc alani "SL" olsa bile) bu hala
-        # bir kazancdir, "SL" etiketi sadece hangi fiyat seviyesine carptigini gosterir.
-        wins = sum(1 for t in completed if t["pnl"] >= 0)
+        # Kazanma/kayip/basabas GERCEK pnl isaretine gore belirlenir: pnl>0 kazanc,
+        # pnl==0 basabas (SL basabasa cekilip tam o seviyeden vurulmus -- ne kazandirdi
+        # ne kaybettirdi, "kazanc" sayilmasi kazanma oranini yaniltici sekilde sisirir),
+        # pnl<0 kayip. "SL" etiketi sadece hangi fiyat seviyesine carptigini gosterir.
+        wins = sum(1 for t in completed if t["pnl"] > 0)
+        breakeven = sum(1 for t in completed if t["pnl"] == 0)
         return {
             "trades": len(completed),
             "win_rate": round(100 * wins / len(completed), 1),
+            "breakeven": breakeven,
             "total_pnl": realized_pnl,
             "balance": round(self.balance, 2),
             "open_positions": len(self.open_positions),
