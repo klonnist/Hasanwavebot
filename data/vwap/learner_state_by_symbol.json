@@ -114,10 +114,11 @@
     "losses": 0
   },
   "[\"PENGU/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 1,
+    "n": 2,
     "reward_sum": -1.0,
     "wins": 0,
-    "losses": 1
+    "losses": 1,
+    "breakeven": 1
   },
   "[\"LINK/USDT:USDT\", 2.0, 0.75, 0.5]": {
     "n": 1,
@@ -569,10 +570,11 @@
     "losses": 1
   },
   "[\"BNB/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 9,
-    "reward_sum": 3.34,
+    "n": 10,
+    "reward_sum": 2.34,
     "wins": 4,
-    "losses": 5
+    "losses": 6,
+    "breakeven": 0
   },
   "[\"ADA/USDT:USDT\", 1.5, 1.0, 0.5]": {
     "n": 3,
