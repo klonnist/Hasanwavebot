@@ -587,5 +587,19 @@
     "wins": 0,
     "breakeven": 0,
     "losses": 1
+  },
+  "[\"SOL/USDT:USDT\", 0.8, 1.618, 0.15]": {
+    "n": 1,
+    "reward_sum": 0.0,
+    "wins": 0,
+    "breakeven": 1,
+    "losses": 0
+  },
+  "[\"DOGE/USDT:USDT\", 1.2, 1.272, 0.15]": {
+    "n": 1,
+    "reward_sum": 0.647,
+    "wins": 1,
+    "breakeven": 0,
+    "losses": 0
   }
 }
