@@ -1,5 +1,5 @@
 {
-  "balance": 11498.880019584933,
+  "balance": 11485.651604822648,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -12128,33 +12128,110 @@
       "open_time": "2026-09-17T23:09:15+00:00",
       "close_time": "2026-09-17T23:22:28+00:00",
       "balance_after": 11498.88
-    }
-  ],
-  "open_positions": {
-    "AVAX/USDT:USDT": {
+    },
+    {
       "symbol": "AVAX/USDT:USDT",
       "side": "SELL",
       "entry": 7.589,
-      "tp": 7.5070846327696685,
-      "sl": 7.609078087926197,
-      "risk_amount": 13.228414762285418,
-      "size": 658.8483331137172,
+      "exit": 7.609078087926197,
+      "result": "SL",
+      "pnl": -13.2284,
+      "final_leg_pnl": -13.2284,
+      "partial_taken": false,
+      "r_multiple": -1.0,
       "param_key": [
         2.5,
         0.5,
         0.5
       ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
       "open_time": "2026-09-17T23:09:15+00:00",
+      "close_time": "2026-09-17T23:36:47+00:00",
+      "balance_after": 11485.6516
+    }
+  ],
+  "open_positions": {
+    "ETH/USDT:USDT": {
+      "symbol": "ETH/USDT:USDT",
+      "side": "SELL",
+      "entry": 2446.46,
+      "tp": 2433.7072430143885,
+      "sl": 2450.4416108733203,
+      "risk_amount": 8.137494325107049,
+      "size": 2.0437693647147306,
+      "param_key": [
+        2.0,
+        1.0,
+        0.5
+      ],
+      "open_time": "2026-09-17T23:36:45+00:00",
       "leverage": 10.0,
       "notional": 5000.0,
       "margin": 500.0,
-      "last_funding_time": "2026-09-17T23:09:15+00:00",
+      "last_funding_time": "2026-09-17T23:36:45+00:00",
       "funding_paid": 0.0,
-      "last_price": 7.602,
-      "unrealized_pnl": -8.565,
-      "unrealized_r": -0.647,
-      "initial_sl": 7.609078087926197,
-      "initial_risk_amount": 13.228414762285418,
+      "last_price": 2446.46,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 2450.4416108733203,
+      "initial_risk_amount": 8.137494325107049,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    },
+    "SOL/USDT:USDT": {
+      "symbol": "SOL/USDT:USDT",
+      "side": "SELL",
+      "entry": 101.41,
+      "tp": 99.19439802839615,
+      "sl": 101.64789481839053,
+      "risk_amount": 11.72935698602354,
+      "size": 49.30480228774283,
+      "param_key": [
+        2.5,
+        1.0,
+        0.5
+      ],
+      "open_time": "2026-09-17T23:36:45+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-09-17T23:36:45+00:00",
+      "funding_paid": 0.0,
+      "last_price": 101.41,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 101.64789481839053,
+      "initial_risk_amount": 11.72935698602354,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    },
+    "LINK/USDT:USDT": {
+      "symbol": "LINK/USDT:USDT",
+      "side": "SELL",
+      "entry": 11.388,
+      "tp": 11.163321637910729,
+      "sl": 11.415417949880018,
+      "risk_amount": 12.038088285922901,
+      "size": 439.0586582367404,
+      "param_key": [
+        2.0,
+        0.75,
+        0.5
+      ],
+      "open_time": "2026-09-17T23:36:48+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-09-17T23:36:48+00:00",
+      "funding_paid": 0.0,
+      "last_price": 11.388,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 11.415417949880018,
+      "initial_risk_amount": 12.038088285922901,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
