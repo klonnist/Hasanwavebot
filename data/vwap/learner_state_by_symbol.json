@@ -26,9 +26,9 @@
     "losses": 1
   },
   "[\"XRP/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 11,
-    "reward_sum": 3.99,
-    "wins": 5,
+    "n": 12,
+    "reward_sum": 5.705,
+    "wins": 6,
     "losses": 5,
     "breakeven": 1
   },
@@ -320,10 +320,11 @@
     "losses": 1
   },
   "[\"ADA/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 5,
-    "reward_sum": 3.362,
-    "wins": 3,
-    "losses": 2
+    "n": 6,
+    "reward_sum": 5.095000000000001,
+    "wins": 4,
+    "losses": 2,
+    "breakeven": 0
   },
   "[\"SOL/USDT:USDT\", 1.5, 0.5, 0.5]": {
     "n": 1,
@@ -472,9 +473,9 @@
     "losses": 1
   },
   "[\"BTC/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 11,
-    "reward_sum": 5.675,
-    "wins": 5,
+    "n": 12,
+    "reward_sum": 7.617,
+    "wins": 6,
     "losses": 3,
     "breakeven": 3
   },
@@ -555,10 +556,11 @@
     "losses": 2
   },
   "[\"NEAR/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 2,
-    "reward_sum": 0.008999999999999897,
+    "n": 3,
+    "reward_sum": -0.9910000000000001,
     "wins": 1,
-    "losses": 1
+    "losses": 2,
+    "breakeven": 0
   },
   "[\"ADA/USDT:USDT\", 2.5, 0.5, 0.5]": {
     "n": 1,
