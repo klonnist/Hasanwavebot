@@ -1,7 +1,9 @@
 {
-  "checked_at": "2026-09-17T12:14:46+00:00",
-  "ok": true,
-  "issues": [],
+  "checked_at": "2026-09-17T18:14:11+00:00",
+  "ok": false,
+  "issues": [
+    "[vwap] PENGU/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.007297) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-17T17:10:35+00:00 -> 2026-09-17T17:24:33+00:00)"
+  ],
   "profiles_checked": [
     "15m",
     "4h",
