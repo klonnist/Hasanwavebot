@@ -47,10 +47,11 @@
     "breakeven": 0
   },
   "[\"PENGU/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 3,
-    "reward_sum": 0.3720000000000001,
+    "n": 4,
+    "reward_sum": -0.6279999999999999,
     "wins": 2,
-    "losses": 1
+    "losses": 2,
+    "breakeven": 0
   },
   "[\"BTC/USDT:USDT\", 1.5, 1.0, 0.5]": {
     "n": 7,
