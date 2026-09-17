@@ -13,11 +13,11 @@
     "losses": 2
   },
   "[\"NEAR/USDT:USDT\", 1.5, 0.75, 0.5]": {
-    "n": 3,
+    "n": 4,
     "reward_sum": 0.645,
     "wins": 1,
     "losses": 1,
-    "breakeven": 1
+    "breakeven": 2
   },
   "[\"ETH/USDT:USDT\", 2.0, 1.0, 0.5]": {
     "n": 2,
