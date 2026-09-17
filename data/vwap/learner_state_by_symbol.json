@@ -76,10 +76,10 @@
     "breakeven": 0
   },
   "[\"PENGU/USDT:USDT\", 1.5, 0.75, 0.5]": {
-    "n": 2,
-    "reward_sum": -2.0,
+    "n": 3,
+    "reward_sum": -3.0,
     "wins": 0,
-    "losses": 2,
+    "losses": 3,
     "breakeven": 0
   },
   "[\"SOL/USDT:USDT\", 2.0, 1.0, 0.5]": {
@@ -230,10 +230,11 @@
     "losses": 2
   },
   "[\"AVAX/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 2,
-    "reward_sum": 0.4059999999999999,
+    "n": 3,
+    "reward_sum": -0.5940000000000001,
     "wins": 1,
-    "losses": 1
+    "losses": 2,
+    "breakeven": 0
   },
   "[\"LINK/USDT:USDT\", 2.0, 1.0, 0.5]": {
     "n": 4,
@@ -490,10 +491,10 @@
     "breakeven": 4
   },
   "[\"SOL/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 21,
-    "reward_sum": 23.567999999999998,
+    "n": 22,
+    "reward_sum": 22.567999999999998,
     "wins": 15,
-    "losses": 4,
+    "losses": 5,
     "breakeven": 2
   },
   "[\"SOL/USDT:USDT\", 1.5, 1.0, 0.5]": {
