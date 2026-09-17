@@ -1,5 +1,5 @@
 {
-  "balance": 11653.993103639827,
+  "balance": 11642.756316356468,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -11981,6 +11981,27 @@
       "open_time": "2026-09-17T21:11:22+00:00",
       "close_time": "2026-09-17T22:10:43+00:00",
       "balance_after": 11653.9931
+    },
+    {
+      "symbol": "ADA/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.2002,
+      "exit": 0.20064992096282563,
+      "result": "SL",
+      "pnl": -11.2368,
+      "final_leg_pnl": -11.2368,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        1.5,
+        0.5,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-17T22:10:43+00:00",
+      "close_time": "2026-09-17T22:24:56+00:00",
+      "balance_after": 11642.7563
     }
   ],
   "open_positions": {
@@ -12040,30 +12061,30 @@
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
     },
-    "ADA/USDT:USDT": {
-      "symbol": "ADA/USDT:USDT",
+    "AVAX/USDT:USDT": {
+      "symbol": "AVAX/USDT:USDT",
       "side": "SELL",
-      "entry": 0.2002,
-      "tp": 0.19940762554286678,
-      "sl": 0.20064992096282563,
-      "risk_amount": 11.236787283357769,
-      "size": 24975.024975024975,
+      "entry": 7.546,
+      "tp": 7.487864974917606,
+      "sl": 7.5672756036401125,
+      "risk_amount": 14.097272488810146,
+      "size": 662.6027034190299,
       "param_key": [
-        1.5,
+        2.5,
         0.5,
         0.5
       ],
-      "open_time": "2026-09-17T22:10:43+00:00",
+      "open_time": "2026-09-17T22:24:56+00:00",
       "leverage": 10.0,
       "notional": 5000.0,
       "margin": 500.0,
-      "last_funding_time": "2026-09-17T22:10:43+00:00",
+      "last_funding_time": "2026-09-17T22:24:56+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.2002,
+      "last_price": 7.546,
       "unrealized_pnl": 0.0,
       "unrealized_r": 0.0,
-      "initial_sl": 0.20064992096282563,
-      "initial_risk_amount": 11.236787283357769,
+      "initial_sl": 7.5672756036401125,
+      "initial_risk_amount": 14.097272488810146,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
