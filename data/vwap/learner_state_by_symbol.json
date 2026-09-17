@@ -1,9 +1,10 @@
 {
   "[\"DOGE/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 4,
+    "n": 5,
     "reward_sum": 0.5559999999999998,
     "wins": 2,
-    "losses": 2
+    "losses": 2,
+    "breakeven": 1
   },
   "[\"AVAX/USDT:USDT\", 2.0, 1.0, 0.5]": {
     "n": 4,
@@ -168,10 +169,10 @@
     "losses": 1
   },
   "[\"ETH/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 13,
-    "reward_sum": 6.3580000000000005,
+    "n": 14,
+    "reward_sum": 5.3580000000000005,
     "wins": 8,
-    "losses": 5,
+    "losses": 6,
     "breakeven": 0
   },
   "[\"BTC/USDT:USDT\", 2.0, 0.75, 0.5]": {
