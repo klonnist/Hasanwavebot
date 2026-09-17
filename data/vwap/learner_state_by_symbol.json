@@ -38,10 +38,10 @@
     "losses": 1
   },
   "[\"ADA/USDT:USDT\", 1.5, 0.5, 0.5]": {
-    "n": 9,
-    "reward_sum": 7.099,
+    "n": 10,
+    "reward_sum": 6.099,
     "wins": 7,
-    "losses": 2,
+    "losses": 3,
     "breakeven": 0
   },
   "[\"PENGU/USDT:USDT\", 1.5, 1.0, 0.5]": {
@@ -57,10 +57,11 @@
     "losses": 3
   },
   "[\"NEAR/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 1,
+    "n": 2,
     "reward_sum": -1.0,
     "wins": 0,
-    "losses": 1
+    "losses": 1,
+    "breakeven": 1
   },
   "[\"ETHFI/USDT:USDT\", 1.5, 0.5, 0.5]": {
     "n": 6,
@@ -182,10 +183,10 @@
     "losses": 0
   },
   "[\"XRP/USDT:USDT\", 1.5, 0.75, 0.5]": {
-    "n": 4,
-    "reward_sum": 1.105,
+    "n": 5,
+    "reward_sum": 0.10499999999999998,
     "wins": 2,
-    "losses": 2,
+    "losses": 3,
     "breakeven": 0
   },
   "[\"SOL/USDT:USDT\", 1.5, 0.75, 0.5]": {
@@ -529,10 +530,11 @@
     "losses": 1
   },
   "[\"DOGE/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 1,
-    "reward_sum": -1.0,
+    "n": 2,
+    "reward_sum": -2.0,
     "wins": 0,
-    "losses": 1
+    "losses": 2,
+    "breakeven": 0
   },
   "[\"ADA/USDT:USDT\", 1.5, 0.75, 0.5]": {
     "n": 2,
