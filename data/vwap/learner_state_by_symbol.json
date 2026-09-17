@@ -320,16 +320,17 @@
     "losses": 0
   },
   "[\"XRP/USDT:USDT\", 1.5, 0.5, 0.5]": {
-    "n": 1,
+    "n": 2,
     "reward_sum": -1.0,
     "wins": 0,
-    "losses": 1
+    "losses": 1,
+    "breakeven": 1
   },
   "[\"ADA/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 6,
-    "reward_sum": 5.095000000000001,
+    "n": 7,
+    "reward_sum": 4.095000000000001,
     "wins": 4,
-    "losses": 2,
+    "losses": 3,
     "breakeven": 0
   },
   "[\"SOL/USDT:USDT\", 1.5, 0.5, 0.5]": {
