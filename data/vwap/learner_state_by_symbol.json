@@ -392,9 +392,9 @@
     "losses": 0
   },
   "[\"BNB/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 9,
-    "reward_sum": 7.438,
-    "wins": 7,
+    "n": 10,
+    "reward_sum": 9.116,
+    "wins": 8,
     "losses": 2,
     "breakeven": 0
   },
