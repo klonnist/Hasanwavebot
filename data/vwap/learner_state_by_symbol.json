@@ -167,9 +167,9 @@
     "losses": 2
   },
   "[\"NEAR/USDT:USDT\", 2.0, 0.75, 0.5]": {
-    "n": 2,
-    "reward_sum": 3.867,
-    "wins": 1,
+    "n": 3,
+    "reward_sum": 5.417,
+    "wins": 2,
     "losses": 1,
     "breakeven": 0
   },
@@ -246,9 +246,9 @@
     "breakeven": 0
   },
   "[\"ETHFI/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 20,
-    "reward_sum": 7.9460000000000015,
-    "wins": 8,
+    "n": 21,
+    "reward_sum": 10.239,
+    "wins": 9,
     "losses": 12,
     "breakeven": 0
   },
