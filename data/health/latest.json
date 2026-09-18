@@ -1,8 +1,8 @@
 {
-  "checked_at": "2026-09-17T18:14:11+00:00",
+  "checked_at": "2026-09-18T00:15:26+00:00",
   "ok": false,
   "issues": [
-    "[vwap] PENGU/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.007297) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-17T17:10:35+00:00 -> 2026-09-17T17:24:33+00:00)"
+    "[vwap] XRP/USDT:USDT: SL olarak kapanan islemin exit fiyati (1.290221) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-17T22:37:04+00:00 -> 2026-09-17T22:50:57+00:00)"
   ],
   "profiles_checked": [
     "15m",
