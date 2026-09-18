@@ -566,9 +566,9 @@
     "losses": 0
   },
   "[\"XRP/USDT:USDT\", 1.8, 1.618, 0.15]": {
-    "n": 2,
-    "reward_sum": 3.146,
-    "wins": 2,
+    "n": 3,
+    "reward_sum": 3.671,
+    "wins": 3,
     "losses": 0,
     "breakeven": 0
   },
