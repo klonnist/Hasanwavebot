@@ -83,9 +83,9 @@
     "breakeven": 0
   },
   "[\"SOL/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 2,
-    "reward_sum": -1.0,
-    "wins": 0,
+    "n": 3,
+    "reward_sum": 0.8089999999999999,
+    "wins": 1,
     "losses": 1,
     "breakeven": 1
   },
@@ -180,9 +180,9 @@
     "losses": 1
   },
   "[\"ETH/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 14,
-    "reward_sum": 5.3580000000000005,
-    "wins": 8,
+    "n": 15,
+    "reward_sum": 7.046,
+    "wins": 9,
     "losses": 6,
     "breakeven": 0
   },
