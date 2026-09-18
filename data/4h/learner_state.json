@@ -19,9 +19,9 @@
     "breakeven": 1
   },
   "[0.8, 1.618, 0.15]": {
-    "n": 6,
-    "reward_sum": 1.17,
-    "wins": 4,
+    "n": 7,
+    "reward_sum": 2.721,
+    "wins": 5,
     "losses": 2,
     "breakeven": 0
   },

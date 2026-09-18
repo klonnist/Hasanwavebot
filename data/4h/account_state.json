@@ -1,5 +1,5 @@
 {
-  "balance": 10144.237649386587,
+  "balance": 10293.989005625286,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -663,37 +663,49 @@
       "open_time": "2026-09-18T02:28:25+00:00",
       "close_time": "2026-09-18T19:24:41+00:00",
       "balance_after": 10144.2376
-    }
-  ],
-  "open_positions": {
-    "XRP/USDT:USDT": {
+    },
+    {
       "symbol": "XRP/USDT:USDT",
       "side": "BUY",
+      "result": "PARTIAL_TP",
       "entry": 1.3272,
-      "tp": 1.4027106,
-      "sl": 1.3272,
-      "risk_amount": 96.54724231464748,
-      "size": 1883.6648583484027,
+      "exit": 1.4067,
+      "pnl": 74.8757,
+      "r_multiple": 1.5,
       "param_key": [
         0.8,
         1.618,
         0.15
       ],
-      "open_time": "2026-09-18T03:53:28+00:00",
       "leverage": 5.0,
-      "notional": 2500.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-09-18T11:53:28+00:00",
-      "funding_paid": 0.10414274041425,
-      "last_price": 1.397,
-      "unrealized_pnl": 131.4798,
-      "unrealized_r": 1.362,
-      "initial_sl": 1.2759449999999999,
-      "initial_risk_amount": 96.54724231464748,
-      "breakeven_done": true,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
+      "funding_paid": 0.0,
+      "open_time": "2026-09-18T03:53:28+00:00",
+      "close_time": "2026-09-18T19:36:55+00:00",
+      "balance_after": 10219.1133
     },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "BUY",
+      "entry": 1.3272,
+      "exit": 1.4067,
+      "result": "SL",
+      "pnl": 149.7514,
+      "final_leg_pnl": 74.8757,
+      "partial_taken": true,
+      "r_multiple": 1.551,
+      "param_key": [
+        0.8,
+        1.618,
+        0.15
+      ],
+      "leverage": 5.0,
+      "funding_paid": 0.1041,
+      "open_time": "2026-09-18T03:53:28+00:00",
+      "close_time": "2026-09-18T19:36:55+00:00",
+      "balance_after": 10293.989
+    }
+  ],
+  "open_positions": {
     "ETH/USDT:USDT": {
       "symbol": "ETH/USDT:USDT",
       "side": "BUY",
@@ -713,11 +725,39 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-18T14:10:38+00:00",
       "funding_paid": 0.0,
-      "last_price": 2626.28,
-      "unrealized_pnl": 68.3383,
-      "unrealized_r": 0.505,
+      "last_price": 2630.47,
+      "unrealized_pnl": 72.4358,
+      "unrealized_r": 0.535,
       "initial_sl": 2418.0060000000003,
       "initial_risk_amount": 135.34071350336387,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    },
+    "ADA/USDT:USDT": {
+      "symbol": "ADA/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.222,
+      "tp": 0.24750000000000005,
+      "sl": 0.20944500000000002,
+      "risk_amount": 141.38513513513493,
+      "size": 11261.261261261261,
+      "param_key": [
+        0.8,
+        2.0,
+        0.15
+      ],
+      "open_time": "2026-09-18T19:36:56+00:00",
+      "leverage": 5.0,
+      "notional": 2500.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-09-18T19:36:56+00:00",
+      "funding_paid": 0.0,
+      "last_price": 0.222,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 0.20944500000000002,
+      "initial_risk_amount": 141.38513513513493,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
