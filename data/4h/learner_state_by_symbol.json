@@ -122,5 +122,12 @@
     "wins": 0,
     "breakeven": 1,
     "losses": 0
+  },
+  "[\"PENGU/USDT:USDT\", 0.8, 1.272, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.514,
+    "wins": 1,
+    "breakeven": 0,
+    "losses": 0
   }
 }
