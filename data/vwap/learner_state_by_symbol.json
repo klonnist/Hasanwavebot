@@ -246,9 +246,9 @@
     "breakeven": 0
   },
   "[\"ETHFI/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 22,
-    "reward_sum": 9.239,
-    "wins": 9,
+    "n": 23,
+    "reward_sum": 11.037,
+    "wins": 10,
     "losses": 13,
     "breakeven": 0
   },
@@ -510,9 +510,9 @@
     "losses": 0
   },
   "[\"XRP/USDT:USDT\", 2.0, 0.75, 0.5]": {
-    "n": 5,
-    "reward_sum": 1.279,
-    "wins": 2,
+    "n": 6,
+    "reward_sum": 2.86,
+    "wins": 3,
     "losses": 2,
     "breakeven": 1
   },
