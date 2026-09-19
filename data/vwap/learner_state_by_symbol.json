@@ -167,11 +167,11 @@
     "losses": 2
   },
   "[\"NEAR/USDT:USDT\", 2.0, 0.75, 0.5]": {
-    "n": 9,
+    "n": 10,
     "reward_sum": 3.1319999999999997,
     "wins": 3,
     "losses": 5,
-    "breakeven": 1
+    "breakeven": 2
   },
   "[\"DOGE/USDT:USDT\", 2.0, 0.75, 0.5]": {
     "n": 2,
