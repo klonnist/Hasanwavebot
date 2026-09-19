@@ -1,9 +1,8 @@
 {
-  "checked_at": "2026-09-19T12:15:02+00:00",
+  "checked_at": "2026-09-19T18:13:23+00:00",
   "ok": false,
   "issues": [
-    "[vwap] BNB/USDT:USDT: SL olarak kapanan islemin exit fiyati (762.454103) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-19T04:40:15+00:00 -> 2026-09-19T04:51:58+00:00)",
-    "[vwap] ETHFI/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.743585) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-19T08:41:44+00:00 -> 2026-09-19T08:52:52+00:00)"
+    "[vwap] XRP/USDT:USDT: SL olarak kapanan islemin exit fiyati (1.430204) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-19T17:36:46+00:00 -> 2026-09-19T17:51:14+00:00)"
   ],
   "profiles_checked": [
     "15m",
