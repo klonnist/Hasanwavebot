@@ -371,6 +371,12 @@ def main():
         max_same_direction=args.max_same_direction,
         breakeven_r=args.breakeven_r, partial_tp_r=args.partial_tp_r,
         partial_tp_fraction=args.partial_tp_fraction, trail_giveback_pct=args.trail_giveback_pct,
+        # Replay sirasinda ARA durumun diske yazilmasina hic gerek yok (sadece
+        # sonuc onemli) -- her mumda 2-3 kez check_and_close() cagrildigindan,
+        # buyuyen history'i binlerce kez yazmak uzun backtestleri ciddi
+        # yavaslatiyordu. Sonunda write_report()/asagidaki blok son durumu
+        # zaten (istenirse) tek seferde kaydediyor.
+        persist=False,
     )
     learner = Learner(state_path=learner_path, epsilon=args.epsilon, strategy=args.strategy)
 
@@ -390,6 +396,7 @@ def main():
         print(f"Panel raporu yazildi: {args.report_dir}/{run_id}.json (index.json guncellendi)")
 
     if args.out_dir:
+        account.save()  # persist=False oldugu icin replay boyunca hic yazilmadi -- son durumu simdi tek seferde yaz
         print(f"Ham state dosyalari kaydedildi: {args.out_dir}/")
     else:
         for p in (state_path, learner_path, learner_path.replace(".json", "_by_symbol.json")):

@@ -44,7 +44,18 @@ class PaperAccount:
                  leverage: float = 1.0, max_portfolio_risk_pct: float = 8.0,
                  max_same_direction: int = 3,
                  breakeven_r: float = 1.0, partial_tp_r: float = 1.5,
-                 partial_tp_fraction: float = 0.5, trail_giveback_pct: float = 0.5):
+                 partial_tp_fraction: float = 0.5, trail_giveback_pct: float = 0.5,
+                 persist: bool = True):
+        # persist=False: _save() cagrilarini diske yazmadan atlar (backtest.py'nin
+        # tarih araligi replay'i icin). check_and_close() ACIK bir pozisyon HENUZ
+        # kapanmamis olsa bile (sadece anlik kar/zarar guncellemesi icin) her
+        # cagrida _save() cagiriyor -- canli botta bu sorun degil (15 dakikada bir
+        # cagriliyor) ama backtest'te mum basina 2-3 kez cagrilinca, buyuyen
+        # history listesini binlerce kez diske yazmak islemi katlanarak
+        # yavaslatiyor (10 binlerce mumluk bir backtest dakikalar surebiliyor).
+        # Backtest replay'i sirasinda ara durum hic onemli degil, sadece son
+        # durum (bkz. save()) -- bu yuzden orada persist=False kullaniliyor.
+        self.persist = persist
         self.state_path = state_path
         self.trade_margin = trade_margin
         self.max_open_positions = max_open_positions
@@ -87,6 +98,13 @@ class PaperAccount:
             self.open_positions = {sym: Position(**p) for sym, p in raw_positions.items()}
 
     def _save(self):
+        if not self.persist:
+            return
+        self.save()
+
+    def save(self):
+        """persist=False olsa bile diske yazmayi ZORLAR -- backtest.py replay
+        bittikten sonra son durumu bir kez kaydetmek icin (bkz. __init__)."""
         os.makedirs(os.path.dirname(self.state_path), exist_ok=True)
         data = {
             "balance": self.balance,
