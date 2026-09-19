@@ -1,5 +1,5 @@
 {
-  "balance": 10293.105817522455,
+  "balance": 10191.1584,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -377,27 +377,6 @@
       "balance_after": 9829.8615
     },
     {
-      "symbol": "PENGU/USDT:USDT",
-      "side": "BUY",
-      "entry": 0.006796,
-      "exit": 0.006796,
-      "result": "SL",
-      "pnl": 0.0,
-      "final_leg_pnl": 0.0,
-      "partial_taken": false,
-      "r_multiple": 0.0,
-      "param_key": [
-        0.8,
-        2.0,
-        0.15
-      ],
-      "leverage": 5.0,
-      "funding_paid": 0.0,
-      "open_time": "2026-09-16T09:10:58+00:00",
-      "close_time": "2026-09-16T12:37:15+00:00",
-      "balance_after": 9830.6486
-    },
-    {
       "symbol": "SOL/USDT:USDT",
       "side": "BUY",
       "result": "PARTIAL_TP",
@@ -478,46 +457,6 @@
       "open_time": "2026-09-15T07:32:05+00:00",
       "close_time": "2026-09-18T02:28:25+00:00",
       "balance_after": 9915.6872
-    },
-    {
-      "symbol": "PENGU/USDT:USDT",
-      "side": "BUY",
-      "result": "PARTIAL_TP",
-      "entry": 0.007226,
-      "exit": 0.007521,
-      "pnl": 51.031,
-      "r_multiple": 1.5,
-      "param_key": [
-        0.8,
-        1.272,
-        0.15
-      ],
-      "leverage": 5.0,
-      "funding_paid": 0.0,
-      "open_time": "2026-09-17T13:14:40+00:00",
-      "close_time": "2026-09-18T02:54:35+00:00",
-      "balance_after": 9966.7182
-    },
-    {
-      "symbol": "PENGU/USDT:USDT",
-      "side": "BUY",
-      "entry": 0.007226,
-      "exit": 0.007521,
-      "result": "SL",
-      "pnl": 102.062,
-      "final_leg_pnl": 51.031,
-      "partial_taken": true,
-      "r_multiple": 1.514,
-      "param_key": [
-        0.8,
-        1.272,
-        0.15
-      ],
-      "leverage": 5.0,
-      "funding_paid": 0.1146,
-      "open_time": "2026-09-17T13:14:40+00:00",
-      "close_time": "2026-09-18T02:54:35+00:00",
-      "balance_after": 10017.7492
     },
     {
       "symbol": "ETH/USDT:USDT",

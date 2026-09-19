@@ -48,13 +48,6 @@
     "losses": 4,
     "breakeven": 0
   },
-  "[\"PENGU/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 4,
-    "reward_sum": -0.6279999999999999,
-    "wins": 2,
-    "losses": 2,
-    "breakeven": 0
-  },
   "[\"BTC/USDT:USDT\", 1.5, 1.0, 0.5]": {
     "n": 7,
     "reward_sum": 0.5619999999999998,
@@ -72,13 +65,6 @@
     "n": 7,
     "reward_sum": 2.0679999999999996,
     "wins": 4,
-    "losses": 3,
-    "breakeven": 0
-  },
-  "[\"PENGU/USDT:USDT\", 1.5, 0.75, 0.5]": {
-    "n": 3,
-    "reward_sum": -3.0,
-    "wins": 0,
     "losses": 3,
     "breakeven": 0
   },
@@ -126,13 +112,6 @@
     "wins": 2,
     "losses": 0,
     "breakeven": 0
-  },
-  "[\"PENGU/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 4,
-    "reward_sum": -2.0,
-    "wins": 0,
-    "losses": 2,
-    "breakeven": 2
   },
   "[\"LINK/USDT:USDT\", 2.0, 0.75, 0.5]": {
     "n": 4,
@@ -264,13 +243,6 @@
     "reward_sum": 1.189,
     "wins": 1,
     "losses": 0
-  },
-  "[\"PENGU/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 5,
-    "reward_sum": 0.14200000000000013,
-    "wins": 2,
-    "losses": 3,
-    "breakeven": 0
   },
   "[\"ETH/USDT:USDT\", 2.5, 1.0, 0.5]": {
     "n": 1,
@@ -424,13 +396,6 @@
     "wins": 2,
     "losses": 0
   },
-  "[\"PENGU/USDT:USDT\", 1.5, 0.5, 0.5]": {
-    "n": 3,
-    "reward_sum": -3.0,
-    "wins": 0,
-    "losses": 3,
-    "breakeven": 0
-  },
   "[\"ETH/USDT:USDT\", 2.0, 0.75, 0.5]": {
     "n": 1,
     "reward_sum": 1.296,
@@ -470,13 +435,6 @@
     "reward_sum": 0.2509999999999999,
     "wins": 1,
     "losses": 2
-  },
-  "[\"PENGU/USDT:USDT\", 2.0, 0.75, 0.5]": {
-    "n": 3,
-    "reward_sum": -3.0,
-    "wins": 0,
-    "losses": 3,
-    "breakeven": 0
   },
   "[\"XRP/USDT:USDT\", 2.5, 0.5, 0.5]": {
     "n": 6,
@@ -571,12 +529,6 @@
     "wins": 1,
     "losses": 1
   },
-  "[\"PENGU/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 4,
-    "reward_sum": -2.0,
-    "wins": 2,
-    "losses": 2
-  },
   "[\"NEAR/USDT:USDT\", 2.5, 0.5, 0.5]": {
     "n": 3,
     "reward_sum": -0.9910000000000001,
@@ -614,13 +566,6 @@
     "reward_sum": -0.9019999999999999,
     "wins": 2,
     "losses": 2,
-    "breakeven": 0
-  },
-  "[\"PENGU/USDT:USDT\", 2.5, 1.0, 0.5]": {
-    "n": 2,
-    "reward_sum": 0.728,
-    "wins": 1,
-    "losses": 1,
     "breakeven": 0
   },
   "[\"BNB/USDT:USDT\", 2.5, 0.75, 0.5]": {
@@ -695,12 +640,6 @@
     "wins": 2,
     "losses": 0,
     "breakeven": 0
-  },
-  "[\"PENGU/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 3,
-    "reward_sum": -3.0,
-    "wins": 0,
-    "losses": 3
   },
   "[\"LINK/USDT:USDT\", 1.5, 1.0, 0.5]": {
     "n": 1,
