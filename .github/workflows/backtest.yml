@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       symbols:
-        description: "Virgulle ayrilmis coin listesi (bos = varsayilan 13 coin)"
+        description: "Virgulle ayrilmis coin listesi (bos = varsayilan 12 coin)"
         required: false
         default: ""
       strategy:

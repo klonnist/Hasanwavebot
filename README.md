@@ -13,8 +13,15 @@ kaybettirenleri daha az kullanır.
 
 ## Varsayılan izlenen coinler
 
-BTC, ETH, SOL, XRP, BNB, DOGE, ADA, AVAX, LINK, TON, ETHFI, PENGU, NEAR
+BTC, ETH, SOL, XRP, BNB, DOGE, ADA, AVAX, LINK, TON, ETHFI, NEAR
 (`main.py` içinde `POPULAR_COINS` listesi, `--symbols` ile değiştirilebilir).
+
+> Not: PENGU/USDT 2026-09-19'da listeden çıkarıldı — VWAP (ortalamaya dönüş)
+> stratejisinde tutarlı şekilde zarar ettirdiği görüldü (o profilin toplam
+> kârını yaklaşık yarı yarıya azaltmıştı), trend takip eden stratejilerde
+> (wave) ise net katkısı pozitifti. Yani PENGU'nun kendisi kötü değildi —
+> ortalamaya dönüş stratejisiyle uyuşmuyordu; basitlik için tüm profillerden
+> birlikte kaldırıldı.
 
 > Not: XAUT/USDT (Tether Gold) OKX'te sadece spot piyasada işlem görüyor,
 > USDT-M perpetual futures (swap) karşılığı yok — bu yüzden listeye
@@ -235,15 +242,15 @@ Ajan; zigzag hassasiyeti (ATR çarpanı) ve TP hedefi (`tp_mult`) için
 **ATR bazlı (volatiliteye duyarlı) hassasiyet:** Zigzag hassasiyeti artık
 sabit bir yüzde değil, o coinin son 14 mumdaki ATR%'sinin bir katsayısı
 (`wave_detector.atr_pct`). Böylece aynı katsayı, BTC gibi düşük oynaklıklı
-bir coin için de PENGU gibi çok oynak bir coin için de o coinin kendi
+bir coin için de DOGE gibi çok oynak bir coin için de o coinin kendi
 hareketine göre adil bir eşik üretir — sabit yüzdeyle BTC'de hiç sinyal
-üretmeyecek bir ayar, PENGU'da sadece gürültüden sinyal üretmiyor.
+üretmeyecek bir ayar, DOGE'da sadece gürültüden sinyal üretmiyor.
 
 **Coin bazlı öğrenme (global fallback'li):** Öğrenen ajan artık her sembol
-için ayrı istatistik tutuyor — BTC'de iyi çalışan kombinasyon PENGU'yu
+için ayrı istatistik tutuyor — BTC'de iyi çalışan kombinasyon DOGE'yu
 etkilemiyor. Bir sembol için yeterli veri (`MIN_SYMBOL_SAMPLES = 3`)
 birikene kadar, o kombinasyonun **tüm semboller genelindeki** ortalaması
-fallback olarak kullanılır, böylece 13 coin × 12 kombinasyon için ayrı ayrı
+fallback olarak kullanılır, böylece 12 coin × 12 kombinasyon için ayrı ayrı
 sıfırdan keşif dönemi yaşanmaz.
 
 Öğrenilen istatistikler ve işlem geçmişi her zaman dilimi klasöründe
@@ -376,7 +383,7 @@ Ogrenilen en iyi parametre kombinasyonlari:
 ## Notlar / Geliştirme fikirleri
 
 - `--max-open` ve `--max-portfolio-risk-pct` ile eşzamanlı pozisyon
-  sayısını ve toplam riski sınırlayabilirsiniz (örn. 13 coin izlerken
+  sayısını ve toplam riski sınırlayabilirsiniz (örn. 12 coin izlerken
   `--max-open 3 --max-portfolio-risk-pct 5` daha temkinli bir yaklaşımdır).
 - Gerçek emir göndermeye geçmek isterseniz `paper_account.py`'yi referans
   alıp `ccxt`'in `create_order` fonksiyonunu kullanan ayrı bir "live"

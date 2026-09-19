@@ -55,7 +55,6 @@ POPULAR_COINS = [
     "LINK/USDT",
     "TON/USDT",
     "ETHFI/USDT",
-    "PENGU/USDT",
     "NEAR/USDT",
 ]
 
@@ -312,11 +311,17 @@ def print_report(account: PaperAccount, learner: Learner, symbols):
 
 
 def run_cycle(exchange, symbols, timeframe, limit, learner, account, strategy, notify=False):
-    for symbol in symbols:
+    # Acik pozisyonu olan ama --symbols listesinden sonradan cikarilmis bir coin
+    # (orn. kotu performans yuzunden listeden kaldirilan bir coin) hic
+    # izlenmeden SONSUZA KADAR acik kalmasin diye, tarama listesine acik
+    # pozisyonlari da ekliyoruz -- YENI pozisyon yine de sadece asil
+    # `symbols` listesindeki coinler icin acilir (asagidaki `elif`).
+    scan_symbols = list(dict.fromkeys(list(symbols) + list(account.open_positions.keys())))
+    for symbol in scan_symbols:
         try:
             if account.has_open_position(symbol):
                 try_close_position(exchange, symbol, learner, account, strategy, notify=notify)
-            else:
+            elif symbol in symbols:
                 try_open_position(exchange, symbol, timeframe, limit, learner, account, strategy, notify=notify)
         except ccxt.NetworkError as e:
             log(f"{symbol}: ag hatasi, tekrar denenecek: {e}")
