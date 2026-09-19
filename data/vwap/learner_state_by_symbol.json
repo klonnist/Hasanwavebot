@@ -42,9 +42,9 @@
     "breakeven": 1
   },
   "[\"ADA/USDT:USDT\", 1.5, 0.5, 0.5]": {
-    "n": 11,
-    "reward_sum": 5.099,
-    "wins": 7,
+    "n": 12,
+    "reward_sum": 6.944,
+    "wins": 8,
     "losses": 4,
     "breakeven": 0
   },
@@ -266,9 +266,9 @@
     "losses": 0
   },
   "[\"PENGU/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 4,
-    "reward_sum": -1.428,
-    "wins": 1,
+    "n": 5,
+    "reward_sum": 0.14200000000000013,
+    "wins": 2,
     "losses": 3,
     "breakeven": 0
   },
