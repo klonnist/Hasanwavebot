@@ -242,10 +242,11 @@
     "losses": 1
   },
   "[\"XRP/USDT:USDT\", 1.2, 1.272, 0.15]": {
-    "n": 1,
-    "reward_sum": -1.0,
-    "wins": 0,
-    "losses": 1
+    "n": 2,
+    "reward_sum": 0.06899999999999995,
+    "wins": 1,
+    "losses": 1,
+    "breakeven": 0
   },
   "[\"LINK/USDT:USDT\", 2.5, 1.618, 0.15]": {
     "n": 1,
@@ -805,5 +806,19 @@
     "wins": 0,
     "breakeven": 0,
     "losses": 1
+  },
+  "[\"DOGE/USDT:USDT\", 2.5, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": 0.0,
+    "wins": 0,
+    "breakeven": 1,
+    "losses": 0
+  },
+  "[\"LINK/USDT:USDT\", 1.8, 1.618, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.596,
+    "wins": 1,
+    "breakeven": 0,
+    "losses": 0
   }
 }
