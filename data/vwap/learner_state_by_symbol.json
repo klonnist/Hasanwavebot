@@ -21,9 +21,9 @@
     "breakeven": 2
   },
   "[\"ETH/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 15,
-    "reward_sum": 8.576,
-    "wins": 8,
+    "n": 16,
+    "reward_sum": 10.441,
+    "wins": 9,
     "losses": 7,
     "breakeven": 0
   },
@@ -222,9 +222,9 @@
     "breakeven": 1
   },
   "[\"LINK/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 7,
-    "reward_sum": 3.2639999999999993,
-    "wins": 3,
+    "n": 8,
+    "reward_sum": 5.106,
+    "wins": 4,
     "losses": 2,
     "breakeven": 2
   },
