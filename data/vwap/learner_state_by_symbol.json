@@ -224,10 +224,10 @@
     "breakeven": 1
   },
   "[\"LINK/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 9,
-    "reward_sum": 4.106,
+    "n": 10,
+    "reward_sum": 3.106,
     "wins": 4,
-    "losses": 3,
+    "losses": 4,
     "breakeven": 2
   },
   "[\"ETHFI/USDT:USDT\", 1.5, 1.0, 0.5]": {
