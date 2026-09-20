@@ -1,9 +1,7 @@
 {
-  "checked_at": "2026-09-19T18:13:23+00:00",
-  "ok": false,
-  "issues": [
-    "[vwap] XRP/USDT:USDT: SL olarak kapanan islemin exit fiyati (1.430204) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-19T17:36:46+00:00 -> 2026-09-19T17:51:14+00:00)"
-  ],
+  "checked_at": "2026-09-20T00:16:46+00:00",
+  "ok": true,
+  "issues": [],
   "profiles_checked": [
     "15m",
     "4h",
