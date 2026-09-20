@@ -24,10 +24,11 @@
     "losses": 1
   },
   "[\"ETHFI/USDT:USDT\", 1.2, 1.272, 0.15]": {
-    "n": 1,
-    "reward_sum": -1.0,
+    "n": 2,
+    "reward_sum": -2.0,
     "wins": 0,
-    "losses": 1
+    "losses": 2,
+    "breakeven": 0
   },
   "[\"XRP/USDT:USDT\", 0.8, 2.0, 0.15]": {
     "n": 1,
@@ -218,10 +219,11 @@
     "losses": 1
   },
   "[\"SOL/USDT:USDT\", 1.2, 1.618, 0.15]": {
-    "n": 1,
-    "reward_sum": -1.0,
-    "wins": 0,
-    "losses": 1
+    "n": 2,
+    "reward_sum": 0.887,
+    "wins": 1,
+    "losses": 1,
+    "breakeven": 0
   },
   "[\"XRP/USDT:USDT\", 1.2, 1.618, 0.15]": {
     "n": 2,
@@ -551,9 +553,9 @@
     "losses": 1
   },
   "[\"DOGE/USDT:USDT\", 1.2, 1.272, 0.15]": {
-    "n": 1,
-    "reward_sum": 0.647,
-    "wins": 1,
+    "n": 2,
+    "reward_sum": 1.452,
+    "wins": 2,
     "breakeven": 0,
     "losses": 0
   },
@@ -835,6 +837,13 @@
     "reward_sum": 1.579,
     "wins": 1,
     "breakeven": 0,
+    "losses": 0
+  },
+  "[\"BNB/USDT:USDT\", 2.5, 1.272, 0.15]": {
+    "n": 1,
+    "reward_sum": 0.0,
+    "wins": 0,
+    "breakeven": 1,
     "losses": 0
   }
 }
