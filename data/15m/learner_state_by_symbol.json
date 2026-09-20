@@ -688,9 +688,9 @@
     "losses": 0
   },
   "[\"NEAR/USDT:USDT\", 1.2, 1.618, 0.15]": {
-    "n": 2,
-    "reward_sum": 0.5009999999999999,
-    "wins": 1,
+    "n": 3,
+    "reward_sum": 2.081,
+    "wins": 2,
     "breakeven": 0,
     "losses": 1
   },
