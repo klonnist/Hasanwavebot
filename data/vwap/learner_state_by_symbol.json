@@ -42,9 +42,9 @@
     "breakeven": 1
   },
   "[\"ADA/USDT:USDT\", 1.5, 0.5, 0.5]": {
-    "n": 13,
-    "reward_sum": 8.535,
-    "wins": 9,
+    "n": 14,
+    "reward_sum": 9.591000000000001,
+    "wins": 10,
     "losses": 4,
     "breakeven": 0
   },
