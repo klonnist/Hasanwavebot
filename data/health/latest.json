@@ -1,9 +1,7 @@
 {
-  "checked_at": "2026-09-20T12:13:53+00:00",
-  "ok": false,
-  "issues": [
-    "[vwap] BNB/USDT:USDT: SL olarak kapanan islemin exit fiyati (749.546047) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-20T11:24:53+00:00 -> 2026-09-20T11:38:24+00:00)"
-  ],
+  "checked_at": "2026-09-20T18:12:55+00:00",
+  "ok": true,
+  "issues": [],
   "profiles_checked": [
     "15m",
     "4h",
