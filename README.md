@@ -44,7 +44,14 @@ böylece sonuçları birbirinden bağımsız karşılaştırabilirsiniz:
 Sonuçlar [klonnist.github.io/Hasanwavebot](https://klonnist.github.io/Hasanwavebot/)
 adresindeki panelde sekmeler halinde canlı gösterilir.
 
-## Telegram bildirimleri (şu an sadece VWAP profili)
+## Telegram bildirimleri (şu an KAPALI)
+
+> Not: 2026-09-20'de hem VWAP işlem bildirimleri hem de 6 saatlik sağlık
+> kontrolü bildirimleri CI'da devre dışı bırakıldı (`run-bot.yml` ve
+> `health-check.yml`'deki `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID`
+> `env:` girdileri kaldırıldı). Kod hâlâ yerinde duruyor, tekrar açmak
+> için aşağıdaki `env:` bloklarını ilgili workflow adımlarına geri
+> eklemek yeterli.
 
 `vwap` profili, her sinyal açılışında/kapanışında/kısmi kâr alımında
 [Telegram Bot API](https://core.telegram.org/bots/api) üzerinden bildirim
