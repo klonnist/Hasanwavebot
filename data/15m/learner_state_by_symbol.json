@@ -765,11 +765,11 @@
     "losses": 0
   },
   "[\"ETH/USDT:USDT\", 1.2, 1.618, 0.15]": {
-    "n": 1,
-    "reward_sum": 1.525,
+    "n": 2,
+    "reward_sum": 0.5249999999999999,
     "wins": 1,
     "breakeven": 0,
-    "losses": 0
+    "losses": 1
   },
   "[\"AVAX/USDT:USDT\", 1.8, 1.618, 0.15]": {
     "n": 1,
