@@ -242,10 +242,11 @@
     "breakeven": 0
   },
   "[\"ETH/USDT:USDT\", 1.5, 0.75, 0.5]": {
-    "n": 1,
+    "n": 2,
     "reward_sum": 1.189,
     "wins": 1,
-    "losses": 0
+    "losses": 0,
+    "breakeven": 1
   },
   "[\"ETH/USDT:USDT\", 2.5, 1.0, 0.5]": {
     "n": 1,
