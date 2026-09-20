@@ -231,9 +231,9 @@
     "breakeven": 2
   },
   "[\"ETHFI/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 30,
-    "reward_sum": 11.422,
-    "wins": 11,
+    "n": 31,
+    "reward_sum": 13.189,
+    "wins": 12,
     "losses": 17,
     "breakeven": 2
   },
@@ -558,10 +558,10 @@
     "losses": 1
   },
   "[\"AVAX/USDT:USDT\", 2.0, 0.75, 0.5]": {
-    "n": 3,
-    "reward_sum": -3.0,
+    "n": 4,
+    "reward_sum": -4.0,
     "wins": 0,
-    "losses": 3,
+    "losses": 4,
     "breakeven": 0
   },
   "[\"BNB/USDT:USDT\", 2.0, 0.75, 0.5]": {
