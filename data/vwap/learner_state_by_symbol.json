@@ -196,10 +196,10 @@
     "breakeven": 0
   },
   "[\"NEAR/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 18,
-    "reward_sum": 0.09799999999999898,
+    "n": 19,
+    "reward_sum": -0.902000000000001,
     "wins": 6,
-    "losses": 11,
+    "losses": 12,
     "breakeven": 1
   },
   "[\"BTC/USDT:USDT\", 2.5, 1.0, 0.5]": {
