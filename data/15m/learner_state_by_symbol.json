@@ -668,11 +668,11 @@
     "losses": 0
   },
   "[\"NEAR/USDT:USDT\", 1.2, 1.272, 0.15]": {
-    "n": 4,
-    "reward_sum": 1.598,
+    "n": 5,
+    "reward_sum": 0.5980000000000001,
     "wins": 2,
     "breakeven": 1,
-    "losses": 1
+    "losses": 2
   },
   "[\"AVAX/USDT:USDT\", 2.5, 2.0, 0.15]": {
     "n": 1,
