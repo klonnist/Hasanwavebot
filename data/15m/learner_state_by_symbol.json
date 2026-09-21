@@ -37,10 +37,11 @@
     "losses": 1
   },
   "[\"DOGE/USDT:USDT\", 0.8, 1.272, 0.15]": {
-    "n": 1,
-    "reward_sum": -1.0,
+    "n": 2,
+    "reward_sum": -2.0,
     "wins": 0,
-    "losses": 1
+    "losses": 2,
+    "breakeven": 0
   },
   "[\"BTC/USDT:USDT\", 1.2, 1.272, 0.15]": {
     "n": 2,
