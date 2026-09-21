@@ -226,10 +226,10 @@
     "breakeven": 0
   },
   "[\"XRP/USDT:USDT\", 1.2, 1.618, 0.15]": {
-    "n": 3,
-    "reward_sum": -0.5760000000000001,
+    "n": 4,
+    "reward_sum": -1.576,
     "wins": 1,
-    "losses": 1,
+    "losses": 2,
     "breakeven": 1
   },
   "[\"AVAX/USDT:USDT\", 1.8, 2.0, 0.15]": {
