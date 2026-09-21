@@ -24,10 +24,10 @@
     "losses": 1
   },
   "[\"ETHFI/USDT:USDT\", 1.2, 1.272, 0.15]": {
-    "n": 2,
-    "reward_sum": -2.0,
+    "n": 3,
+    "reward_sum": -3.0,
     "wins": 0,
-    "losses": 2,
+    "losses": 3,
     "breakeven": 0
   },
   "[\"XRP/USDT:USDT\", 0.8, 2.0, 0.15]": {
