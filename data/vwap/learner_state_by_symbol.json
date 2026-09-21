@@ -238,10 +238,10 @@
     "breakeven": 2
   },
   "[\"BTC/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 7,
-    "reward_sum": -0.8340000000000003,
+    "n": 8,
+    "reward_sum": -1.8340000000000003,
     "wins": 2,
-    "losses": 4,
+    "losses": 5,
     "breakeven": 1
   },
   "[\"ETH/USDT:USDT\", 1.5, 0.75, 0.5]": {
