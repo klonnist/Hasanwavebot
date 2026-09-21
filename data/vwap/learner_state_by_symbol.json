@@ -21,11 +21,11 @@
     "breakeven": 2
   },
   "[\"ETH/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 23,
+    "n": 24,
     "reward_sum": 7.093,
     "wins": 10,
     "losses": 12,
-    "breakeven": 1
+    "breakeven": 2
   },
   "[\"XRP/USDT:USDT\", 2.0, 1.0, 0.5]": {
     "n": 21,
@@ -609,9 +609,9 @@
     "breakeven": 6
   },
   "[\"AVAX/USDT:USDT\", 2.5, 1.0, 0.5]": {
-    "n": 3,
-    "reward_sum": -0.4910000000000001,
-    "wins": 1,
+    "n": 4,
+    "reward_sum": 1.073,
+    "wins": 2,
     "losses": 2,
     "breakeven": 0
   },
