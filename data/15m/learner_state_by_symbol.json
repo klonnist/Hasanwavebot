@@ -691,11 +691,11 @@
     "losses": 0
   },
   "[\"NEAR/USDT:USDT\", 1.2, 1.618, 0.15]": {
-    "n": 4,
-    "reward_sum": 2.081,
+    "n": 5,
+    "reward_sum": 1.081,
     "wins": 2,
     "breakeven": 1,
-    "losses": 1
+    "losses": 2
   },
   "[\"BNB/USDT:USDT\", 1.2, 1.618, 0.15]": {
     "n": 3,
