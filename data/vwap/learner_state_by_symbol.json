@@ -585,10 +585,10 @@
     "breakeven": 0
   },
   "[\"BNB/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 15,
-    "reward_sum": 2.452,
+    "n": 16,
+    "reward_sum": 1.452,
     "wins": 6,
-    "losses": 9,
+    "losses": 10,
     "breakeven": 0
   },
   "[\"ADA/USDT:USDT\", 1.5, 1.0, 0.5]": {
