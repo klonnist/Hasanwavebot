@@ -7,9 +7,15 @@ const HB_OKX_BASE = "https://www.okx.com";
 
 const HB_BAR_MS = {
   "1m": 60_000, "5m": 5 * 60_000, "15m": 15 * 60_000, "30m": 30 * 60_000,
-  "1h": 3_600_000, "2h": 2 * 3_600_000, "4h": 4 * 3_600_000, "1d": 86_400_000,
+  "1h": 3_600_000, "2h": 2 * 3_600_000, "4h": 4 * 3_600_000, "1d": 86_400_000, "1w": 7 * 86_400_000,
 };
-const HB_OKX_BAR = { "1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m", "1h": "1H", "2h": "2H", "4h": "4H", "1d": "1D" };
+const HB_OKX_BAR = { "1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m", "1h": "1H", "2h": "2H", "4h": "4H", "1d": "1D", "1w": "1W" };
+
+// islem zaman diliminin trend teyidi icin baktigi "bir ust derece" zaman
+// dilimi -- main.py'deki HIGHER_TIMEFRAME ile birebir ayni (bkz. o dosyadaki
+// aciklama: knowledge_base.md'deki derece hiyerarsisi ilkesinin
+// basitlestirilmis, iki-kademeli hali).
+const HB_HIGHER_TIMEFRAME = { "15m": "4h", "4h": "1d", "1d": "1w" };
 
 const HB_POPULAR_COINS = ["BTC", "ETH", "SOL", "XRP", "BNB", "DOGE", "ADA", "AVAX", "LINK", "TON", "ETHFI", "NEAR"];
 
@@ -134,6 +140,45 @@ function hbDetectWave3Setup(pivots, params) {
   return null;
 }
 
+function hbWave1HasInternalStructure(candles, p0, p1, effectiveDevPct, minSubPivots = 4) {
+  // wave_detector.py'deki wave1_has_internal_structure() ile birebir ayni mantik:
+  // dalga 1 adayinin (p0->p1) rastgele tek bacakli bir sicrayis degil, gercekten
+  // ic yapisi olan (en az 2 yon degisikligi) bir hareket oldugunu, p0-p1 araligina
+  // daha ince bir esikle ikinci bir zigzag uygulayip kac pivot ciktigina bakarak
+  // dogrular.
+  const lo = Math.min(p0.idx, p1.idx), hi = Math.max(p0.idx, p1.idx);
+  if (hi - lo < 3) return false;
+  const segment = candles.slice(lo, hi + 1);
+  const fineDevPct = Math.max(effectiveDevPct / 2, 0.02);
+  const subPivots = hbZigzagPivots(segment, fineDevPct);
+  return subPivots.length >= minSubPivots;
+}
+
+function hbHigherTimeframeTrend(candlesHtf, smaPeriod = 50) {
+  // wave_detector.py'deki higher_timeframe_trend() ile birebir ayni: basit bir
+  // SMA'ya gore ust zaman dilimi trend yonu tahmini. Yeterli veri yoksa null
+  // doner (filtre devre disi kalir, islem engellenmez -- "fail-open").
+  if (!candlesHtf || candlesHtf.length < smaPeriod) return null;
+  const closes = candlesHtf.slice(candlesHtf.length - smaPeriod).map(c => c.close);
+  const sma = closes.reduce((a, b) => a + b, 0) / smaPeriod;
+  const lastClose = candlesHtf[candlesHtf.length - 1].close;
+  return lastClose > sma ? "up" : "down";
+}
+
+function hbHtfSliceUpTo(candlesHtf, ts, lookback = 60) {
+  // backtest.py'deki _htf_slice_up_to() ile ayni: candlesHtf icinde zamani ts'den
+  // SONRA olan hicbir bari DAHIL ETMEDEN (ileriye bakma/lookahead hatasi
+  // yapmadan), o ana kadarki son `lookback` bari dondurur. candlesHtf
+  // zaman sirali oldugu icin basit bir ikili arama yeterli.
+  if (!candlesHtf || !candlesHtf.length) return candlesHtf;
+  let lo = 0, hi = candlesHtf.length;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (candlesHtf[mid].timestamp <= ts) lo = mid + 1; else hi = mid;
+  }
+  return candlesHtf.slice(Math.max(0, lo - lookback), lo);
+}
+
 function hbBuildSignalLevels(setup, params, lastClose) {
   const { p2, wave1Len, direction } = setup;
   const entry = lastClose;
@@ -199,7 +244,10 @@ function hbDetectVwapSignal(candles, params) {
 
 const HB_WAVE_DEVIATIONS = [0.8, 1.2, 1.8, 2.5];
 const HB_WAVE_TP_MULTS = [1.272, 1.618, 2.0];
-const HB_WAVE_SL_MULT = 0.15;
+// DEGISTI (eskiden 0.15): wave_detector.py / learner.py ile senkron --
+// bkz. oradaki gerekce (dar stop + genis TP kombinasyonunun canli veride
+// %16.7 kazanma oraniyla en kotu performansi vermesi).
+const HB_WAVE_SL_MULT = 0.382;
 const HB_VWAP_BAND_MULTS = [1.5, 2.0, 2.5];
 const HB_VWAP_TP_MULTS = [0.5, 0.75, 1.0];
 const HB_VWAP_SL_MULT = 0.5;
@@ -207,8 +255,11 @@ const HB_MIN_SYMBOL_SAMPLES = 3;
 const HB_MIN_RELIABLE_N = 5; // bunun altinda n istatistiksel olarak neredeyse anlamsiz
 
 function hbBuildWaveGrid() {
+  // retraceMin DEGISTI (eskiden 0.236): wave_detector.py ile senkron -- %23.6
+  // gibi sig bir geri cekilme klasik Elliott kaynaklarinda dalga 4 karakteri
+  // sayilir, dalga 2 degil.
   return HB_WAVE_DEVIATIONS.flatMap(dev => HB_WAVE_TP_MULTS.map(tp => ({
-    deviationPct: dev, tpMult: tp, slMult: HB_WAVE_SL_MULT, retraceMin: 0.236, retraceMax: 0.886,
+    deviationPct: dev, tpMult: tp, slMult: HB_WAVE_SL_MULT, retraceMin: 0.5, retraceMax: 0.886,
   })));
 }
 function hbBuildVwapGrid() {
@@ -435,7 +486,7 @@ function hbUpdateLearnerOnClose(result, symbol, learner) {
   learner.update(symbol, result.param_key, result.r_multiple, outcome);
 }
 
-function hbReplaySymbol(candles, symbol, strategy, window, learner, account) {
+function hbReplaySymbol(candles, symbol, strategy, window, learner, account, candlesHtf = null) {
   for (let i = window; i < candles.length; i++) {
     const windowDf = candles.slice(i - window, i + 1);
     const barClose = candles[i].close;
@@ -466,10 +517,25 @@ function hbReplaySymbol(candles, symbol, strategy, window, learner, account) {
       const params = learner.select(symbol);
       let direction = null, entry, tp, sl;
       if (strategy === "wave") {
+        // main.py._find_wave_setup ile ayni uc asamali dogrulama (bkz. o
+        // fonksiyondaki aciklama): pivot+retrace -> dalga 1 ic yapisi ->
+        // ust zaman dilimi trend teyidi.
         const volPct = hbAtrPct(windowDf);
         const effectiveDev = Math.max(params.deviationPct * volPct, 0.05);
         const pivots = hbZigzagPivots(windowDf, effectiveDev);
-        const setup = hbDetectWave3Setup(pivots, params);
+        let setup = hbDetectWave3Setup(pivots, params);
+
+        if (setup && !hbWave1HasInternalStructure(windowDf, setup.p0, setup.p1, effectiveDev)) {
+          setup = null;
+        }
+
+        if (setup && candlesHtf) {
+          const htfWindow = hbHtfSliceUpTo(candlesHtf, barTs);
+          const trend = hbHigherTimeframeTrend(htfWindow);
+          if (trend === "down" && setup.direction === "BUY") setup = null;
+          else if (trend === "up" && setup.direction === "SELL") setup = null;
+        }
+
         if (setup) { const lv = hbBuildSignalLevels(setup, params, barClose); entry = lv.entry; tp = lv.tp; sl = lv.sl; direction = setup.direction; }
       } else {
         const sig = hbDetectVwapSignal(windowDf, params);
@@ -542,6 +608,8 @@ async function runHbBacktest({
   const learner = new HbLearner(strategy, epsilon);
   const okxBar = HB_OKX_BAR[timeframe];
   const warmupMs = HB_BAR_MS[timeframe] * window;
+  const higherTf = strategy === "wave" ? HB_HIGHER_TIMEFRAME[timeframe] : null;
+  if (higherTf) onProgress?.(`Üst zaman dilimi trend filtresi aktif: ${timeframe} -> ${higherTf}`);
 
   for (const symbol of symbols) {
     onProgress?.(`${symbol}: OKX'ten veri çekiliyor…`);
@@ -556,9 +624,23 @@ async function runHbBacktest({
       onProgress?.(`${symbol}: yeterli geçmiş veri yok (${candles.length} mum), atlandı`);
       continue;
     }
+
+    let candlesHtf = null;
+    if (higherTf) {
+      // _htf_slice_up_to (Python) / hbHtfSliceUpTo ile ayni SMA isinma payi
+      // mantigi -- 60 bar oncesinden cekip replay sirasinda o ana kadarki
+      // kismini kullanacagiz (ileriye bakma/lookahead hatasi olmadan).
+      try {
+        candlesHtf = await hbFetchHistoryCandles(hbInstId(symbol), HB_OKX_BAR[higherTf],
+          sinceMs - HB_BAR_MS[higherTf] * 60, untilMs);
+      } catch (e) {
+        onProgress?.(`${symbol}: üst zaman dilimi (${higherTf}) verisi alınamadı, trend filtresi bu coin için atlanacak (${e.message})`);
+      }
+    }
+
     onProgress?.(`${symbol}: taranıyor (${candles.length} mum)…`);
     await hbSleep(0);
-    hbReplaySymbol(candles, symbol, strategy, window, learner, account);
+    hbReplaySymbol(candles, symbol, strategy, window, learner, account, candlesHtf);
     await hbSleep(0);
   }
 
