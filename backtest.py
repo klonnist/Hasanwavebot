@@ -38,14 +38,18 @@ import os
 import time
 from datetime import datetime, timezone
 
+import ccxt
 import pandas as pd
 
 from data_feed import build_exchange
-from wave_detector import zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams
+from wave_detector import (
+    zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams,
+    wave1_has_internal_structure, higher_timeframe_trend,
+)
 from vwap_detector import detect_vwap_signal, VwapParams
 from paper_account import PaperAccount
 from learner import Learner
-from main import POPULAR_COINS, normalize_symbol, _candle_check_order
+from main import POPULAR_COINS, normalize_symbol, _candle_check_order, HIGHER_TIMEFRAME
 
 
 def fetch_historical_ohlcv(exchange, symbol, timeframe, since_ms, until_ms, page_limit=300):
@@ -76,6 +80,20 @@ def fetch_historical_ohlcv(exchange, symbol, timeframe, since_ms, until_ms, page
     return df
 
 
+def _htf_slice_up_to(df_htf: pd.DataFrame, ts, lookback: int = 60) -> pd.DataFrame:
+    """df_htf icinde, zamani ts'DEN KESINLIKLE ONCE olan (>= ts olmayan) son
+    `lookback` satiri dondurur -- higher_timeframe_trend() icin, ILERIYE
+    BAKMA (lookahead) HATASI yapmadan, o anki replay noktasinda gercekten
+    "bilinebilir" olan ust zaman dilimi verisini vermek icin. Binary search
+    (searchsorted) kullanir, boylece uzun backtestlerde her bar icin
+    O(log n) maliyetle calisir.
+    """
+    if df_htf is None or len(df_htf) == 0:
+        return df_htf
+    idx = df_htf["timestamp"].searchsorted(ts, side="right")
+    return df_htf.iloc[max(0, idx - lookback):idx]
+
+
 def _update_learner_on_close(result, symbol, learner: Learner):
     if result is None or result["result"] not in ("TP", "SL"):
         return
@@ -89,7 +107,8 @@ def _update_learner_on_close(result, symbol, learner: Learner):
 
 
 def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, window,
-                   learner: Learner, account: PaperAccount, log_every: int = 500):
+                   learner: Learner, account: PaperAccount, log_every: int = 500,
+                   df_htf_full: pd.DataFrame = None):
     df_full = fetch_historical_ohlcv(exchange, symbol, timeframe, since_ms, until_ms)
     if len(df_full) < window + 5:
         print(f"  {symbol}: yeterli gecmis veri yok ({len(df_full)} mum) -- atlaniyor.")
@@ -130,10 +149,28 @@ def replay_symbol(exchange, symbol, timeframe, strategy, since_ms, until_ms, win
             direction = entry = tp = sl = None
 
             if strategy == "wave":
+                # Canli bottaki (main.py._find_wave_setup) UC ASAMALI dogrulamayla
+                # ayni mantik -- eskiden burasi sadece 1. asamayi (pivot+retrace)
+                # yapip dogrudan islem aciyordu, bu da backtest sonuclarinin canli
+                # botun GERCEKTE yapacagi filtrelemeyi yansitmamasina yol aciyordu.
                 vol_pct = atr_pct(window_df)
                 effective_dev = max(params.deviation_pct * vol_pct, 0.05)
                 pivots = zigzag_pivots(window_df, deviation_pct=effective_dev)
                 setup = detect_wave3_setup(pivots, params)
+
+                if setup is not None and not wave1_has_internal_structure(
+                        window_df, setup["p0"], setup["p1"], effective_dev):
+                    setup = None
+
+                if setup is not None and df_htf_full is not None:
+                    htf_window = _htf_slice_up_to(df_htf_full, bar_ts)
+                    trend = higher_timeframe_trend(htf_window)
+                    if trend is not None:
+                        if setup["direction"] == "BUY" and trend == "down":
+                            setup = None
+                        elif setup["direction"] == "SELL" and trend == "up":
+                            setup = None
+
                 if setup is not None:
                     entry, tp, sl = build_signal_levels(setup, params, bar_close)
                     direction = setup["direction"]
@@ -380,12 +417,25 @@ def main():
     )
     learner = Learner(state_path=learner_path, epsilon=args.epsilon, strategy=args.strategy)
 
+    higher_tf = HIGHER_TIMEFRAME.get(args.timeframe) if args.strategy == "wave" else None
+    if higher_tf:
+        print(f"Ust zaman dilimi trend filtresi aktif: {args.timeframe} -> {higher_tf}")
+
     print(f"Backtest basliyor | strateji={args.strategy} | {len(symbols)} coin | "
           f"timeframe={args.timeframe} | pencere={args.window} mum")
     for symbol in symbols:
         try:
+            df_htf_full = None
+            if higher_tf:
+                # Ust zaman dilimi verisini de since_ms'ten (biraz oncesinden, SMA
+                # isinma payi icin -- 60 bar) cekiyoruz -- _htf_slice_up_to() replay
+                # sirasinda her bar icin bunun SADECE o ana kadarki kismini kullanir,
+                # ileriye bakma (lookahead) hatasi olmaz.
+                warmup_ms = ccxt.Exchange.parse_timeframe(higher_tf) * 1000 * 60
+                df_htf_full = fetch_historical_ohlcv(exchange, symbol, higher_tf,
+                                                       since_ms - warmup_ms, until_ms)
             replay_symbol(exchange, symbol, args.timeframe, args.strategy, since_ms, until_ms,
-                          args.window, learner, account)
+                          args.window, learner, account, df_htf_full=df_htf_full)
         except Exception as e:
             print(f"  {symbol}: hata, atlaniyor -- {e}")
 
