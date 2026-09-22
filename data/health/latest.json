@@ -1,8 +1,9 @@
 {
-  "checked_at": "2026-09-21T18:13:06+00:00",
+  "checked_at": "2026-09-22T00:15:23+00:00",
   "ok": false,
   "issues": [
-    "[vwap] NEAR/USDT:USDT: SL olarak kapanan islemin exit fiyati (4.129357) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-21T15:11:44+00:00 -> 2026-09-21T15:26:13+00:00)"
+    "[vwap] XRP/USDT:USDT: SL olarak kapanan islemin exit fiyati (1.566643) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-21T22:26:17+00:00 -> 2026-09-21T22:40:22+00:00)",
+    "[vwap] NEAR/USDT:USDT: SL olarak kapanan islemin exit fiyati (4.335114) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-21T23:11:11+00:00 -> 2026-09-21T23:25:58+00:00)"
   ],
   "profiles_checked": [
     "15m",
