@@ -493,10 +493,10 @@
     "losses": 0
   },
   "[\"BTC/USDT:USDT\", 1.2, 1.618, 0.15]": {
-    "n": 3,
-    "reward_sum": 2.69,
+    "n": 4,
+    "reward_sum": 1.69,
     "wins": 2,
-    "losses": 1,
+    "losses": 2,
     "breakeven": 0
   },
   "[\"BNB/USDT:USDT\", 1.8, 2.0, 0.15]": {
@@ -774,11 +774,11 @@
     "losses": 0
   },
   "[\"ETH/USDT:USDT\", 1.2, 1.618, 0.15]": {
-    "n": 4,
-    "reward_sum": 3.752,
+    "n": 5,
+    "reward_sum": 2.752,
     "wins": 3,
     "breakeven": 0,
-    "losses": 1
+    "losses": 2
   },
   "[\"AVAX/USDT:USDT\", 1.8, 1.618, 0.15]": {
     "n": 1,
