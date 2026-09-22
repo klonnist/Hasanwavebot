@@ -28,7 +28,16 @@ from vwap_detector import VwapParams
 # bir memecoin icin de o coinin kendi volatilitesine gore olceklenmis olur.
 WAVE_DEVIATIONS = [0.8, 1.2, 1.8, 2.5]
 WAVE_TP_MULTS = [1.272, 1.618, 2.0]
-WAVE_SL_MULT = 0.15  # sabit tutuyoruz, grid'i sismesin diye
+# DEGISTI (eskiden 0.15): dalga-1 uzunlugunun sadece %15'i kadar bir stop,
+# normal piyasa gurultusune neredeyse hic nefes payi birakmiyordu -- ozellikle
+# TP 2.0x gibi genis oldugunda R:R matematigi bozuluyordu (canli veride bu
+# kombinasyon %16.7 kazanma oraniyla en kotu performansi verdi). 0.382,
+# wave_detector.WaveParams'daki varsayilanla tutarli, Fibonacci-hizali bir
+# deger. Grid'i sismesin diye hala sabit tutuyoruz (ogrenen ajanin sadece
+# giris-hassasiyeti ve hedef genisligini tarayip stop mesafesini sabit
+# birakmasi bilinen bir sinirlama olarak kaliyor -- ayri bir gelecek
+# iyilestirme konusu).
+WAVE_SL_MULT = 0.382
 
 # VWAP (ortalamaya donus) stratejisinin grid'i: bant genisligi (std carpani)
 # ve VWAP'a donus hedefinin ne kadari kadar kar alinacagi.

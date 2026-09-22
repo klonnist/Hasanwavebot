@@ -35,8 +35,20 @@ from datetime import datetime, timezone
 import ccxt
 
 from data_feed import build_exchange, fetch_ohlcv, fetch_last_price, fetch_funding_rate
-from wave_detector import zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams
+from wave_detector import (
+    zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams,
+    wave1_has_internal_structure, higher_timeframe_trend,
+)
 from vwap_detector import detect_vwap_signal, VwapParams
+
+# Her islem zaman diliminin trend teyidi icin baktigi "bir ust derece"
+# zaman dilimi -- knowledge_base.md'deki derece hiyerarsisi ilkesinin
+# (Grand Supercycle...Minuette gibi) basitlestirilmis, iki-kademeli hali.
+HIGHER_TIMEFRAME = {
+    "15m": "4h",
+    "4h": "1d",
+    "1d": "1w",
+}
 from paper_account import PaperAccount
 from learner import Learner
 from telegram_notify import send_telegram, telegram_enabled
@@ -85,8 +97,18 @@ def _leveraged_pct(entry: float, price: float, direction: str, leverage: float) 
     return raw * 100 * leverage
 
 
-def _find_wave_setup(df, params: WaveParams, symbol, timeframe):
-    """Elliott Wave Dalga-3 kurulumu arar (trend takip eden strateji)."""
+def _find_wave_setup(df, params: WaveParams, symbol, timeframe, exchange=None):
+    """Elliott Wave Dalga-3 kurulumu arar (trend takip eden strateji).
+
+    Uc asamali dogrulama yapar (eskiden sadece 1. asama vardi):
+      1) Pivot bazli 0-1-2 kurulumu + retrace araligi (detect_wave3_setup)
+      2) Dalga 1'in gercekten ic yapisi olan (impulsif) bir hareket olup
+         olmadigi (wave1_has_internal_structure) -- rastgele tek bacakli
+         sicramalarin "dalga 1" sanilmasini engeller.
+      3) Ust zaman diliminde trend, sinyal yonuyle celisiyor mu
+         (higher_timeframe_trend) -- knowledge_base.md'nin "once buyuk
+         resim" ilkesi.
+    """
     vol_pct = atr_pct(df)
     effective_dev_pct = max(params.deviation_pct * vol_pct, 0.05)
     pivots = zigzag_pivots(df, deviation_pct=effective_dev_pct)
@@ -97,13 +119,37 @@ def _find_wave_setup(df, params: WaveParams, symbol, timeframe):
             f"esik%={effective_dev_pct:.2f}) tp_x={params.tp_mult} -> gecerli kurulum yok.")
         return None
 
+    if not wave1_has_internal_structure(df, setup["p0"], setup["p1"], effective_dev_pct):
+        log(f"{symbol} {timeframe} | dalga 1 adayinin ic yapisi yetersiz (tek bacakli sicrayis "
+            f"olabilir) -> atlaniyor.")
+        return None
+
+    higher_tf = HIGHER_TIMEFRAME.get(timeframe)
+    if exchange is not None and higher_tf is not None:
+        try:
+            df_htf = fetch_ohlcv(exchange, symbol, higher_tf, limit=60)
+            trend = higher_timeframe_trend(df_htf)
+        except Exception as e:
+            log(f"{symbol} {timeframe} | ust zaman dilimi ({higher_tf}) verisi alinamadi, "
+                f"trend filtresi atlaniyor: {e}")
+            trend = None
+        if trend is not None:
+            if setup["direction"] == "BUY" and trend == "down":
+                log(f"{symbol} {timeframe} | BUY sinyali ama ust zaman dilimi ({higher_tf}) "
+                    f"trendi asagi -> atlaniyor.")
+                return None
+            if setup["direction"] == "SELL" and trend == "up":
+                log(f"{symbol} {timeframe} | SELL sinyali ama ust zaman dilimi ({higher_tf}) "
+                    f"trendi yukari -> atlaniyor.")
+                return None
+
     last_close = float(df["close"].iloc[-1])
     entry, tp, sl = build_signal_levels(setup, params, last_close)
     extra = f"param(atr_x={params.deviation_pct}, tp_x={params.tp_mult}) | dalga2 retrace=%{setup['retrace_pct']:.1f}"
     return setup["direction"], entry, tp, sl, extra
 
 
-def _find_vwap_setup(df, params: VwapParams, symbol, timeframe):
+def _find_vwap_setup(df, params: VwapParams, symbol, timeframe, exchange=None):
     """VWAP'tan asiri sapip geri donen fiyat arar (ortalamaya donus stratejisi)."""
     sig = detect_vwap_signal(df, params)
     if sig is None:
@@ -129,7 +175,7 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
     df = fetch_ohlcv(exchange, symbol, timeframe, limit=limit)
 
     finder = STRATEGY_FINDERS[strategy]
-    found = finder(df, params, symbol, timeframe)
+    found = finder(df, params, symbol, timeframe, exchange=exchange)
     if found is None:
         return
     direction, entry, tp, sl, extra = found

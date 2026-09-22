@@ -23,10 +23,22 @@ class WaveParams:
     # deviation_pct burada dogrudan bir yuzde degil, ATR%%'nin katsayisidir
     # (main.py bunu atr_pct(df) ile carpip zigzag_pivots'a gercek yuzdeyi verir).
     deviation_pct: float = 2.5
-    retrace_min: float = 0.236
+    # DEGISTI (eskiden 0.236): %23.6 gibi sig bir geri cekilme klasik Elliott
+    # kaynaklarinda (Nature's Law / EWP / Handbook) tipik bir DALGA 4 ozelligi
+    # sayilir, dalga 2 degil -- dalga 2 genelde keskin/derin olur (%50-88.7).
+    # 0.236 alt sinir pratikte neredeyse her pullback'i kabul ediyordu, gercek
+    # bir filtre gorevi gormuyordu. 0.5-0.886 araligi EWP/Handbook'un "tipik
+    # dalga 2" tanimina cok daha yakin.
+    retrace_min: float = 0.5
     retrace_max: float = 0.886
     tp_mult: float = 1.618
-    sl_mult: float = 0.15
+    # DEGISTI (eskiden 0.15): stop, dalga-1 uzunlugunun sadece %15'i kadar bir
+    # mesafedeydi -- bu, normal piyasa gurultusune neredeyse hic nefes payi
+    # birakmiyordu ve TP genis (1.272-2.0x) oldugunda matematiksel olarak
+    # zor bir R:R yaratiyordu (bkz. ogrenen ajanin ATR1.2/TP2.0 kombinasyonunda
+    # gozlemlenen %16.7 kazanma orani). 0.382 hem Fibonacci-hizali hem de
+    # gercekci bir nefes payi veriyor.
+    sl_mult: float = 0.382
 
     def key(self):
         return (round(self.deviation_pct, 3), round(self.tp_mult, 3), round(self.sl_mult, 3))
@@ -104,6 +116,54 @@ def zigzag_pivots(df: pd.DataFrame, deviation_pct: float = 2.5) -> List[Pivot]:
 
     pivots.append(Pivot(last_pivot_idx, last_pivot_price, last_pivot_kind, pd.Timestamp(times[last_pivot_idx])))
     return pivots
+
+
+def wave1_has_internal_structure(df: pd.DataFrame, p0: Pivot, p1: Pivot, effective_dev_pct: float,
+                                  min_sub_pivots: int = 4) -> bool:
+    """Dalga 1 adayinin (p0->p1) gercekten itici (impulsif, coklu-bacakli) mi,
+    yoksa tek yonlu duz bir sicrayis mi oldugunu kontrol eder.
+
+    Onceki mantik yalnizca 2 fiyat noktasina (p0, p1) bakiyordu ve aralarinda
+    kac alt dalga oldugunu hic bilmiyordu -- knowledge_base.md'deki temel
+    kurala gore ("1. Dalga impulse veya diagonal olmalidir", EW Patterns.pdf
+    / Rules.docx) bir dalga 1 adayinin kendi icinde alt yapisi olmasi
+    beklenir, rastgele tek bacakli bir hareket olmamalidir.
+
+    Bunu tam bir alt-dalga sayimi yapmadan, ucuz bir vekil (proxy) ile
+    kontrol ediyoruz: p0-p1 araligina, ana zigzag'dan daha ince bir esikle
+    (yarisi) ikinci bir zigzag uygulayip kac pivot ciktigina bakiyoruz. Saf
+    tek bacakli bir sicrayista sadece 2 pivot (baslangic+bitis) cikar; en
+    az `min_sub_pivots` (varsayilan 4) pivot cikmasi, aralarinda en az 2
+    gercek yon degisikligi (ic yapi) oldugu anlamina gelir -- bu da tek bir
+    duz mumun/gurultunun "dalga 1" sanilmasina karsi ucuz ama gercek bir
+    filtredir.
+    """
+    lo, hi = min(p0.idx, p1.idx), max(p0.idx, p1.idx)
+    if hi - lo < 3:
+        # cok kisa bir aralikta ic yapi aramak anlamsiz (yeterli mum yok)
+        return False
+    segment = df.iloc[lo:hi + 1].reset_index(drop=True)
+    fine_dev_pct = max(effective_dev_pct / 2, 0.02)
+    sub_pivots = zigzag_pivots(segment, deviation_pct=fine_dev_pct)
+    return len(sub_pivots) >= min_sub_pivots
+
+
+def higher_timeframe_trend(df_htf: pd.DataFrame, sma_period: int = 50) -> Optional[str]:
+    """Ust zaman diliminde basit bir trend yonu tahmini dondurur: 'up' / 'down' / None.
+
+    knowledge_base.md'de defalarca vurgulanan "once buyuk resim, sonra kucuk
+    resim" ilkesinin (coklu zaman dilimi/derece tutarliligi) kod karsiligi.
+    Eskiden bot SADECE islem yaptigi tek zaman dilimine bakiyordu, hicbir
+    ust-derece trend teyidi yoktu. Yeterli veri yoksa None doner (filtre
+    devre disi kalir, islem engellenmez -- "fail-open").
+    """
+    if df_htf is None or len(df_htf) < sma_period:
+        return None
+    sma = df_htf["close"].rolling(sma_period).mean().iloc[-1]
+    last_close = float(df_htf["close"].iloc[-1])
+    if pd.isna(sma):
+        return None
+    return "up" if last_close > sma else "down"
 
 
 def detect_wave3_setup(pivots: List[Pivot], params: WaveParams) -> Optional[dict]:
