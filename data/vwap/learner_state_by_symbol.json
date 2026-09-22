@@ -389,10 +389,10 @@
     "breakeven": 0
   },
   "[\"BNB/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 25,
-    "reward_sum": 3.2329999999999988,
+    "n": 26,
+    "reward_sum": 2.2329999999999988,
     "wins": 11,
-    "losses": 12,
+    "losses": 13,
     "breakeven": 2
   },
   "[\"NEAR/USDT:USDT\", 2.5, 1.0, 0.5]": {
@@ -403,9 +403,9 @@
     "breakeven": 0
   },
   "[\"ETHFI/USDT:USDT\", 2.5, 1.0, 0.5]": {
-    "n": 3,
-    "reward_sum": 2.412,
-    "wins": 2,
+    "n": 4,
+    "reward_sum": 4.058,
+    "wins": 3,
     "losses": 1,
     "breakeven": 0
   },
