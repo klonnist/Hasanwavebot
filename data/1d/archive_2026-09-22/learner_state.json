@@ -1,0 +1,74 @@
+{
+  "[3.5, 1.272, 0.15]": {
+    "n": 1,
+    "reward_sum": -0.052,
+    "wins": 1,
+    "losses": 0
+  },
+  "[2.5, 1.618, 0.15]": {
+    "n": 2,
+    "reward_sum": -2.0,
+    "wins": 0,
+    "losses": 2
+  },
+  "[5.0, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": -1.0,
+    "wins": 0,
+    "losses": 1
+  },
+  "[0.8, 2.0, 0.15]": {
+    "n": 2,
+    "reward_sum": 2.754,
+    "wins": 2,
+    "losses": 0
+  },
+  "[0.8, 1.272, 0.15]": {
+    "n": 2,
+    "reward_sum": 0.603,
+    "wins": 1,
+    "losses": 1,
+    "breakeven": 0
+  },
+  "[1.2, 2.0, 0.15]": {
+    "n": 1,
+    "reward_sum": -1.0,
+    "wins": 0,
+    "losses": 1
+  },
+  "[1.2, 1.618, 0.15]": {
+    "n": 1,
+    "reward_sum": 1.532,
+    "wins": 1,
+    "breakeven": 0,
+    "losses": 0
+  },
+  "[1.5, 1.618, 0.15]": {
+    "n": 1,
+    "reward_sum": 0.0,
+    "wins": 0,
+    "breakeven": 1,
+    "losses": 0
+  },
+  "[1.8, 2.0, 0.15]": {
+    "n": 2,
+    "reward_sum": -2.0,
+    "wins": 0,
+    "breakeven": 0,
+    "losses": 2
+  },
+  "[1.2, 1.272, 0.15]": {
+    "n": 2,
+    "reward_sum": 2.7800000000000002,
+    "wins": 2,
+    "breakeven": 0,
+    "losses": 0
+  },
+  "[2.5, 1.272, 0.15]": {
+    "n": 1,
+    "reward_sum": -1.0,
+    "wins": 0,
+    "breakeven": 0,
+    "losses": 1
+  }
+}
