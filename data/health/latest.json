@@ -1,9 +1,8 @@
 {
-  "checked_at": "2026-09-22T06:14:53+00:00",
+  "checked_at": "2026-09-22T12:14:32+00:00",
   "ok": false,
   "issues": [
-    "[vwap] ETHFI/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.701148) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-22T03:27:45+00:00 -> 2026-09-22T03:42:50+00:00)",
-    "[vwap] ETHFI/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.693438) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-22T05:40:51+00:00 -> 2026-09-22T05:52:37+00:00)"
+    "[vwap] NEAR/USDT:USDT: SL olarak kapanan islemin exit fiyati (4.592748) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-22T11:26:48+00:00 -> 2026-09-22T11:41:25+00:00)"
   ],
   "profiles_checked": [
     "15m",
