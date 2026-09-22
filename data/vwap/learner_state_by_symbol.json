@@ -77,10 +77,10 @@
     "breakeven": 1
   },
   "[\"XRP/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 12,
-    "reward_sum": 1.5700000000000003,
+    "n": 13,
+    "reward_sum": 0.5700000000000003,
     "wins": 4,
-    "losses": 6,
+    "losses": 7,
     "breakeven": 2
   },
   "[\"LINK/USDT:USDT\", 1.5, 0.5, 0.5]": {
@@ -493,11 +493,11 @@
     "breakeven": 2
   },
   "[\"SOL/USDT:USDT\", 2.5, 1.0, 0.5]": {
-    "n": 2,
+    "n": 3,
     "reward_sum": -2.0,
     "wins": 0,
     "losses": 2,
-    "breakeven": 0
+    "breakeven": 1
   },
   "[\"BNB/USDT:USDT\", 1.5, 1.0, 0.5]": {
     "n": 7,
