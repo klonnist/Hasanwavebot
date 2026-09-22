@@ -655,11 +655,11 @@
     "losses": 0
   },
   "[\"DOGE/USDT:USDT\", 1.2, 1.618, 0.15]": {
-    "n": 2,
-    "reward_sum": -0.16800000000000004,
+    "n": 3,
+    "reward_sum": -1.1680000000000001,
     "wins": 1,
     "breakeven": 0,
-    "losses": 1
+    "losses": 2
   },
   "[\"ADA/USDT:USDT\", 1.2, 1.272, 0.15]": {
     "n": 4,
