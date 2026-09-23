@@ -87,5 +87,34 @@
       "balance_after": 9643.8673
     }
   ],
-  "open_positions": {}
+  "open_positions": {
+    "NEAR/USDT:USDT": {
+      "symbol": "NEAR/USDT:USDT",
+      "side": "BUY",
+      "entry": 4.64,
+      "tp": 5.595,
+      "sl": 4.17771,
+      "risk_amount": 498.15732758620635,
+      "size": 1077.5862068965519,
+      "param_key": [
+        1.8,
+        2.0,
+        0.382
+      ],
+      "open_time": "2026-09-23T15:27:47+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-09-23T15:27:47+00:00",
+      "funding_paid": 0.0,
+      "last_price": 4.64,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 4.17771,
+      "initial_risk_amount": 498.15732758620635,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    }
+  }
 }
