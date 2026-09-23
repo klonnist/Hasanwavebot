@@ -1,5 +1,5 @@
 {
-  "balance": 10018.848362638124,
+  "balance": 10004.914219233744,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -20982,6 +20982,27 @@
       "open_time": "2026-09-23T16:12:28+00:00",
       "close_time": "2026-09-23T22:10:55+00:00",
       "balance_after": 10018.8484
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "BUY",
+      "entry": 115.25,
+      "exit": 114.92881799452903,
+      "result": "SL",
+      "pnl": -13.9341,
+      "final_leg_pnl": -13.9341,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.5,
+        0.75,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-23T22:10:55+00:00",
+      "close_time": "2026-09-23T22:26:00+00:00",
+      "balance_after": 10004.9142
     }
   ],
   "open_positions": {
@@ -21004,9 +21025,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-23T16:12:30+00:00",
       "funding_paid": 0.0,
-      "last_price": 10.372,
-      "unrealized_pnl": 23.7334,
-      "unrealized_r": 0.159,
+      "last_price": 10.352,
+      "unrealized_pnl": 14.0463,
+      "unrealized_r": 0.094,
       "initial_sl": 10.015079841205187,
       "initial_risk_amount": 149.1427679912879,
       "breakeven_done": false,
@@ -21032,39 +21053,11 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-23T16:12:31+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.6535,
-      "unrealized_pnl": 19.2012,
-      "unrealized_r": 0.118,
+      "last_price": 0.6504,
+      "unrealized_pnl": -4.6083,
+      "unrealized_r": -0.028,
       "initial_sl": 0.6297529666895628,
       "initial_risk_amount": 163.18765983438712,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
-    },
-    "SOL/USDT:USDT": {
-      "symbol": "SOL/USDT:USDT",
-      "side": "BUY",
-      "entry": 115.25,
-      "tp": 115.92448016542781,
-      "sl": 114.92881799452903,
-      "risk_amount": 13.93414340438062,
-      "size": 43.38394793926247,
-      "param_key": [
-        2.5,
-        0.75,
-        0.5
-      ],
-      "open_time": "2026-09-23T22:10:55+00:00",
-      "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-09-23T22:10:55+00:00",
-      "funding_paid": 0.0,
-      "last_price": 115.25,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 114.92881799452903,
-      "initial_risk_amount": 13.93414340438062,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
