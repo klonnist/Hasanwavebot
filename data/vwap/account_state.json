@@ -1,5 +1,5 @@
 {
-  "balance": 9577.661542079364,
+  "balance": 9682.466586932373,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -19775,43 +19775,55 @@
       "open_time": "2026-09-23T01:26:49+00:00",
       "close_time": "2026-09-23T01:40:25+00:00",
       "balance_after": 9577.6615
-    }
-  ],
-  "open_positions": {
-    "AVAX/USDT:USDT": {
+    },
+    {
       "symbol": "AVAX/USDT:USDT",
       "side": "SELL",
+      "result": "PARTIAL_TP",
       "entry": 11.259,
-      "tp": 11.011266147928659,
-      "sl": 11.259,
-      "risk_amount": 69.62831115817247,
-      "size": 444.0891731059597,
+      "exit": 11.023,
+      "pnl": 52.4025,
+      "r_multiple": 1.5,
       "param_key": [
         2.5,
         0.5,
         0.5
       ],
-      "open_time": "2026-09-23T00:14:12+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-09-23T00:14:12+00:00",
       "funding_paid": 0.0,
-      "last_price": 11.071,
-      "unrealized_pnl": 83.4888,
-      "unrealized_r": 1.199,
-      "initial_sl": 11.415789031065973,
-      "initial_risk_amount": 69.62831115817247,
-      "breakeven_done": true,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
+      "open_time": "2026-09-23T00:14:12+00:00",
+      "close_time": "2026-09-23T01:51:38+00:00",
+      "balance_after": 9630.0641
     },
+    {
+      "symbol": "AVAX/USDT:USDT",
+      "side": "SELL",
+      "entry": 11.259,
+      "exit": 11.023,
+      "result": "SL",
+      "pnl": 104.805,
+      "final_leg_pnl": 52.4025,
+      "partial_taken": true,
+      "r_multiple": 1.505,
+      "param_key": [
+        2.5,
+        0.5,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-23T00:14:12+00:00",
+      "close_time": "2026-09-23T01:51:38+00:00",
+      "balance_after": 9682.4666
+    }
+  ],
+  "open_positions": {
     "NEAR/USDT:USDT": {
       "symbol": "NEAR/USDT:USDT",
       "side": "SELL",
       "entry": 4.372,
       "tp": 4.213280573348812,
-      "sl": 4.423642156044515,
+      "sl": 4.372,
       "risk_amount": 59.06010526591408,
       "size": 1143.6413540713631,
       "param_key": [
@@ -19825,12 +19837,12 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-23T01:11:07+00:00",
       "funding_paid": 0.0,
-      "last_price": 4.357,
-      "unrealized_pnl": 17.1546,
-      "unrealized_r": 0.29,
+      "last_price": 4.326,
+      "unrealized_pnl": 52.6075,
+      "unrealized_r": 0.891,
       "initial_sl": 4.423642156044515,
       "initial_risk_amount": 59.06010526591408,
-      "breakeven_done": false,
+      "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
     },
@@ -19853,9 +19865,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-23T01:40:27+00:00",
       "funding_paid": 0.0,
-      "last_price": 12.981,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 12.974,
+      "unrealized_pnl": 2.6962,
+      "unrealized_r": 0.107,
       "initial_sl": 13.046233212702022,
       "initial_risk_amount": 25.126420422934412,
       "breakeven_done": false,
