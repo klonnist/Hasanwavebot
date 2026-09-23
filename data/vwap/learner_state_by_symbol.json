@@ -118,10 +118,10 @@
     "breakeven": 0
   },
   "[\"LINK/USDT:USDT\", 2.0, 0.75, 0.5]": {
-    "n": 10,
-    "reward_sum": 4.037,
+    "n": 11,
+    "reward_sum": 3.037,
     "wins": 4,
-    "losses": 3,
+    "losses": 4,
     "breakeven": 3
   },
   "[\"BNB/USDT:USDT\", 1.5, 0.5, 0.5]": {
@@ -391,10 +391,10 @@
     "breakeven": 0
   },
   "[\"BNB/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 29,
-    "reward_sum": 1.2329999999999988,
+    "n": 30,
+    "reward_sum": 0.23299999999999876,
     "wins": 11,
-    "losses": 14,
+    "losses": 15,
     "breakeven": 4
   },
   "[\"NEAR/USDT:USDT\", 2.5, 1.0, 0.5]": {
