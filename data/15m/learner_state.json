@@ -7,11 +7,11 @@
     "losses": 0
   },
   "[2.5, 2.0, 0.382]": {
-    "n": 1,
-    "reward_sum": 0.0,
+    "n": 2,
+    "reward_sum": -1.0,
     "wins": 0,
     "breakeven": 1,
-    "losses": 0
+    "losses": 1
   },
   "[2.5, 1.618, 0.382]": {
     "n": 1,
