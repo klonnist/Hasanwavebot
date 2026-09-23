@@ -608,10 +608,10 @@
     "breakeven": 1
   },
   "[\"AVAX/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 28,
-    "reward_sum": 0.974,
+    "n": 29,
+    "reward_sum": -0.026000000000000023,
     "wins": 10,
-    "losses": 12,
+    "losses": 13,
     "breakeven": 6
   },
   "[\"AVAX/USDT:USDT\", 2.5, 1.0, 0.5]": {
