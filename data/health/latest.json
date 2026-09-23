@@ -1,7 +1,9 @@
 {
-  "checked_at": "2026-09-22T18:13:58+00:00",
-  "ok": true,
-  "issues": [],
+  "checked_at": "2026-09-23T00:14:52+00:00",
+  "ok": false,
+  "issues": [
+    "[vwap] SOL/USDT:USDT: SL olarak kapanan islemin exit fiyati (118.678138) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-22T23:38:17+00:00 -> 2026-09-22T23:50:48+00:00)"
+  ],
   "profiles_checked": [
     "15m",
     "4h",
