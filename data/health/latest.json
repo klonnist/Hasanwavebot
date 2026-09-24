@@ -1,7 +1,10 @@
 {
-  "checked_at": "2026-09-24T00:14:47+00:00",
-  "ok": true,
-  "issues": [],
+  "checked_at": "2026-09-24T06:14:41+00:00",
+  "ok": false,
+  "issues": [
+    "[vwap] NEAR/USDT:USDT: SL olarak kapanan islemin exit fiyati (4.273084) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-24T02:11:02+00:00 -> 2026-09-24T02:27:43+00:00)",
+    "[vwap] BTC/USDT:USDT: SL olarak kapanan islemin exit fiyati (84143.549818) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-24T02:43:27+00:00 -> 2026-09-24T02:55:40+00:00)"
+  ],
   "profiles_checked": [
     "15m",
     "4h",
