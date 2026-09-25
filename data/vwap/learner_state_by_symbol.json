@@ -318,10 +318,10 @@
     "breakeven": 2
   },
   "[\"ADA/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 10,
-    "reward_sum": 3.8550000000000004,
+    "n": 11,
+    "reward_sum": 2.8550000000000004,
     "wins": 5,
-    "losses": 5,
+    "losses": 6,
     "breakeven": 0
   },
   "[\"SOL/USDT:USDT\", 1.5, 0.5, 0.5]": {
@@ -630,9 +630,9 @@
     "breakeven": 1
   },
   "[\"DOGE/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 12,
-    "reward_sum": 5.948,
-    "wins": 6,
+    "n": 13,
+    "reward_sum": 7.640000000000001,
+    "wins": 7,
     "losses": 6,
     "breakeven": 0
   },
