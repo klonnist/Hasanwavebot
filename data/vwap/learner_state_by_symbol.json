@@ -228,9 +228,9 @@
     "breakeven": 1
   },
   "[\"LINK/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 18,
-    "reward_sum": 3.817,
-    "wins": 7,
+    "n": 19,
+    "reward_sum": 5.396,
+    "wins": 8,
     "losses": 8,
     "breakeven": 3
   },
@@ -359,10 +359,11 @@
     "losses": 1
   },
   "[\"ADA/USDT:USDT\", 2.5, 1.0, 0.5]": {
-    "n": 2,
+    "n": 3,
     "reward_sum": -2.0,
     "wins": 0,
-    "losses": 2
+    "losses": 2,
+    "breakeven": 1
   },
   "[\"BTC/USDT:USDT\", 2.5, 0.5, 0.5]": {
     "n": 11,
@@ -634,9 +635,9 @@
     "breakeven": 1
   },
   "[\"DOGE/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 16,
-    "reward_sum": 4.640000000000001,
-    "wins": 7,
+    "n": 17,
+    "reward_sum": 6.214,
+    "wins": 8,
     "losses": 9,
     "breakeven": 0
   },
