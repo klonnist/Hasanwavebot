@@ -613,9 +613,9 @@
     "breakeven": 2
   },
   "[\"AVAX/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 33,
-    "reward_sum": 3.865,
-    "wins": 13,
+    "n": 34,
+    "reward_sum": 4.78,
+    "wins": 14,
     "losses": 14,
     "breakeven": 6
   },
@@ -661,10 +661,10 @@
     "breakeven": 1
   },
   "[\"LINK/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 3,
-    "reward_sum": 1.514,
+    "n": 4,
+    "reward_sum": 0.514,
     "wins": 2,
-    "losses": 0,
+    "losses": 1,
     "breakeven": 1
   },
   "[\"LINK/USDT:USDT\", 1.5, 1.0, 0.5]": {
