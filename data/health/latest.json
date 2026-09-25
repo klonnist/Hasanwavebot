@@ -1,9 +1,7 @@
 {
-  "checked_at": "2026-09-25T00:16:12+00:00",
-  "ok": false,
-  "issues": [
-    "[vwap] NEAR/USDT:USDT: SL olarak kapanan islemin exit fiyati (4.740304) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-24T21:42:15+00:00 -> 2026-09-24T21:52:20+00:00)"
-  ],
+  "checked_at": "2026-09-25T06:14:31+00:00",
+  "ok": true,
+  "issues": [],
   "profiles_checked": [
     "15m",
     "4h",
