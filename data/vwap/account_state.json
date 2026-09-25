@@ -23505,7 +23505,7 @@
       "side": "BUY",
       "entry": 10.354,
       "tp": 10.493722268251366,
-      "sl": 10.28375413677598,
+      "sl": 10.354,
       "risk_amount": 33.92208963879582,
       "size": 482.90515742708135,
       "param_key": [
@@ -23519,12 +23519,12 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-25T08:33:29+00:00",
       "funding_paid": 0.0,
-      "last_price": 10.393,
-      "unrealized_pnl": 18.8333,
-      "unrealized_r": 0.555,
+      "last_price": 10.436,
+      "unrealized_pnl": 39.5982,
+      "unrealized_r": 1.167,
       "initial_sl": 10.28375413677598,
       "initial_risk_amount": 33.92208963879582,
-      "breakeven_done": false,
+      "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
     }
