@@ -400,10 +400,10 @@
     "breakeven": 4
   },
   "[\"NEAR/USDT:USDT\", 2.5, 1.0, 0.5]": {
-    "n": 2,
-    "reward_sum": -1.0,
+    "n": 3,
+    "reward_sum": -2.0,
     "wins": 1,
-    "losses": 1,
+    "losses": 2,
     "breakeven": 0
   },
   "[\"ETHFI/USDT:USDT\", 2.5, 1.0, 0.5]": {
@@ -483,9 +483,9 @@
     "breakeven": 9
   },
   "[\"SOL/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 3,
-    "reward_sum": 2.1180000000000003,
-    "wins": 2,
+    "n": 4,
+    "reward_sum": 3.684,
+    "wins": 3,
     "losses": 1,
     "breakeven": 0
   },
@@ -661,11 +661,11 @@
     "breakeven": 1
   },
   "[\"LINK/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 2,
+    "n": 3,
     "reward_sum": 1.514,
     "wins": 2,
     "losses": 0,
-    "breakeven": 0
+    "breakeven": 1
   },
   "[\"LINK/USDT:USDT\", 1.5, 1.0, 0.5]": {
     "n": 2,
