@@ -526,10 +526,10 @@
     "breakeven": 1
   },
   "[\"ADA/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 2,
-    "reward_sum": 3.423,
+    "n": 3,
+    "reward_sum": 2.423,
     "wins": 2,
-    "losses": 0,
+    "losses": 1,
     "breakeven": 0
   },
   "[\"NEAR/USDT:USDT\", 1.5, 0.5, 0.5]": {
