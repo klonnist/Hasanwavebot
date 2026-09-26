@@ -477,11 +477,11 @@
     "breakeven": 13
   },
   "[\"SOL/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 57,
+    "n": 58,
     "reward_sum": 20.303,
     "wins": 24,
     "losses": 23,
-    "breakeven": 10
+    "breakeven": 11
   },
   "[\"SOL/USDT:USDT\", 1.5, 1.0, 0.5]": {
     "n": 6,
