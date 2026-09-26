@@ -1,9 +1,7 @@
 {
-  "checked_at": "2026-09-26T00:14:23+00:00",
-  "ok": false,
-  "issues": [
-    "[vwap] ETH/USDT:USDT: SL olarak kapanan islemin exit fiyati (2675.903372) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-09-25T21:41:58+00:00 -> 2026-09-25T21:54:01+00:00)"
-  ],
+  "checked_at": "2026-09-26T06:13:53+00:00",
+  "ok": true,
+  "issues": [],
   "profiles_checked": [
     "15m",
     "4h",
