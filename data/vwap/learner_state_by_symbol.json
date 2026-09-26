@@ -408,10 +408,10 @@
     "breakeven": 1
   },
   "[\"ETHFI/USDT:USDT\", 2.5, 1.0, 0.5]": {
-    "n": 18,
-    "reward_sum": 10.188999999999998,
+    "n": 19,
+    "reward_sum": 9.188999999999998,
     "wins": 10,
-    "losses": 6,
+    "losses": 7,
     "breakeven": 2
   },
   "[\"ETH/USDT:USDT\", 2.0, 0.75, 0.5]": {
@@ -470,9 +470,9 @@
     "losses": 1
   },
   "[\"BTC/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 75,
-    "reward_sum": 3.518,
-    "wins": 24,
+    "n": 76,
+    "reward_sum": 4.947,
+    "wins": 25,
     "losses": 38,
     "breakeven": 13
   },
