@@ -1,5 +1,5 @@
 {
-  "balance": 10264.68937264624,
+  "balance": 10243.220177343339,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -26056,6 +26056,27 @@
       "open_time": "2026-09-26T10:40:01+00:00",
       "close_time": "2026-09-26T11:09:52+00:00",
       "balance_after": 10264.6894
+    },
+    {
+      "symbol": "LINK/USDT:USDT",
+      "side": "SELL",
+      "entry": 14.179,
+      "exit": 14.23988234403997,
+      "result": "SL",
+      "pnl": -21.4692,
+      "final_leg_pnl": -21.4692,
+      "partial_taken": false,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.0,
+        1.0,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-09-26T11:09:53+00:00",
+      "close_time": "2026-09-26T11:25:24+00:00",
+      "balance_after": 10243.2202
     }
   ],
   "open_positions": {
@@ -26078,9 +26099,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-26T10:10:20+00:00",
       "funding_paid": 0.0,
-      "last_price": 84131.4,
-      "unrealized_pnl": 2.8603,
-      "unrealized_r": 0.496,
+      "last_price": 84132.7,
+      "unrealized_pnl": 2.9376,
+      "unrealized_r": 0.51,
       "initial_sl": 83986.40942562619,
       "initial_risk_amount": 5.761582524342774,
       "breakeven_done": false,
@@ -26106,9 +26127,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-26T10:40:01+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.09786,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 0.09785,
+      "unrealized_pnl": 0.5109,
+      "unrealized_r": 0.027,
       "initial_sl": 0.09823145724911758,
       "initial_risk_amount": 18.9790133413846,
       "breakeven_done": false,
@@ -26134,39 +26155,11 @@
       "margin": 500.0,
       "last_funding_time": "2026-09-26T10:52:28+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.7304,
-      "unrealized_pnl": -1.3695,
-      "unrealized_r": -0.035,
-      "initial_sl": 0.7359878134368133,
-      "initial_risk_amount": 39.631699786451236,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
-    },
-    "LINK/USDT:USDT": {
-      "symbol": "LINK/USDT:USDT",
-      "side": "SELL",
-      "entry": 14.179,
-      "tp": 13.227461276648219,
-      "sl": 14.23988234403997,
-      "risk_amount": 21.469195302901927,
-      "size": 352.63417730446434,
-      "param_key": [
-        2.0,
-        1.0,
-        0.5
-      ],
-      "open_time": "2026-09-26T11:09:53+00:00",
-      "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-09-26T11:09:53+00:00",
-      "funding_paid": 0.0,
-      "last_price": 14.179,
+      "last_price": 0.7302,
       "unrealized_pnl": 0.0,
       "unrealized_r": 0.0,
-      "initial_sl": 14.23988234403997,
-      "initial_risk_amount": 21.469195302901927,
+      "initial_sl": 0.7359878134368133,
+      "initial_risk_amount": 39.631699786451236,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
