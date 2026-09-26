@@ -472,17 +472,17 @@
     "losses": 1
   },
   "[\"BTC/USDT:USDT\", 2.0, 0.5, 0.5]": {
-    "n": 76,
-    "reward_sum": 4.947,
-    "wins": 25,
+    "n": 77,
+    "reward_sum": 6.072,
+    "wins": 26,
     "losses": 38,
     "breakeven": 13
   },
   "[\"SOL/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 60,
-    "reward_sum": 22.130000000000003,
+    "n": 61,
+    "reward_sum": 21.130000000000003,
     "wins": 25,
-    "losses": 23,
+    "losses": 24,
     "breakeven": 12
   },
   "[\"SOL/USDT:USDT\", 1.5, 1.0, 0.5]": {
