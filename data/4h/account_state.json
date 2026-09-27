@@ -1,36 +1,30 @@
 {
-  "balance": 9997.1790775426,
+  "balance": 10446.972602077665,
   "starting_balance": 10000.0,
-  "history": [],
-  "open_positions": {
-    "NEAR/USDT:USDT": {
+  "history": [
+    {
       "symbol": "NEAR/USDT:USDT",
       "side": "BUY",
       "entry": 4.463,
-      "tp": 5.266864,
-      "sl": 3.510316,
-      "risk_amount": 533.6567331391441,
-      "size": 560.1613264620211,
+      "exit": 5.266864,
+      "result": "TP",
+      "pnl": 450.2935,
+      "final_leg_pnl": 450.2935,
+      "partial_taken": false,
+      "r_multiple": 0.844,
       "param_key": [
         1.8,
         1.272,
         0.382
       ],
-      "open_time": "2026-09-22T17:39:38+00:00",
       "leverage": 5.0,
-      "notional": 2500.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-09-27T01:39:38+00:00",
-      "funding_paid": 2.0224268552522497,
-      "last_price": 5.051,
-      "unrealized_pnl": 329.3749,
-      "unrealized_r": 0.617,
-      "initial_sl": 3.510316,
-      "initial_risk_amount": 533.6567331391441,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
-    },
+      "funding_paid": 2.2724,
+      "open_time": "2026-09-22T17:39:38+00:00",
+      "close_time": "2026-09-27T09:50:35+00:00",
+      "balance_after": 10446.9726
+    }
+  ],
+  "open_positions": {
     "AVAX/USDT:USDT": {
       "symbol": "AVAX/USDT:USDT",
       "side": "BUY",
@@ -48,11 +42,11 @@
       "leverage": 5.0,
       "notional": 2500.0,
       "margin": 500.0,
-      "last_funding_time": "2026-09-26T20:36:15+00:00",
-      "funding_paid": 0.7984956021442501,
-      "last_price": 10.726,
-      "unrealized_pnl": -9.9824,
-      "unrealized_r": -0.038,
+      "last_funding_time": "2026-09-27T04:36:15+00:00",
+      "funding_paid": 1.04849560214425,
+      "last_price": 11.059,
+      "unrealized_pnl": 67.3229,
+      "unrealized_r": 0.257,
       "initial_sl": 9.640344,
       "initial_risk_amount": 262.01504317949656,
       "breakeven_done": false,
