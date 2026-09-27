@@ -1,5 +1,5 @@
 {
-  "balance": 10660.061380528028,
+  "balance": 10660.561380528028,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -27239,11 +27239,11 @@
       "leverage": 10.0,
       "notional": 5000.0,
       "margin": 500.0,
-      "last_funding_time": "2026-09-27T09:50:42+00:00",
-      "funding_paid": 0.0,
-      "last_price": 10.938,
-      "unrealized_pnl": 55.1537,
-      "unrealized_r": 0.821,
+      "last_funding_time": "2026-09-27T17:50:42+00:00",
+      "funding_paid": -0.5,
+      "last_price": 11.017,
+      "unrealized_pnl": 19.4394,
+      "unrealized_r": 0.289,
       "initial_sl": 11.208625095701363,
       "initial_risk_amount": 67.1903687619179,
       "breakeven_done": true,
