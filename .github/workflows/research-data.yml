@@ -1,0 +1,28 @@
+name: Arastirma verisi indir (OKX perp 15m + 4h)
+
+on:
+  push:
+    branches: [claude/po3-ew-backtest-data]
+    paths: [research/fetch_okx_history.py, .github/workflows/research-data.yml]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python research/fetch_okx_history.py
+      - name: Veriyi branch'e commit et
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add research/data/
+          git commit -m "Arastirma verisi: OKX perp 15m + 4h [skip ci]"
+          git push
