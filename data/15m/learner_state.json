@@ -14,9 +14,9 @@
     "losses": 2
   },
   "[2.5, 1.618, 0.382]": {
-    "n": 4,
-    "reward_sum": -1.719,
-    "wins": 1,
+    "n": 5,
+    "reward_sum": 0.137,
+    "wins": 2,
     "breakeven": 0,
     "losses": 3
   },
@@ -56,9 +56,9 @@
     "losses": 3
   },
   "[1.2, 1.272, 0.382]": {
-    "n": 1,
-    "reward_sum": -1.0,
-    "wins": 0,
+    "n": 2,
+    "reward_sum": -0.9410000000000001,
+    "wins": 1,
     "breakeven": 0,
     "losses": 1
   }
