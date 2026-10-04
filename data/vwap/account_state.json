@@ -1,5 +1,5 @@
 {
-  "balance": 12205.698692967815,
+  "balance": 12238.393225916114,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -28942,61 +28942,141 @@
       "open_time": "2026-10-03T14:56:21+00:00",
       "close_time": "2026-10-04T06:11:26+00:00",
       "balance_after": 12205.6987
-    }
-  ],
-  "open_positions": {
-    "BTC/USDT:USDT": {
+    },
+    {
       "symbol": "BTC/USDT:USDT",
       "side": "BUY",
+      "result": "PARTIAL_TP",
       "entry": 84880.0,
-      "tp": 84941.72411845399,
-      "sl": 84825.49599908234,
-      "risk_amount": 3.2106503839337384,
-      "size": 0.0589066918001885,
+      "exit": 85301.9,
+      "pnl": 12.4264,
+      "r_multiple": 1.5,
       "param_key": [
         2.5,
         0.5,
         0.5
       ],
-      "open_time": "2026-10-04T06:11:24+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-10-04T06:11:24+00:00",
       "funding_paid": 0.0,
-      "last_price": 84880.0,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 84825.49599908234,
-      "initial_risk_amount": 3.2106503839337384,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
+      "open_time": "2026-10-04T06:11:24+00:00",
+      "close_time": "2026-10-04T12:23:06+00:00",
+      "balance_after": 12218.1251
     },
-    "ADA/USDT:USDT": {
+    {
+      "symbol": "BTC/USDT:USDT",
+      "side": "BUY",
+      "entry": 84880.0,
+      "exit": 84941.72411845399,
+      "result": "TP",
+      "pnl": 14.2443,
+      "final_leg_pnl": 1.818,
+      "partial_taken": true,
+      "r_multiple": 4.437,
+      "param_key": [
+        2.5,
+        0.5,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-10-04T06:11:24+00:00",
+      "close_time": "2026-10-04T12:23:06+00:00",
+      "balance_after": 12219.943
+    },
+    {
       "symbol": "ADA/USDT:USDT",
       "side": "BUY",
+      "result": "PARTIAL_TP",
       "entry": 0.2439,
-      "tp": 0.2475836200954774,
-      "sl": 0.24346795491763196,
-      "risk_amount": 8.857012758672589,
-      "size": 20500.20500205002,
+      "exit": 0.2448,
+      "pnl": 9.2251,
+      "r_multiple": 1.5,
       "param_key": [
         2.0,
         1.0,
         0.5
       ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
       "open_time": "2026-10-04T06:11:25+00:00",
+      "close_time": "2026-10-04T12:23:07+00:00",
+      "balance_after": 12229.1681
+    },
+    {
+      "symbol": "ADA/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.2439,
+      "exit": 0.2448,
+      "result": "SL",
+      "pnl": 18.4502,
+      "final_leg_pnl": 9.2251,
+      "partial_taken": true,
+      "r_multiple": 2.083,
+      "param_key": [
+        2.0,
+        1.0,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-10-04T06:11:25+00:00",
+      "close_time": "2026-10-04T12:23:07+00:00",
+      "balance_after": 12238.3932
+    }
+  ],
+  "open_positions": {
+    "ETH/USDT:USDT": {
+      "symbol": "ETH/USDT:USDT",
+      "side": "BUY",
+      "entry": 2700.97,
+      "tp": 2703.246365776048,
+      "sl": 2698.6063912660666,
+      "risk_amount": 4.375481278824337,
+      "size": 1.8511867958548227,
+      "param_key": [
+        2.0,
+        0.5,
+        0.5
+      ],
+      "open_time": "2026-10-04T12:23:06+00:00",
       "leverage": 10.0,
       "notional": 5000.0,
       "margin": 500.0,
-      "last_funding_time": "2026-10-04T06:11:25+00:00",
+      "last_funding_time": "2026-10-04T12:23:06+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.2439,
+      "last_price": 2700.97,
       "unrealized_pnl": 0.0,
       "unrealized_r": 0.0,
-      "initial_sl": 0.24346795491763196,
-      "initial_risk_amount": 8.857012758672589,
+      "initial_sl": 2698.6063912660666,
+      "initial_risk_amount": 4.375481278824337,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    },
+    "DOGE/USDT:USDT": {
+      "symbol": "DOGE/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.09352,
+      "tp": 0.09416360150992412,
+      "sl": 0.09333485765924576,
+      "risk_amount": 9.898542598066912,
+      "size": 53464.499572284,
+      "param_key": [
+        2.5,
+        1.0,
+        0.5
+      ],
+      "open_time": "2026-10-04T12:23:07+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-10-04T12:23:07+00:00",
+      "funding_paid": 0.0,
+      "last_price": 0.09352,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 0.09333485765924576,
+      "initial_risk_amount": 9.898542598066912,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
