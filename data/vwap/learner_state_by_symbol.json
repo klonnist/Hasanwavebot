@@ -28,9 +28,9 @@
     "breakeven": 4
   },
   "[\"XRP/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 42,
-    "reward_sum": 23.360000000000007,
-    "wins": 22,
+    "n": 43,
+    "reward_sum": 25.422000000000008,
+    "wins": 23,
     "losses": 15,
     "breakeven": 5
   },
@@ -619,9 +619,9 @@
     "breakeven": 2
   },
   "[\"AVAX/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 40,
-    "reward_sum": 9.905,
-    "wins": 17,
+    "n": 41,
+    "reward_sum": 11.011,
+    "wins": 18,
     "losses": 15,
     "breakeven": 8
   },
@@ -640,10 +640,10 @@
     "breakeven": 1
   },
   "[\"DOGE/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 21,
-    "reward_sum": 9.775,
+    "n": 22,
+    "reward_sum": 8.775,
     "wins": 11,
-    "losses": 10,
+    "losses": 11,
     "breakeven": 0
   },
   "[\"DOGE/USDT:USDT\", 1.5, 0.5, 0.5]": {
