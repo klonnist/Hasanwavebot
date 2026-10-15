@@ -1,5 +1,5 @@
 {
-  "balance": 9867.945378587776,
+  "balance": 9956.41152891824,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -127,37 +127,30 @@
       "open_time": "2026-09-23T12:36:15+00:00",
       "close_time": "2026-10-15T04:38:41+00:00",
       "balance_after": 9868.0343
-    }
-  ],
-  "open_positions": {
-    "DOGE/USDT:USDT": {
+    },
+    {
       "symbol": "DOGE/USDT:USDT",
       "side": "SELL",
       "entry": 0.08145,
-      "tp": 0.07857492,
-      "sl": 0.09069492,
-      "risk_amount": 283.76058931860047,
-      "size": 30693.677102516882,
+      "exit": 0.07857492,
+      "result": "TP",
+      "pnl": 88.2468,
+      "final_leg_pnl": 88.2468,
+      "partial_taken": false,
+      "r_multiple": 0.311,
       "param_key": [
         1.2,
         1.618,
         0.382
       ],
-      "open_time": "2026-10-08T18:00:18+00:00",
       "leverage": 5.0,
-      "notional": 2500.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-10-15T02:00:18+00:00",
-      "funding_paid": -1.2842555944332499,
-      "last_price": 0.08018,
-      "unrealized_pnl": 38.981,
-      "unrealized_r": 0.137,
-      "initial_sl": 0.09069492,
-      "initial_risk_amount": 283.76058931860047,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
-    },
+      "funding_paid": -1.4414,
+      "open_time": "2026-10-08T18:00:18+00:00",
+      "close_time": "2026-10-15T14:19:14+00:00",
+      "balance_after": 9956.3493
+    }
+  ],
+  "open_positions": {
     "LINK/USDT:USDT": {
       "symbol": "LINK/USDT:USDT",
       "side": "BUY",
@@ -175,11 +168,11 @@
       "leverage": 5.0,
       "notional": 2500.0,
       "margin": 500.0,
-      "last_funding_time": "2026-10-15T04:57:42+00:00",
-      "funding_paid": 0.25194074800275,
-      "last_price": 12.12,
-      "unrealized_pnl": -157.3373,
-      "unrealized_r": -0.658,
+      "last_funding_time": "2026-10-15T12:57:42+00:00",
+      "funding_paid": 0.18967921660725,
+      "last_price": 12.141,
+      "unrealized_pnl": -153.2782,
+      "unrealized_r": -0.641,
       "initial_sl": 11.697684,
       "initial_risk_amount": 238.96629039740196,
       "breakeven_done": false,
