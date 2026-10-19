@@ -1,5 +1,5 @@
 {
-  "balance": 8464.069527543441,
+  "balance": 8464.319527543441,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -984,6 +984,27 @@
       "open_time": "2026-10-17T16:28:59+00:00",
       "close_time": "2026-10-17T21:01:49+00:00",
       "balance_after": 8465.2019
+    },
+    {
+      "symbol": "ETHFI/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.6822,
+      "exit": 0.6822,
+      "result": "SL",
+      "pnl": 0.0,
+      "final_leg_pnl": 0.0,
+      "partial_taken": false,
+      "r_multiple": 0.0,
+      "param_key": [
+        1.8,
+        2.0,
+        0.382
+      ],
+      "leverage": 10.0,
+      "funding_paid": -0.4775,
+      "open_time": "2026-10-16T17:37:00+00:00",
+      "close_time": "2026-10-19T03:25:09+00:00",
+      "balance_after": 8464.3195
     }
   ],
   "open_positions": {
@@ -1006,39 +1027,11 @@
       "margin": 500.0,
       "last_funding_time": "2026-10-18T20:57:36+00:00",
       "funding_paid": -0.6395962212815004,
-      "last_price": 0.2209,
-      "unrealized_pnl": 275.8768,
-      "unrealized_r": 0.687,
+      "last_price": 0.2213,
+      "unrealized_pnl": 267.3225,
+      "unrealized_r": 0.665,
       "initial_sl": 0.2525858,
       "initial_risk_amount": 401.74935842600553,
-      "breakeven_done": true,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
-    },
-    "ETHFI/USDT:USDT": {
-      "symbol": "ETHFI/USDT:USDT",
-      "side": "SELL",
-      "entry": 0.6822,
-      "tp": 0.6301,
-      "sl": 0.6822,
-      "risk_amount": 199.50600996775086,
-      "size": 7329.228965112869,
-      "param_key": [
-        1.8,
-        2.0,
-        0.382
-      ],
-      "open_time": "2026-10-16T17:37:00+00:00",
-      "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-10-18T17:37:00+00:00",
-      "funding_paid": -0.22747867248249998,
-      "last_price": 0.6764,
-      "unrealized_pnl": 42.5095,
-      "unrealized_r": 0.213,
-      "initial_sl": 0.7094206,
-      "initial_risk_amount": 199.50600996775086,
       "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
