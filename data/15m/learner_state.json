@@ -1,8 +1,8 @@
 {
   "[1.8, 1.618, 0.382]": {
-    "n": 6,
-    "reward_sum": -3.572,
-    "wins": 1,
+    "n": 7,
+    "reward_sum": -2.746,
+    "wins": 2,
     "breakeven": 1,
     "losses": 4
   },
