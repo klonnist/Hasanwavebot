@@ -481,9 +481,9 @@
     "breakeven": 13
   },
   "[\"SOL/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 75,
-    "reward_sum": 45.111000000000004,
-    "wins": 34,
+    "n": 76,
+    "reward_sum": 46.643,
+    "wins": 35,
     "losses": 28,
     "breakeven": 13
   },
@@ -600,9 +600,9 @@
     "breakeven": 1
   },
   "[\"BNB/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 40,
-    "reward_sum": 10.868,
-    "wins": 17,
+    "n": 41,
+    "reward_sum": 12.508000000000001,
+    "wins": 18,
     "losses": 22,
     "breakeven": 1
   },
