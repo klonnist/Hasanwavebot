@@ -154,9 +154,9 @@
     "breakeven": 1
   },
   "[\"NEAR/USDT:USDT\", 2.0, 0.75, 0.5]": {
-    "n": 62,
-    "reward_sum": 14.601,
-    "wins": 21,
+    "n": 63,
+    "reward_sum": 20.617,
+    "wins": 22,
     "losses": 31,
     "breakeven": 10
   },
@@ -676,9 +676,9 @@
     "breakeven": 2
   },
   "[\"LINK/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 8,
-    "reward_sum": 17.591,
-    "wins": 5,
+    "n": 9,
+    "reward_sum": 21.431,
+    "wins": 6,
     "losses": 3,
     "breakeven": 0
   },
