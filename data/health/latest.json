@@ -1,9 +1,8 @@
 {
-  "checked_at": "2026-10-22T11:14:32+00:00",
+  "checked_at": "2026-10-22T16:43:15+00:00",
   "ok": false,
   "issues": [
-    "[vwap] BNB/USDT:USDT: SELL pozisyonda SL/TP siralamasi bozuk (sl=739.6 entry=744.9 tp=736.9956852434149)",
-    "Son tarama 279 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
+    "Son tarama 255 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
   ],
   "profiles_checked": [
     "15m",
