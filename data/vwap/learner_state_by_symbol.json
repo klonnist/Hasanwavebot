@@ -530,9 +530,9 @@
     "breakeven": 1
   },
   "[\"ADA/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 12,
-    "reward_sum": 20.070999999999998,
-    "wins": 9,
+    "n": 13,
+    "reward_sum": 21.642999999999997,
+    "wins": 10,
     "losses": 3,
     "breakeven": 0
   },
@@ -621,10 +621,10 @@
     "breakeven": 2
   },
   "[\"AVAX/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 47,
-    "reward_sum": 13.183999999999997,
+    "n": 48,
+    "reward_sum": 12.183999999999997,
     "wins": 21,
-    "losses": 18,
+    "losses": 19,
     "breakeven": 8
   },
   "[\"AVAX/USDT:USDT\", 2.5, 1.0, 0.5]": {
@@ -676,10 +676,10 @@
     "breakeven": 2
   },
   "[\"LINK/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 9,
-    "reward_sum": 21.431,
+    "n": 10,
+    "reward_sum": 20.431,
     "wins": 6,
-    "losses": 3,
+    "losses": 4,
     "breakeven": 0
   },
   "[\"LINK/USDT:USDT\", 2.5, 0.75, 0.5]": {
