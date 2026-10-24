@@ -1,5 +1,5 @@
 {
-  "balance": 8678.611171071225,
+  "balance": 8899.562599657524,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -1087,6 +1087,44 @@
       "open_time": "2026-10-21T00:59:06+00:00",
       "close_time": "2026-10-21T15:58:56+00:00",
       "balance_after": 8679.4627
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "SELL",
+      "result": "PARTIAL_TP",
+      "entry": 1.3117,
+      "exit": 1.2816,
+      "pnl": 57.3683,
+      "r_multiple": 1.5,
+      "param_key": [
+        2.5,
+        2.0,
+        0.382
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-10-23T18:21:07+00:00",
+      "close_time": "2026-10-24T09:07:57+00:00",
+      "balance_after": 8735.9795
+    },
+    {
+      "symbol": "NEAR/USDT:USDT",
+      "side": "SELL",
+      "result": "PARTIAL_TP",
+      "entry": 4.85,
+      "exit": 4.533,
+      "pnl": 163.4021,
+      "r_multiple": 1.5,
+      "param_key": [
+        2.5,
+        2.0,
+        0.382
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-10-22T20:49:43+00:00",
+      "close_time": "2026-10-24T09:07:58+00:00",
+      "balance_after": 8899.5626
     }
   ],
   "open_positions": {
@@ -1107,11 +1145,11 @@
       "leverage": 10.0,
       "notional": 5000.0,
       "margin": 500.0,
-      "last_funding_time": "2026-10-23T20:57:36+00:00",
-      "funding_paid": -0.08254730181450043,
-      "last_price": 0.2113,
-      "unrealized_pnl": 481.1805,
-      "unrealized_r": 1.198,
+      "last_funding_time": "2026-10-24T04:57:36+00:00",
+      "funding_paid": 0.23638664606549958,
+      "last_price": 0.2073,
+      "unrealized_pnl": 566.7237,
+      "unrealized_r": 1.411,
       "initial_sl": 0.2525858,
       "initial_risk_amount": 401.74935842600553,
       "breakeven_done": true,
@@ -1123,9 +1161,9 @@
       "side": "SELL",
       "entry": 4.85,
       "tp": 4.4799999999999995,
-      "sl": 4.85,
-      "risk_amount": 203.0061855670111,
-      "size": 1030.9278350515465,
+      "sl": 4.533,
+      "risk_amount": 101.50309278350555,
+      "size": 515.4639175257732,
       "param_key": [
         2.5,
         2.0,
@@ -1133,27 +1171,27 @@
       ],
       "open_time": "2026-10-22T20:49:43+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-10-23T20:49:43+00:00",
-      "funding_paid": 0.0482800477725,
-      "last_price": 4.634,
-      "unrealized_pnl": 222.6804,
-      "unrealized_r": 1.097,
+      "notional": 2500.0,
+      "margin": 250.0,
+      "last_funding_time": "2026-10-24T04:49:43+00:00",
+      "funding_paid": -0.4517199522275,
+      "last_price": 4.501,
+      "unrealized_pnl": 179.8969,
+      "unrealized_r": 1.772,
       "initial_sl": 5.046916,
       "initial_risk_amount": 203.0061855670111,
       "breakeven_done": true,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
+      "partial_tp_done": true,
+      "partial_pnl_realized": 163.40206185566976
     },
     "XRP/USDT:USDT": {
       "symbol": "XRP/USDT:USDT",
       "side": "SELL",
       "entry": 1.3117,
       "tp": 1.2625,
-      "sl": 1.3117,
-      "risk_amount": 71.23198902187961,
-      "size": 3811.8472211633757,
+      "sl": 1.2816,
+      "risk_amount": 35.61599451093981,
+      "size": 1905.9236105816879,
       "param_key": [
         2.5,
         2.0,
@@ -1161,18 +1199,18 @@
       ],
       "open_time": "2026-10-23T18:21:07+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
+      "notional": 2500.0,
+      "margin": 250.0,
       "last_funding_time": "2026-10-24T02:21:07+00:00",
       "funding_paid": -0.1697978969695,
-      "last_price": 1.2901,
-      "unrealized_pnl": 82.3359,
-      "unrealized_r": 1.156,
+      "last_price": 1.2782,
+      "unrealized_pnl": 63.8484,
+      "unrealized_r": 1.793,
       "initial_sl": 1.330387,
       "initial_risk_amount": 71.23198902187961,
       "breakeven_done": true,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
+      "partial_tp_done": true,
+      "partial_pnl_realized": 57.36830067850883
     }
   }
 }
