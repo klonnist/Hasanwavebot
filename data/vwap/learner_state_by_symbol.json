@@ -21,9 +21,9 @@
     "breakeven": 2
   },
   "[\"ETH/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 32,
-    "reward_sum": 3.7200000000000006,
-    "wins": 11,
+    "n": 33,
+    "reward_sum": 5.23,
+    "wins": 12,
     "losses": 17,
     "breakeven": 4
   },
@@ -217,9 +217,9 @@
     "breakeven": 0
   },
   "[\"XRP/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 13,
-    "reward_sum": 11.719999999999997,
-    "wins": 7,
+    "n": 14,
+    "reward_sum": 15.109999999999998,
+    "wins": 8,
     "losses": 6,
     "breakeven": 0
   },
@@ -482,9 +482,9 @@
     "breakeven": 13
   },
   "[\"SOL/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 78,
-    "reward_sum": 49.167,
-    "wins": 36,
+    "n": 79,
+    "reward_sum": 50.691,
+    "wins": 37,
     "losses": 29,
     "breakeven": 13
   },
