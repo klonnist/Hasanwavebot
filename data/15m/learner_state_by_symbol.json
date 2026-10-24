@@ -355,5 +355,12 @@
     "wins": 1,
     "breakeven": 0,
     "losses": 0
+  },
+  "[\"ADA/USDT:USDT\", 2.5, 1.618, 0.382]": {
+    "n": 1,
+    "reward_sum": 1.666,
+    "wins": 1,
+    "breakeven": 0,
+    "losses": 0
   }
 }
