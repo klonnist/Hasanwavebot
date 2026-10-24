@@ -1,10 +1,8 @@
 {
-  "checked_at": "2026-10-24T10:22:51+00:00",
+  "checked_at": "2026-10-24T15:27:41+00:00",
   "ok": false,
   "issues": [
-    "[15m] NEAR/USDT:USDT: SELL pozisyonda SL/TP siralamasi bozuk (sl=4.533 entry=4.85 tp=4.4799999999999995)",
-    "[15m] XRP/USDT:USDT: SELL pozisyonda SL/TP siralamasi bozuk (sl=1.2816 entry=1.3117 tp=1.2625)",
-    "Son tarama 75 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
+    "Son tarama 128 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
   ],
   "profiles_checked": [
     "15m",
