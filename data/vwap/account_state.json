@@ -34518,5 +34518,34 @@
       "balance_after": 16121.2989
     }
   ],
-  "open_positions": {}
+  "open_positions": {
+    "ETHFI/USDT:USDT": {
+      "symbol": "ETHFI/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.6172,
+      "tp": 0.6303526959259373,
+      "sl": 0.6139889622730299,
+      "risk_amount": 26.01294334875298,
+      "size": 8101.101749837979,
+      "param_key": [
+        1.5,
+        0.75,
+        0.5
+      ],
+      "open_time": "2026-10-26T04:46:58+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-10-26T04:46:58+00:00",
+      "funding_paid": 0.0,
+      "last_price": 0.6172,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 0.6139889622730299,
+      "initial_risk_amount": 26.01294334875298,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    }
+  }
 }
