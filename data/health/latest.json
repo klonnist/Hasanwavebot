@@ -1,9 +1,8 @@
 {
-  "checked_at": "2026-10-30T12:14:26+00:00",
+  "checked_at": "2026-10-30T21:58:51+00:00",
   "ok": false,
   "issues": [
-    "[vwap] LINK/USDT:USDT: BUY pozisyonda SL/TP siralamasi bozuk (sl=11.063 entry=10.431 tp=11.33418785020916)",
-    "Son tarama 346 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
+    "Son tarama 195 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
   ],
   "profiles_checked": [
     "15m",
