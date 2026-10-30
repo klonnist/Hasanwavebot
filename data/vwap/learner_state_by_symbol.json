@@ -531,9 +531,9 @@
     "breakeven": 1
   },
   "[\"ADA/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 15,
-    "reward_sum": 29.52,
-    "wins": 12,
+    "n": 16,
+    "reward_sum": 31.891,
+    "wins": 13,
     "losses": 3,
     "breakeven": 0
   },
@@ -622,9 +622,9 @@
     "breakeven": 2
   },
   "[\"AVAX/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 51,
-    "reward_sum": 14.194999999999999,
-    "wins": 23,
+    "n": 52,
+    "reward_sum": 15.953,
+    "wins": 24,
     "losses": 20,
     "breakeven": 8
   },
