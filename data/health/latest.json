@@ -1,10 +1,9 @@
 {
-  "checked_at": "2026-10-31T04:20:11+00:00",
+  "checked_at": "2026-10-31T11:46:16+00:00",
   "ok": false,
   "issues": [
-    "[vwap] XRP/USDT:USDT: BUY pozisyonda SL/TP siralamasi bozuk (sl=1.2489 entry=1.2381 tp=1.271461927530992)",
-    "[vwap] BTC/USDT:USDT: BUY pozisyonda SL/TP siralamasi bozuk (sl=77318.4 entry=76930.2 tp=79239.0927160907)",
-    "Son tarama 150 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
+    "[vwap] LINK/USDT:USDT: SELL pozisyonda SL/TP siralamasi bozuk (sl=11.377 entry=11.633 tp=11.22782752162426)",
+    "Son tarama 226 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
   ],
   "profiles_checked": [
     "15m",
