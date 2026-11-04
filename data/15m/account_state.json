@@ -1,5 +1,5 @@
 {
-  "balance": 9610.697985231647,
+  "balance": 9691.138184152238,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -1413,6 +1413,27 @@
       "open_time": "2026-11-03T08:35:16+00:00",
       "close_time": "2026-11-03T22:01:51+00:00",
       "balance_after": 9610.698
+    },
+    {
+      "symbol": "ADA/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.1899,
+      "exit": 0.18687520000000002,
+      "result": "TP",
+      "pnl": 79.6419,
+      "final_leg_pnl": 79.6419,
+      "partial_taken": false,
+      "r_multiple": 1.164,
+      "param_key": [
+        1.8,
+        1.272,
+        0.382
+      ],
+      "leverage": 10.0,
+      "funding_paid": -0.5,
+      "open_time": "2026-11-03T16:35:52+00:00",
+      "close_time": "2026-11-04T02:20:03+00:00",
+      "balance_after": 9691.1382
     }
   ],
   "open_positions": {
@@ -1433,41 +1454,13 @@
       "leverage": 10.0,
       "notional": 5000.0,
       "margin": 500.0,
-      "last_funding_time": "2026-11-03T16:37:35+00:00",
-      "funding_paid": -1.094675549111,
-      "last_price": 700.81,
-      "unrealized_pnl": -73.4804,
-      "unrealized_r": -0.148,
+      "last_funding_time": "2026-11-04T00:37:35+00:00",
+      "funding_paid": -1.392957671387,
+      "last_price": 692.88,
+      "unrealized_pnl": -16.0716,
+      "unrealized_r": -0.032,
       "initial_sl": 759.05574,
       "initial_risk_amount": 495.14768482321296,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
-    },
-    "ADA/USDT:USDT": {
-      "symbol": "ADA/USDT:USDT",
-      "side": "SELL",
-      "entry": 0.1899,
-      "tp": 0.18687520000000002,
-      "sl": 0.1924988,
-      "risk_amount": 68.42548709847246,
-      "size": 26329.64718272775,
-      "param_key": [
-        1.8,
-        1.272,
-        0.382
-      ],
-      "open_time": "2026-11-03T16:35:52+00:00",
-      "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-03T16:35:52+00:00",
-      "funding_paid": 0.0,
-      "last_price": 0.1911,
-      "unrealized_pnl": -31.5956,
-      "unrealized_r": -0.462,
-      "initial_sl": 0.1924988,
-      "initial_risk_amount": 68.42548709847246,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
