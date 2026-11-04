@@ -91,9 +91,9 @@
     "breakeven": 1
   },
   "[\"ETHFI/USDT:USDT\", 1.5, 0.75, 0.5]": {
-    "n": 10,
-    "reward_sum": 13.201999999999998,
-    "wins": 6,
+    "n": 11,
+    "reward_sum": 17.947,
+    "wins": 7,
     "losses": 4,
     "breakeven": 0
   },
@@ -622,9 +622,9 @@
     "breakeven": 2
   },
   "[\"AVAX/USDT:USDT\", 2.5, 0.5, 0.5]": {
-    "n": 53,
-    "reward_sum": 17.907,
-    "wins": 25,
+    "n": 54,
+    "reward_sum": 20.01,
+    "wins": 26,
     "losses": 20,
     "breakeven": 8
   },
@@ -657,10 +657,11 @@
     "breakeven": 0
   },
   "[\"LINK/USDT:USDT\", 2.5, 1.0, 0.5]": {
-    "n": 1,
-    "reward_sum": -1.0,
-    "wins": 0,
-    "losses": 1
+    "n": 2,
+    "reward_sum": 0.5840000000000001,
+    "wins": 1,
+    "losses": 1,
+    "breakeven": 0
   },
   "[\"DOGE/USDT:USDT\", 2.0, 0.5, 0.5]": {
     "n": 13,
