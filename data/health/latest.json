@@ -1,7 +1,9 @@
 {
-  "checked_at": "2026-11-06T13:49:21+00:00",
-  "ok": true,
-  "issues": [],
+  "checked_at": "2026-11-06T22:46:08+00:00",
+  "ok": false,
+  "issues": [
+    "Son tarama 169 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
+  ],
   "profiles_checked": [
     "15m",
     "4h",
