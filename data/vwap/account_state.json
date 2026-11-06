@@ -1,5 +1,5 @@
 {
-  "balance": 19434.006331487384,
+  "balance": 19474.302461184692,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -37079,33 +37079,129 @@
       "open_time": "2026-11-04T22:53:59+00:00",
       "close_time": "2026-11-05T18:34:23+00:00",
       "balance_after": 19434.0063
-    }
-  ],
-  "open_positions": {
-    "LINK/USDT:USDT": {
+    },
+    {
       "symbol": "LINK/USDT:USDT",
       "side": "BUY",
+      "result": "PARTIAL_TP",
       "entry": 10.671,
-      "tp": 11.15053007025838,
-      "sl": 10.618600220198418,
-      "risk_amount": 24.552422360407157,
-      "size": 468.559647643145,
+      "exit": 10.757,
+      "pnl": 20.1481,
+      "r_multiple": 1.5,
       "param_key": [
         1.5,
         1.0,
         0.5
       ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
       "open_time": "2026-11-05T23:51:26+00:00",
+      "close_time": "2026-11-06T05:16:41+00:00",
+      "balance_after": 19454.1544
+    },
+    {
+      "symbol": "LINK/USDT:USDT",
+      "side": "BUY",
+      "entry": 10.671,
+      "exit": 10.757,
+      "result": "SL",
+      "pnl": 40.2961,
+      "final_leg_pnl": 20.1481,
+      "partial_taken": true,
+      "r_multiple": 1.641,
+      "param_key": [
+        1.5,
+        1.0,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-11-05T23:51:26+00:00",
+      "close_time": "2026-11-06T05:16:41+00:00",
+      "balance_after": 19474.3025
+    }
+  ],
+  "open_positions": {
+    "BTC/USDT:USDT": {
+      "symbol": "BTC/USDT:USDT",
+      "side": "BUY",
+      "entry": 75609.6,
+      "tp": 77856.47647889575,
+      "sl": 75448.80783958227,
+      "risk_amount": 10.63305191521573,
+      "size": 0.06612916878280006,
+      "param_key": [
+        1.5,
+        1.0,
+        0.5
+      ],
+      "open_time": "2026-11-06T05:16:40+00:00",
       "leverage": 10.0,
       "notional": 5000.0,
       "margin": 500.0,
-      "last_funding_time": "2026-11-05T23:51:26+00:00",
+      "last_funding_time": "2026-11-06T05:16:40+00:00",
       "funding_paid": 0.0,
-      "last_price": 10.671,
+      "last_price": 75609.6,
       "unrealized_pnl": 0.0,
       "unrealized_r": 0.0,
-      "initial_sl": 10.618600220198418,
-      "initial_risk_amount": 24.552422360407157,
+      "initial_sl": 75448.80783958227,
+      "initial_risk_amount": 10.63305191521573,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    },
+    "ETH/USDT:USDT": {
+      "symbol": "ETH/USDT:USDT",
+      "side": "BUY",
+      "entry": 2224.97,
+      "tp": 2272.5280388966107,
+      "sl": 2220.7747713793383,
+      "risk_amount": 9.42760716023477,
+      "size": 2.2472213108491355,
+      "param_key": [
+        1.5,
+        0.5,
+        0.5
+      ],
+      "open_time": "2026-11-06T05:16:40+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-11-06T05:16:40+00:00",
+      "funding_paid": 0.0,
+      "last_price": 2224.97,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 2220.7747713793383,
+      "initial_risk_amount": 9.42760716023477,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    },
+    "NEAR/USDT:USDT": {
+      "symbol": "NEAR/USDT:USDT",
+      "side": "BUY",
+      "entry": 3.664,
+      "tp": 3.843664392252057,
+      "sl": 3.634898489738446,
+      "risk_amount": 39.712759636400335,
+      "size": 1364.6288209606987,
+      "param_key": [
+        2.0,
+        0.75,
+        0.5
+      ],
+      "open_time": "2026-11-06T05:16:42+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-11-06T05:16:42+00:00",
+      "funding_paid": 0.0,
+      "last_price": 3.664,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 3.634898489738446,
+      "initial_risk_amount": 39.712759636400335,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
