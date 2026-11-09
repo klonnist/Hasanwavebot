@@ -1,5 +1,5 @@
 {
-  "balance": 10680.12754940339,
+  "balance": 10811.281347430018,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -331,6 +331,27 @@
       "open_time": "2026-10-29T20:53:06+00:00",
       "close_time": "2026-11-08T22:40:10+00:00",
       "balance_after": 10680.1275
+    },
+    {
+      "symbol": "SOL/USDT:USDT",
+      "side": "SELL",
+      "entry": 96.91,
+      "exit": 86.74,
+      "result": "SL",
+      "pnl": 262.3568,
+      "final_leg_pnl": 131.1784,
+      "partial_taken": true,
+      "r_multiple": 1.692,
+      "param_key": [
+        1.8,
+        1.272,
+        0.382
+      ],
+      "leverage": 5.0,
+      "funding_paid": -4.6017,
+      "open_time": "2026-10-31T01:50:28+00:00",
+      "close_time": "2026-11-09T01:59:21+00:00",
+      "balance_after": 10811.2813
     }
   ],
   "open_positions": {
@@ -353,42 +374,14 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-08T21:25:15+00:00",
       "funding_paid": -2.2229303095577504,
-      "last_price": 681.21,
-      "unrealized_pnl": 65.02,
-      "unrealized_r": 0.177,
+      "last_price": 688.21,
+      "unrealized_pnl": 39.9986,
+      "unrealized_r": 0.109,
       "initial_sl": 802.1118,
       "initial_risk_amount": 367.14255075779255,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
-    },
-    "SOL/USDT:USDT": {
-      "symbol": "SOL/USDT:USDT",
-      "side": "SELL",
-      "entry": 96.91,
-      "tp": 83.78296,
-      "sl": 86.74,
-      "risk_amount": 77.51702610669686,
-      "size": 12.898565679496441,
-      "param_key": [
-        1.8,
-        1.272,
-        0.382
-      ],
-      "open_time": "2026-10-31T01:50:28+00:00",
-      "leverage": 5.0,
-      "notional": 1250.0,
-      "margin": 250.0,
-      "last_funding_time": "2026-11-08T17:50:28+00:00",
-      "funding_paid": -4.6262872664215005,
-      "last_price": 85.68,
-      "unrealized_pnl": 144.8509,
-      "unrealized_r": 1.869,
-      "initial_sl": 102.91973999999999,
-      "initial_risk_amount": 155.03405221339372,
-      "breakeven_done": true,
-      "partial_tp_done": true,
-      "partial_pnl_realized": 131.17841296047882
     }
   }
 }
