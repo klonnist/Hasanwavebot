@@ -1,8 +1,9 @@
 {
-  "checked_at": "2026-11-14T13:02:09+00:00",
+  "checked_at": "2026-11-14T22:01:38+00:00",
   "ok": false,
   "issues": [
-    "Son tarama 125 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
+    "[4h] SOL/USDT:USDT: SELL pozisyonda SL/TP siralamasi bozuk (sl=71.62 entry=79.91 tp=69.48071999999999)",
+    "Son tarama 55 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
   ],
   "profiles_checked": [
     "15m",
