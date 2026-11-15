@@ -1,5 +1,5 @@
 {
-  "balance": 11867.677252573043,
+  "balance": 12030.818286235914,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -453,37 +453,30 @@
       "open_time": "2026-11-09T09:36:57+00:00",
       "close_time": "2026-11-14T21:07:24+00:00",
       "balance_after": 11867.6773
-    }
-  ],
-  "open_positions": {
-    "SOL/USDT:USDT": {
+    },
+    {
       "symbol": "SOL/USDT:USDT",
       "side": "SELL",
       "entry": 79.91,
-      "tp": 69.48071999999999,
-      "sl": 71.62,
-      "risk_amount": 85.88912526592433,
-      "size": 15.642597922662997,
+      "exit": 69.48071999999999,
+      "result": "TP",
+      "pnl": 292.8182,
+      "final_leg_pnl": 163.141,
+      "partial_taken": true,
+      "r_multiple": 1.705,
       "param_key": [
         1.2,
         1.618,
         0.382
       ],
-      "open_time": "2026-11-13T18:05:37+00:00",
       "leverage": 5.0,
-      "notional": 1250.0,
-      "margin": 250.0,
-      "last_funding_time": "2026-11-14T18:05:37+00:00",
-      "funding_paid": 0.29034979298625,
-      "last_price": 70.63,
-      "unrealized_pnl": 145.1633,
-      "unrealized_r": 1.69,
-      "initial_sl": 85.40072,
-      "initial_risk_amount": 171.77825053184867,
-      "breakeven_done": true,
-      "partial_tp_done": true,
-      "partial_pnl_realized": 129.67713677887613
-    },
+      "funding_paid": 0.2903,
+      "open_time": "2026-11-13T18:05:37+00:00",
+      "close_time": "2026-11-15T01:02:28+00:00",
+      "balance_after": 12030.8183
+    }
+  ],
+  "open_positions": {
     "XRP/USDT:USDT": {
       "symbol": "XRP/USDT:USDT",
       "side": "SELL",
@@ -503,9 +496,9 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-14T21:07:23+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.9252,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 0.9176,
+      "unrealized_pnl": 20.5361,
+      "unrealized_r": 0.051,
       "initial_sl": 1.0752970000000002,
       "initial_risk_amount": 405.5798746217038,
       "breakeven_done": false,
