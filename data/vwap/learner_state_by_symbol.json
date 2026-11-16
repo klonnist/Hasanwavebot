@@ -49,9 +49,9 @@
     "breakeven": 2
   },
   "[\"BTC/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 47,
-    "reward_sum": 88.15199999999997,
-    "wins": 27,
+    "n": 48,
+    "reward_sum": 90.50299999999997,
+    "wins": 28,
     "losses": 19,
     "breakeven": 1
   },
@@ -482,9 +482,9 @@
     "breakeven": 13
   },
   "[\"SOL/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 86,
-    "reward_sum": 60.677,
-    "wins": 41,
+    "n": 87,
+    "reward_sum": 64.297,
+    "wins": 42,
     "losses": 32,
     "breakeven": 13
   },
