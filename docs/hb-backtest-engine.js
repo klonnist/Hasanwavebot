@@ -166,7 +166,7 @@ function hbDetectWave3Setup(pivots, params) {
     const retrace = (p1.price - p2.price) / wave1Len;
     if (p2.price <= p0.price) return null;
     if (!(retrace >= params.retraceMin && retrace <= params.retraceMax)) return null;
-    return { direction: "BUY", p0, p1, p2, wave1Len };
+    return { direction: "BUY", p0, p1, p2, wave1Len, retracePct: retrace * 100 };
   }
   if (p0.kind === "H" && p1.kind === "L" && p2.kind === "H") {
     const wave1Len = p0.price - p1.price;
@@ -174,7 +174,7 @@ function hbDetectWave3Setup(pivots, params) {
     const retrace = (p2.price - p1.price) / wave1Len;
     if (p2.price >= p0.price) return null;
     if (!(retrace >= params.retraceMin && retrace <= params.retraceMax)) return null;
-    return { direction: "SELL", p0, p1, p2, wave1Len };
+    return { direction: "SELL", p0, p1, p2, wave1Len, retracePct: retrace * 100 };
   }
   return null;
 }
@@ -284,6 +284,74 @@ function hbDetectVwapSignal(candles, params) {
     return { direction: "SELL", entry, tp, sl };
   }
   return null;
+}
+
+// ---------------- Islem gerekcesi (grafikteki "Karar gerekcesi") ----------------
+// Bir islem KAYDINDA kurulum ayrintilari (p0/p1/p2, retrace, ATR...) saklanmaz. Bu fonksiyonlar, islemin
+// acildigi andaki mumlar uzerinde AYNI dedektor zincirini yeniden calistirip kurulumu geri bulur ve bulunan
+// TP/stop'u kayittakilerle karsilastirir (verified). Eslesmezse yalniz formulden turetilen degerler doner.
+
+// Bilinmeyen (null) seviye kontrol disi birakilir; en az biri bilinmeli. tol: goreli tolerans (eski kayitlarda
+// geri hesaplanan seviyeler yuvarlanmis R'den geldigi icin daha genis).
+function hbNear(a, b, tol = 1e-6) { return b == null || Math.abs(a - b) <= tol * Math.max(Math.abs(b), 1e-12) + 1e-12; }
+
+// tp/sl/entry ve parametrelerden (formul): w1 = (sl-tp)/(SLx+TPx), p2 = sl -/+ w1*SLx. (tp veya sl yoksa null)
+function hbDeriveWaveLevels({ side, entry, tp, sl, paramKey }) {
+  if (tp == null || sl == null) return null;
+  const [, tpm, slm] = paramKey;
+  const w1 = Math.abs(sl - tp) / (slm + tpm);
+  const p2 = side === "BUY" ? sl + w1 * slm : sl - w1 * slm;
+  return { wave1Len: w1, p2Price: p2, gapFromP2: Math.abs(entry - p2) / w1 };
+}
+
+// Islem mumunun (acilis zamanini iceren bar) indeksi ve bir onceki bar -- canli botta open_time tarama
+// aninin zamanidir (oluşmakta olan mum), backtestte barin acilis zamanidir; ikisini de dene.
+function hbCandidateBars(candles, openMs) {
+  let i0 = -1;
+  for (let i = 0; i < candles.length; i++) { if (candles[i].timestamp <= openMs) i0 = i; else break; }
+  return i0 < 0 ? [] : [i0, i0 - 1].filter(i => i >= 1);
+}
+
+function hbExplainWaveTrade({ candles, candlesHtf, openMs, entry, tp, sl, side, paramKey, window = 300,
+                              htfShiftMs = 0, htfTf = null, tol = 1e-6 }) {
+  // tp ve sl ikisi de bilinmiyorsa (eski kayit) dogrulama yapilamaz: ayni dedektor ayni anda ayni yonde GECERLI bir
+  // kurulum uretiyorsa (giris stop ile TP arasinda) "yeniden uretildi" sayilir (reproduced).
+  const weak = tp == null && sl == null;
+  const [dev, tpMult, slMult] = paramKey;
+  const params = { deviationPct: dev, tpMult, slMult, retraceMin: 0.5, retraceMax: 0.886 };
+  const derived = hbDeriveWaveLevels({ side, entry, tp, sl, paramKey });
+  let best = null;
+  for (const i of hbCandidateBars(candles, openMs)) {
+    const windowDf = candles.slice(Math.max(0, i - window), i + 1);
+    const atrPct = hbAtrPct(windowDf);
+    const effDev = Math.max(dev * atrPct, 0.05);
+    const pivots = hbZigzagPivots(windowDf, effDev);
+    const setup = hbDetectWave3Setup(pivots, params);
+    if (!setup || setup.direction !== side) continue;
+    const lv = hbBuildSignalLevels(setup, params, entry);
+    if (weak && !(side === "BUY" ? (lv.sl < entry && entry < lv.tp) : (lv.tp < entry && entry < lv.sl))) continue;
+    const verified = !weak && hbNear(lv.tp, tp, tol) && hbNear(lv.sl, sl, tol);
+    const lo = Math.min(setup.p0.idx, setup.p1.idx), hi = Math.max(setup.p0.idx, setup.p1.idx);
+    const subPivots = hi - lo < 3 ? 0
+      : hbZigzagPivots(windowDf.slice(lo, hi + 1), Math.max(effDev / 2, 0.02)).length;
+    let htf = null;
+    if (candlesHtf && candlesHtf.length) {
+      const w = hbHtfSliceUpTo(candlesHtf, openMs, 60, htfShiftMs);
+      const trend = hbHigherTimeframeTrend(w);
+      if (trend !== null) {
+        const closes = w.slice(w.length - 50).map(c => c.close);
+        htf = { tf: htfTf, trend, close: w[w.length - 1].close, sma: closes.reduce((a, b) => a + b, 0) / 50 };
+      }
+    }
+    const res = {
+      verified, reproduced: weak, levels: lv, barTime: candles[i].timestamp, params, atrPct, effDev, subPivots, htf, setup,
+      wave1Bars: Math.abs(setup.p1.idx - setup.p0.idx), wave1Pct: setup.wave1Len / setup.p0.price * 100,
+      gapFromP2: Math.abs(entry - setup.p2.price) / setup.wave1Len,
+    };
+    if (verified || weak) return res;
+    if (!best) best = res;
+  }
+  return { verified: false, derived, candidate: best, params };
 }
 
 // ---------------- learner.py port ----------------

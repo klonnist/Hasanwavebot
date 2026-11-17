@@ -94,6 +94,12 @@ yönetimi) **daha geniş bir evrende ve sabit riskle** izler:
   yüklenir. Kapanan işlem kayıtlarına artık `tp` ve `initial_sl` (açılıştaki orijinal stop) yazılır;
   bu alanlar eklenmeden önceki eski kayıtlarda eksik seviyeler giriş/çıkış ve R değerinden geri hesaplanır
   (hesaplanamıyorsa grafikte "kayıt yok" yazar).
+  **4 saatlik işlemlerde** grafiğin altında ayrıca **"Karar gerekçesi"** çıkar: dalga 1 / dalga 2 (geri çekilme %),
+  iç yapı, üst zaman dilimi trendi, girişin neden o fiyat olduğu, stop ve TP'nin formülü (gerçek sayılarla),
+  risk:ödül, boyut, yönetim ve seçilen parametre seti; dalga noktaları (0→1→2) grafikte altın çizgiyle çizilir.
+  İşlem kaydında kurulum ayrıntısı saklanmadığı için gerekçe, işlemin açıldığı andaki mumlarda aynı dedektör
+  kodu yeniden çalıştırılarak üretilir ve kayıtlı TP/stop ile karşılaştırılır ("✔ kayıtla doğrulandı"; eski
+  kayıtlarda TP/stop yoksa "yeniden üretildi", bulunamazsa "formülden türetildi").
 - **Dikkat:** komisyon ve slipaj modellenmez (özellikle 15m'de dar stoplarla
   sonuçları iyimser gösterir) ve hacim sıralamasının alt ucundaki coinlerde
   (~10M USDT/gün) gerçek dolum zor olurdu. `--top-n 100` ile evren genişletilebilir.

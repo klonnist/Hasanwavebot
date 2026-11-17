@@ -167,6 +167,17 @@
   .cm-legend i { display: inline-block; width: 14px; height: 3px; margin-right: 5px; vertical-align: middle; border-radius: 2px; }
   .cm-legend b { color: var(--text); font-weight: 500; }
   .cm-note { margin-top: 8px; font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+  .cm-why { margin-top: 14px; border-top: 1px solid var(--panel-border); padding-top: 12px; }
+  .cm-why h3 { font-size: 13.5px; margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .cm-why .vbadge { font-size: 10.5px; font-weight: 500; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--panel-border); color: var(--muted); }
+  .cm-why .vbadge.ok { color: var(--green); border-color: var(--green); }
+  .cm-why ol { margin: 0; padding-left: 20px; font-size: 12.5px; line-height: 1.65; color: var(--text); }
+  .cm-why li { margin-bottom: 5px; }
+  .cm-why li b { font-weight: 600; }
+  .cm-why li .why { color: var(--muted); }
+  .cm-why .ok { color: var(--green); }
+  .cm-why .warn { color: #d29922; }
+  .cm-why .sub { font-size: 11.5px; color: var(--muted); margin: 8px 0 0; line-height: 1.5; }
   tr.low-n { opacity: .55; }
   .n-warn {
     display: inline-block; font-size: 9.5px; color: var(--muted); border: 1px solid var(--panel-border);
@@ -188,7 +199,7 @@
 <div id="profiles"></div>
 
 <!-- ?v= : motor degistiginde artir (tarayici/CDN onbellegi eski motoru yeni sayfayla karistirmasin) -->
-<script src="hb-backtest-engine.js?v=6"></script>
+<script src="hb-backtest-engine.js?v=7"></script>
 <script>
 const OWNER = "klonnist";
 const REPO = "Hasanwavebot";
@@ -200,7 +211,7 @@ const PROFILES = [
   { key: "15m", dir: "15m", label: "15 Dakika · Scalp", leverage: "10x", tf: "15m" },
   { key: "4h",  dir: "4h",  label: "4 Saat · Swing",    leverage: "5x", tf: "4h" },
   { key: "1d",  dir: "1d",  label: "1 Gün · Pozisyon",  leverage: "3x", tf: "1d" },
-  { key: "vwap", dir: "vwap", label: "VWAP · Ortalamaya Dönüş", leverage: "10x", tf: "15m" },
+  { key: "vwap", dir: "vwap", label: "VWAP · Ortalamaya Dönüş", leverage: "10x", tf: "15m", strategy: "vwap" },
   // R bazli profiller: hacme gore ilk 50 kripto, sabit risk (1R = 100 USDT), havuzlu ogrenme
   { key: "r50-15m", dir: "r50-15m", label: "15 Dakika · Top50 (R)", leverage: "1R = 100 USDT", rMode: true, tf: "15m" },
   { key: "r50-4h",  dir: "r50-4h",  label: "4 Saat · Top50 (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "4h" },
@@ -429,7 +440,9 @@ function renderCards(p, stats) {
 // Mumlar OKX'in herkese acik API'sinden tarayicida cekilir; grafik kutuphanesi
 // (TradingView lightweight-charts) ilk "Grafik" tiklamasinda yuklenir.
 // ---------------------------------------------------------------------------
-const CHART_BARS = { "15m": ["15m", 900000], "30m": ["30m", 1800000], "1h": ["1H", 3600000], "4h": ["4H", 14400000], "1d": ["1D", 86400000] };
+const CHART_BARS = { "15m": ["15m", 900000], "30m": ["30m", 1800000], "1h": ["1H", 3600000], "4h": ["4H", 14400000], "1d": ["1D", 86400000], "1w": ["1W", 604800000] };
+const CHART_HTF = { "15m": "4h", "4h": "1d", "1d": "1w" };   // main.py HIGHER_TIMEFRAME ile ayni
+const CHART_WINDOW = 300;                                      // dedektorun baktigi mum sayisi (--limit)
 const CHART_SCOPES = {};   // kapsam adi -> [ctx, ...] (tablo yeniden cizilince sifirlanir)
 const LWC_URLS = [
   "https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js",
@@ -471,7 +484,7 @@ document.addEventListener("click", (e) => {
 // stop mesafesi = |cikis-giris| / |R|). Bilinmeyen seviye null kalir.
 function tradeLevels(t, isOpen, history) {
   const sgn = t.side === "BUY" ? 1 : -1;
-  let tp = t.tp ?? null, sl = t.initial_sl ?? null, derived = false;
+  let tp = t.tp ?? null, sl = t.initial_sl ?? null, derived = false, slApprox = false;
   if (isOpen) {
     if (sl == null) sl = t.sl ?? null;
   } else {
@@ -479,7 +492,9 @@ function tradeLevels(t, isOpen, history) {
     // Kismi kar alinmissa: kismi kayit R'si (1.5) ve fiyati stop mesafesini verir.
     if (sl == null && t.partial_taken) {
       const pk = (history || []).find(h => h.result === "PARTIAL_TP" && h.symbol === t.symbol && h.open_time === t.open_time);
-      if (pk && pk.r_multiple > 0) { sl = t.entry - sgn * Math.abs(pk.exit - t.entry) / pk.r_multiple; derived = true; }
+      // DIKKAT: canli botta kismi kar tarama anindaki fiyattan alinir (ornegin 1,63R) ama kayit R'si hep 1,5 yazar;
+      // bu yuzden bu stop YAKLASIK (slApprox) -- gerekce motoru kurulumu bulursa kesin degerle degistirilir.
+      if (pk && pk.r_multiple > 0) { sl = t.entry - sgn * Math.abs(pk.exit - t.entry) / pk.r_multiple; derived = true; slApprox = true; }
     }
     if (sl == null && !t.partial_taken && t.r_multiple
         && ((t.exit - t.entry) * sgn) * t.r_multiple > 0) {
@@ -487,7 +502,7 @@ function tradeLevels(t, isOpen, history) {
       derived = true;
     }
   }
-  return { tp, sl, derived };
+  return { tp, sl, derived, slApprox };
 }
 
 // Fiyat bicimi: buyuklugune gore basamak (78.549,90 / 0,925200)
@@ -514,7 +529,7 @@ async function chartFetchCandles(instId, bar, startMs, endMs) {
     await new Promise(r => setTimeout(r, 120));
   }
   return rows
-    .map(r => ({ time: Math.floor(Number(r[0]) / 1000), open: +r[1], high: +r[2], low: +r[3], close: +r[4] }))
+    .map(r => ({ time: Math.floor(Number(r[0]) / 1000), open: +r[1], high: +r[2], low: +r[3], close: +r[4], volume: +r[5] }))
     .filter(c => c.time * 1000 >= startMs && c.time * 1000 <= endMs)
     .sort((a, b) => a.time - b.time);
 }
@@ -535,6 +550,7 @@ function ensureChartModal() {
       <div id="cm-chart"></div>
       <div class="cm-legend" id="cm-legend"></div>
       <div class="cm-note" id="cm-note"></div>
+      <div class="cm-why" id="cm-why"></div>
     </div>`;
   document.body.appendChild(m);
   m.addEventListener("click", (e) => { if (e.target === m) closeTradeChart(); });
@@ -552,7 +568,82 @@ function closeTradeChart() {
   if (CHART_LIVE.chart) { CHART_LIVE.chart.remove(); CHART_LIVE.chart = null; }
 }
 
-// ctx: { trade, isOpen, tf, history (tum kayitlar, kismi kar aramak icin), beR, ptR }
+const tmFmt = (ms) => new Date(ms).toISOString().slice(0, 16).replace("T", " ");
+
+// "Karar gerekcesi": giris / stop / TP neden orada? Gercek sayilarla, numarali Turkce adimlar.
+function buildWhyHtml({ ctx, t, lv, dist, rr, ex, sgn, isBuy }) {
+  const head = (badge) => `<h3>Karar gerekçesi — giriş, stop ve TP neden burada? ${badge}</h3>`;
+  const pk = Array.isArray(t.param_key) ? t.param_key : null;
+  if (!pk || lv.tp == null || lv.sl == null) {
+    return head("") + `<div class="sub">Bu işlemin TP/stop ya da parametre kaydı olmadığı için gerekçe çıkarılamadı.</div>`;
+  }
+  const wave = true;                       // gerekce yalniz 4h dalga islemleri icin uretilir
+  const reproduced = !!(ex && ex.reproduced);
+  const verified = !!(ex && (ex.verified || ex.reproduced));   // dalga noktalari bulundu
+  const pm = isBuy ? "−" : "+";            // stop yonu (BUY: asagi, SELL: yukari)
+  const tm = isBuy ? "+" : "−";            // TP yonu
+  const steps = [];
+  let tpFormula = "", stopFormula = "", entryText = "", sigName = "";
+
+  if (wave) {
+    const [dev, tpm, slm] = pk;
+    let W, p2;
+    if (verified) {
+      const s = ex.setup;
+      W = s.wave1Len; p2 = s.p2.price;
+      const dir = isBuy ? "yukarı" : "aşağı";
+      steps.push(`<b>Zigzag eşiği:</b> ATR% = ${fmt(ex.atrPct, 2)} → eşik = ATR× ${dev} · ${fmt(ex.atrPct, 2)}% = <b>%${fmt(ex.effDev, 2)}</b>; fiyat bu kadar ters yöne giderse bir pivot (tepe/dip) sayılır.`);
+      steps.push(`<b>Dalga 1 (0→1):</b> ${tmFmt(s.p0.time)} UTC ${px(s.p0.price)} → ${tmFmt(s.p1.time)} UTC ${px(s.p1.price)} — ${dir} <b>%${fmt(ex.wave1Pct, 1)}</b>, ${ex.wave1Bars} mum. `
+        + `İç yapı: ${ex.subPivots} alt-pivot (en az 4 gerekir; tek bacaklı sıçrama elenir) <span class="ok">✔</span>`);
+      steps.push(`<b>Dalga 2 (1→2):</b> ${px(s.p1.price)} → ${px(s.p2.price)} (${tmFmt(s.p2.time)} UTC): dalga 1'in <b>%${fmt(s.retracePct, 1)}</b>'i geri alındı `
+        + `(kabul aralığı %50–88,6) <span class="ok">✔</span>; fiyat dalga 1'in başlangıcını (0) aşmadı.`);
+      if (ex.htf) {
+        const above = ex.htf.close > ex.htf.sma;
+        const agree = above === isBuy;
+        steps.push(`<b>Üst zaman dilimi (${ex.htf.tf}):</b> son kapanış ${px(ex.htf.close)}, SMA50 ${px(ex.htf.sma)} → ${above ? "üstünde (trend yukarı)" : "altında (trend aşağı)"}; `
+          + `${t.side} yönüyle ${agree ? '<span class="ok">uyumlu ✔</span>' : '<span class="warn">çelişiyor ⚠ (veri farkı olabilir)</span>'}. Çelişseydi sinyal atlanırdı.`);
+      } else {
+        steps.push(`<b>Üst zaman dilimi:</b> yeterli veri bulunamadı → filtre uygulanmadı (veri yoksa işlem engellenmez).`);
+      }
+      entryText = `son kapanış fiyatı <b>${px(t.entry)}</b>, dalga-2 ucundan (p2) dalga-1 uzunluğunun <b>%${fmt(ex.gapFromP2 * 100, 0)}</b>'i kadar uzakta`;
+    } else {
+      const d = hbDeriveWaveLevels({ side: t.side, entry: t.entry, tp: lv.tp, sl: lv.sl, paramKey: pk });
+      W = d.wave1Len; p2 = d.p2Price;
+      steps.push(`<span class="warn">Dalga noktaları (0-1-2) bu işlem için yeniden bulunamadı</span> (canlı bottaki oluşmakta olan mum farkı ya da veri eksikliği olabilir). `
+        + `Aşağıdaki değerler kayıtlı TP/stop'tan formülle türetildi: dalga-1 uzunluğu ≈ <b>${px(W)}</b>, dalga-2 ucu (p2) ≈ <b>${px(p2)}</b>.`);
+      entryText = `son kapanış fiyatı <b>${px(t.entry)}</b>, dalga-2 ucundan (p2) dalga-1 uzunluğunun <b>%${fmt(d.gapFromP2 * 100, 0)}</b>'i kadar uzakta`;
+    }
+    steps.push(`<b>Giriş:</b> kurulum tespit edildiği andaki ${entryText} (bekleyen emir yok, o anki fiyattan girilir).`);
+    steps.push(`<b>Stop:</b> p2 ${pm} dalga1 × ${slm} = ${px(p2)} ${pm} ${px(W)} × ${slm} = <b>${px(lv.sl)}</b> — dalga 2'nin ucunun hemen ötesi; fiyat oraya dönerse dalga-2 sayımı geçersiz olur. `
+      + `Girişe uzaklığı <b>%${fmt(Math.abs(t.entry - lv.sl) / t.entry * 100, 2)}</b>.`);
+    steps.push(`<b>Hedef (TP):</b> p2 ${tm} dalga1 × ${tpm} = ${px(p2)} ${tm} ${px(W)} × ${tpm} = <b>${px(lv.tp)}</b> — dalga 3 için Fibonacci uzantısı ${tpm}.`);
+  }
+
+  steps.push(`<b>Risk : ödül</b> = 1 : ${fmt(rr, 2)}` + (rr < 1
+    ? ` — hedef, riskten daha yakın: kazanırsa +${fmt(rr, 2)}R, kaybederse −1R (bu yüzden böyle işlemlerin kazanma oranının yüksek olması gerekir).`
+    : ` — kazanırsa +${fmt(rr, 2)}R, kaybederse −1R.`));
+  if (ctx.rMode) {
+    steps.push(`<b>Boyut:</b> sabit risk — pozisyon = risk ÷ stop mesafesi, yani stopta kayıp tam −1R${t.notional ? `; bu işlemde pozisyon ≈ <b>${fmt(t.notional, 0)} USDT</b>` : ""}.`);
+  } else {
+    steps.push(`<b>Boyut:</b> sabit teminat × kaldıraç (${fmt(t.leverage, 0)}x)${t.initial_risk_amount || t.risk_amount ? `; riske edilen ≈ ${fmt(t.initial_risk_amount || t.risk_amount)} USDT (stop mesafesine göre değişir)` : ""}.`);
+  }
+  const tpDist = Math.abs(lv.tp - t.entry);
+  steps.push(`<b>Yönetim:</b> ` + (dist * ctx.beR < tpDist
+    ? `${px(t.entry + sgn * dist * ctx.beR)} (${ctx.beR}R) görülünce stop girişe çekilir (başabaş); ${px(t.entry + sgn * dist * ctx.ptR)} (${ctx.ptR}R) görülünce pozisyonun yarısı satılır, kalanı için stop kârın %50'sini geri verecek şekilde izlenir (trailing); TP ya da stopa değince kalan kapanır.`
+    : `bu işlemde hedef ${ctx.beR}R'den yakın olduğu için başabaş/kısmi kâr adımları devreye girmez; fiyat TP'ye ya da stopa değince işlem kapanır.`));
+  steps.push(`<b>Parametre seti:</b> ${wave ? "ATR×" : "Bant×"} ${pk[0]} · TP× ${pk[1]} · SL× ${pk[2]}. Öğrenen ajan bu işlem için bu kombinasyonu seçti (ya şimdiye dek en iyi skorlu olduğu için, ya da ~%25 olasılıkla keşif amaçlı).`);
+
+  const badge = reproduced ? `<span class="vbadge ok">yeniden üretildi</span>`
+    : (verified ? `<span class="vbadge ok">✔ kayıtla doğrulandı</span>` : `<span class="vbadge">formülden türetildi</span>`);
+  const sub = reproduced
+    ? `Bu eski kayıtta TP/stop saklanmadığı için bire bir doğrulanamadı; işlemin açıldığı andaki mumlarda botla aynı dedektör aynı yönde, girişi kapsayan geçerli bir kurulum üretti ve TP/stop buradan hesaplandı. Grafikteki altın çizgi dalga 0→1→2'dir.`
+    : (verified
+      ? `Bu gerekçe, işlemin açıldığı andaki mumlarda botla aynı dedektör kodu yeniden çalıştırılarak üretildi; bulunan TP ve stop kayıtlı değerlerle eşleşti. Grafikteki altın çizgi dalga 0→1→2'dir.`
+      : `Kayıtlı giriş/TP/stop ve parametre setinden türetildi; dedektör kurulumu yeniden bulunamadığı için dalga noktaları ve iç yapı/trend ayrıntıları yok.${lv.slApprox ? " (Bu eski kayıttaki stop yaklaşıktır.)" : ""}`);
+  return head(badge) + `<ol>${steps.map(s => `<li>${s}</li>`).join("")}</ol><div class="sub">${sub}</div>`;
+}
+
+// ctx: { trade, isOpen, tf, history (tum kayitlar, kismi kar aramak icin), beR, ptR, strategy, rMode, htfShift }
 async function openTradeChart(ctx) {
   const t = ctx.trade;
   const token = ++CHART_LIVE.token;
@@ -572,35 +663,68 @@ async function openTradeChart(ctx) {
   document.getElementById("cm-title").innerHTML =
     `${base}/USDT · <span class="side-${isBuy ? "buy" : "sell"}">${t.side}</span> · ${ctx.tf} ${ctx.isOpen ? '<span class="badge on">AÇIK</span>' : ""}`;
 
+  document.getElementById("cm-why").innerHTML = "";
   const lv = tradeLevels(t, ctx.isOpen, ctx.history);
-  const dist = lv.sl != null ? Math.abs(t.entry - lv.sl) : null;
-  const rr = (lv.tp != null && dist) ? Math.abs(lv.tp - t.entry) / dist : null;
-  const infoBits = [
-    ["Giriş", px(t.entry)],
-    ["Hedef (TP)", lv.tp != null ? px(lv.tp) : "kayıt yok"],
-    ["Stop (ilk)", lv.sl != null ? px(lv.sl) : "kayıt yok"],
-    ["Risk:Ödül", rr != null ? `1 : ${fmt(rr, 2)}` : "-"],
-  ];
-  if (ctx.isOpen) {
-    infoBits.push(["Anlık fiyat", px(t.last_price)], ["Anlık R", fmt(t.unrealized_r || 0, 2)]);
-  } else {
-    const lab = t.result === "TP" ? "TP'ye ulaştı" : (t.pnl > 0 ? "Stop (kârda)" : (t.pnl === 0 ? "Başabaş" : "Stop"));
-    infoBits.push(["Çıkış", `${px(t.exit)} (${lab})`], ["Sonuç", `${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)} USDT · ${fmt(t.r_multiple, 2)}R`]);
-  }
-  document.getElementById("cm-info").innerHTML = infoBits.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join("");
+  let dist = lv.sl != null ? Math.abs(t.entry - lv.sl) : null;
+  let rr = (lv.tp != null && dist) ? Math.abs(lv.tp - t.entry) / dist : null;
+  const drawInfo = () => {
+    const infoBits = [
+      ["Giriş", px(t.entry)],
+      ["Hedef (TP)", lv.tp != null ? px(lv.tp) + (lv.tpRecomputed ? " (yeniden hesaplandı)" : "") : "kayıt yok"],
+      ["Stop (ilk)", lv.sl != null ? px(lv.sl) : "kayıt yok"],
+      ["Risk:Ödül", rr != null ? `1 : ${fmt(rr, 2)}` : "-"],
+    ];
+    if (ctx.isOpen) {
+      infoBits.push(["Anlık fiyat", px(t.last_price)], ["Anlık R", fmt(t.unrealized_r || 0, 2)]);
+    } else {
+      const lab = t.result === "TP" ? "TP'ye ulaştı" : (t.pnl > 0 ? "Stop (kârda)" : (t.pnl === 0 ? "Başabaş" : "Stop"));
+      infoBits.push(["Çıkış", `${px(t.exit)} (${lab})`], ["Sonuç", `${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)} USDT · ${fmt(t.r_multiple, 2)}R`]);
+    }
+    document.getElementById("cm-info").innerHTML = infoBits.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join("");
+  };
+  drawInfo();
 
   try {
     const [bar, barMs] = CHART_BARS[ctx.tf] || CHART_BARS["15m"];
     const openMs = Date.parse(t.open_time);
     const endMs = ctx.isOpen ? Date.now() : Date.parse(t.close_time);
-    const startMs = openMs - 70 * barMs;
+    const startMs = openMs - 70 * barMs;                                  // grafikte gorunen sol uc
+    const doWhyEarly = ctx.strategy !== "vwap" && ctx.tf === "4h";
+    const fetchStart = doWhyEarly ? openMs - (CHART_WINDOW + 5) * barMs : startMs;   // dedektorun baktigi gecmis (gerekce icin)
     const stopMs = Math.min(Date.now(), endMs + 25 * barMs);
-    const [candles] = await Promise.all([
-      chartFetchCandles(`${base}-USDT-SWAP`, bar, startMs, stopMs),
+    const isWave = ctx.strategy !== "vwap";
+    // Karar gerekcesi yalniz 4h dalga islemleri icin (diger zaman dilimleri/VWAP'ta grafik eskisi gibi, ek veri cekilmez).
+    const doWhy = isWave && ctx.tf === "4h";
+    const htfTf = doWhy ? CHART_HTF[ctx.tf] : null;
+    const htfInfo = htfTf ? CHART_BARS[htfTf] : null;
+    const [candles, htfRaw] = await Promise.all([
+      chartFetchCandles(`${base}-USDT-SWAP`, bar, fetchStart, stopMs),
+      htfInfo ? chartFetchCandles(`${base}-USDT-SWAP`, htfInfo[0], openMs - 75 * htfInfo[1], Math.min(Date.now(), openMs + htfInfo[1])).catch(() => null) : Promise.resolve(null),
       loadChartLib(),
     ]);
     if (token !== CHART_LIVE.token) return;          // kullanici arada kapatti / baska grafik acti
     if (!candles.length) throw new Error("Bu aralık için OKX'ten mum verisi gelmedi");
+
+    // --- Karar gerekcesi: islemin dayandigi kurulumu ayni mumlarda yeniden bul + kayitla dogrula ---
+    let ex = null;
+    const toEng = (arr) => (arr || []).map(c => ({ timestamp: c.time * 1000, open: c.open, high: c.high, low: c.low, close: c.close, volume: c.volume }));
+    try {
+      const pk = Array.isArray(t.param_key) ? t.param_key : null;
+      // Yaklasik (kismi kar kaydindan geri hesaplanan) stop dogrulamada KULLANILMAZ; TP/stop ikisi de yoksa "yeniden uretildi" modu.
+      const tpRec = t.tp ?? lv.tp, slRec = t.initial_sl ?? (lv.slApprox ? null : lv.sl);
+      if (doWhy && pk && typeof hbExplainWaveTrade === "function") {
+        const exact = t.tp != null && t.initial_sl != null;
+        const common = { candles: toEng(candles), openMs, entry: t.entry, tp: tpRec, sl: slRec, side: t.side, paramKey: pk, window: CHART_WINDOW, tol: exact ? 1e-6 : 5e-4 };
+        ex = hbExplainWaveTrade({ ...common, candlesHtf: toEng(htfRaw), htfShiftMs: ctx.htfShift || 0, htfTf });
+        if ((ex.verified || ex.reproduced) && ex.levels && (lv.tp == null || lv.sl == null || lv.slApprox)) {   // eski kayitta eksik/yaklasik seviyeyi kurulumdan doldur
+          if (lv.tp == null && ex.levels.tp != null) { lv.tp = ex.levels.tp; lv.tpRecomputed = true; }
+          if ((lv.sl == null || lv.slApprox) && ex.levels.sl != null) { lv.sl = ex.levels.sl; lv.slApprox = false; }
+          dist = lv.sl != null ? Math.abs(t.entry - lv.sl) : null;
+          rr = (lv.tp != null && dist) ? Math.abs(lv.tp - t.entry) / dist : null;
+          drawInfo();
+        }
+      }
+    } catch (e) { console.warn("gerekce hesaplanamadi", e); ex = null; }
 
     // Zamani en yakin (onceki) muma oturt -- OKX 1D mumlari UTC 00:00'da baslamayabilir.
     const snap = (ms) => {
@@ -659,9 +783,17 @@ async function openTradeChart(ctx) {
     markers.sort((a, b) => a.time - b.time);
     series.setMarkers(markers);
 
-    // Gorunur aralik: girisin biraz oncesi -> kapanisin biraz sonrasi
-    const from = snap(Math.max(startMs, openMs - 30 * barMs));
-    chart.timeScale().setVisibleRange({ from, to: candles[candles.length - 1].time });
+    // Gorunur aralik: girisin biraz oncesi -> kapanisin biraz sonrasi (dalga 0-1-2 noktalari varsa onlari da kapsasin)
+    let fromMs = Math.max(startMs, openMs - 30 * barMs);
+    if (ex && (ex.verified || ex.reproduced)) {
+      // Dalga 0 -> 1 -> 2: tespit edilen kurulum grafikte altin rengi cizgi + "0/1/2" etiketleriyle
+      const pts = [ex.setup.p0, ex.setup.p1, ex.setup.p2];
+      const wl = chart.addLineSeries({ color: "#d4a72c", lineWidth: 2, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false });
+      wl.setData(pts.map(p => ({ time: Math.floor(p.time / 1000), value: p.price })));
+      wl.setMarkers(pts.map((p, i) => ({ time: Math.floor(p.time / 1000), position: p.kind === "H" ? "aboveBar" : "belowBar", color: "#d4a72c", shape: "circle", text: String(i) })));
+      fromMs = Math.min(fromMs, pts[0].time - 4 * barMs);
+    }
+    chart.timeScale().setVisibleRange({ from: snap(Math.max(fetchStart, fromMs)), to: candles[candles.length - 1].time });
 
     document.getElementById("cm-legend").innerHTML = lines.map(l =>
       `<span><i style="background:${l.color};${l.style ? "opacity:.7" : ""}"></i>${l.title} <b>${px(l.price)}</b></span>`).join("");
@@ -671,6 +803,7 @@ async function openTradeChart(ctx) {
     if (rr != null && rr < 1) notes.push(`Dikkat: bu işlemde hedef, riskin yalnızca ${fmt(rr, 2)} katı uzakta (kazanırsa ${fmt(rr, 2)}R, kaybederse -1R).`);
     notes.push("Kesikli gri çizgiler (varsa): 1R'de stop girişe çekilir (başabaş), kısmi kârda pozisyonun yarısı satılır ve stop izlemeli (trailing) olur.");
     document.getElementById("cm-note").textContent = notes.join(" ");
+    if (doWhy) document.getElementById("cm-why").innerHTML = buildWhyHtml({ ctx, t, lv, dist, rr, ex, sgn, isBuy });
   } catch (e) {
     if (token !== CHART_LIVE.token) return;
     host.innerHTML = `<div class="empty" style="padding:40px 0;text-align:center;color:var(--red)">Grafik açılamadı: ${e.message}</div>`;
@@ -695,7 +828,7 @@ function renderOpenPositions(p, account) {
       <tbody>
         ${positions.map(pos => `
           <tr>
-            <td>${chartBtn(scope, { trade: pos, isOpen: true, tf: p.tf, history: account.history || [], beR: 1.0, ptR: 1.5 })}</td>
+            <td>${chartBtn(scope, { trade: pos, isOpen: true, tf: p.tf, history: account.history || [], beR: 1.0, ptR: 1.5, strategy: p.strategy || "wave", rMode: !!p.rMode, htfShift: 0 })}</td>
             <td>${pos.symbol}</td>
             <td class="side-${pos.side.toLowerCase()}">${pos.side}</td>
             <td>${fmt(pos.entry, 4)}</td>
@@ -779,7 +912,7 @@ function renderHistory(p, account) {
           else { sonucLabel = "KAYIP"; sonucCls = "neg"; }
           return `
           <tr class="${isPartial ? "partial-row" : ""}">
-            <td>${isPartial ? "" : chartBtn(hscope, { trade: t, isOpen: false, tf: p.tf, history: account.history || [], beR: 1.0, ptR: 1.5 })}</td>
+            <td>${isPartial ? "" : chartBtn(hscope, { trade: t, isOpen: false, tf: p.tf, history: account.history || [], beR: 1.0, ptR: 1.5, strategy: p.strategy || "wave", rMode: !!p.rMode, htfShift: 0 })}</td>
             <td>${t.symbol}</td>
             <td class="side-${t.side.toLowerCase()}">${t.side}</td>
             <td class="${sonucCls}">${sonucLabel}</td>
@@ -974,7 +1107,7 @@ function buildTradesTable(trades, bt) {
     else { label = "KAYIP"; cls = "neg"; }
     return `
       <tr class="${isPartial ? "partial-row" : ""}">
-        <td>${bt && !isPartial ? chartBtn(bt.scope, { trade: t, isOpen: false, tf: bt.tf, history: bt.all, beR: bt.beR, ptR: bt.ptR }) : ""}</td>
+        <td>${bt && !isPartial ? chartBtn(bt.scope, { trade: t, isOpen: false, tf: bt.tf, history: bt.all, beR: bt.beR, ptR: bt.ptR, strategy: bt.strategy, rMode: bt.rMode, htfShift: bt.htfShift }) : ""}</td>
         <td>${t.symbol}</td>
         <td class="side-${(t.side || "").toLowerCase()}">${t.side}</td>
         <td class="${cls}">${label}</td>
@@ -1035,7 +1168,11 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
   const bySymbolRows = r.by_symbol || computeSymbolRowsFromTrades(r.trades);
   const allTrades = [...(r.trades || [])].reverse();
   // islem grafigi baglami (her hedef kutu icin ayri kapsam)
-  const btChart = { scope: `bt-${targetId}`, tf: c.timeframe, beR: c.breakeven_r ?? 1.0, ptR: c.partial_tp_r ?? 1.5, all: r.trades || [] };
+  // R modunda (Top50) ust-TF mumlari ileriye bakmadan kesilir (kapanmis olanlar): shift = islem bar suresi - ust TF suresi.
+  const btHtf = (typeof HB_HIGHER_TIMEFRAME !== "undefined") ? HB_HIGHER_TIMEFRAME[c.timeframe] : null;
+  const btChart = { scope: `bt-${targetId}`, tf: c.timeframe, beR: c.breakeven_r ?? 1.0, ptR: c.partial_tp_r ?? 1.5, all: r.trades || [],
+    strategy: c.strategy, rMode: ((c.risk_per_trade || 0) > 0 || (c.risk_pct || 0) > 0),
+    htfShift: (((c.risk_per_trade || 0) > 0 || (c.risk_pct || 0) > 0) && btHtf) ? HB_BAR_MS[c.timeframe] - HB_BAR_MS[btHtf] : 0 };
   const filterSymbols = (bySymbolRows.length ? bySymbolRows.map(x => x.symbol) : [...new Set(allTrades.map(t => t.symbol))]).sort();
   const symbolFilterOptions = `<option value="__all__">Tüm coinler (${filterSymbols.length})</option>` +
     filterSymbols.map(sym => `<option value="${sym}">${sym}</option>`).join("");
