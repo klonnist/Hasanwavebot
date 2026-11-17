@@ -1,0 +1,63 @@
+{
+  "balance": 10000.0,
+  "starting_balance": 10000.0,
+  "history": [],
+  "open_positions": {
+    "BTC/USDT:USDT": {
+      "symbol": "BTC/USDT:USDT",
+      "side": "SELL",
+      "entry": 63791.4,
+      "tp": 49609.5,
+      "sl": 69276.7212,
+      "risk_amount": 100.0,
+      "size": 0.018230472993997146,
+      "param_key": [
+        1.8,
+        2.0,
+        0.382
+      ],
+      "open_time": "2026-11-17T18:00:54+00:00",
+      "leverage": 100.0,
+      "notional": 1162.9473949492697,
+      "margin": 11.629473949492697,
+      "last_funding_time": "2026-11-17T18:00:54+00:00",
+      "funding_paid": 0.0,
+      "last_price": 63791.4,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 69276.7212,
+      "initial_risk_amount": 100.0,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    },
+    "PIEVERSE/USDT:USDT": {
+      "symbol": "PIEVERSE/USDT:USDT",
+      "side": "BUY",
+      "entry": 2.03,
+      "tp": 2.2863984,
+      "sl": 1.6211596,
+      "risk_amount": 100.0,
+      "size": 244.59422307580178,
+      "param_key": [
+        1.8,
+        1.272,
+        0.382
+      ],
+      "open_time": "2026-11-17T18:00:58+00:00",
+      "leverage": 100.0,
+      "notional": 496.52627284387756,
+      "margin": 4.965262728438776,
+      "last_funding_time": "2026-11-17T18:00:58+00:00",
+      "funding_paid": 0.0,
+      "last_price": 2.03,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 1.6211596,
+      "initial_risk_amount": 100.0,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    }
+  }
+}
