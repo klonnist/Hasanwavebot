@@ -716,7 +716,7 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
     { label: "Max Drawdown", value: `%${fmt(s.max_drawdown_pct, 1)}`, cls: "neg" },
   ];
   // Sabit risk (R) modunda R bazli metrikler (eski raporlarda risk_per_trade yoktur, kartlar eklenmez).
-  const isR = (c.risk_per_trade || 0) > 0;
+  const isR = (c.risk_per_trade || 0) > 0 || (c.risk_pct || 0) > 0;
   if (isR) {
     cards.splice(6, 0,
       { label: "Toplam R", value: `${s.total_r >= 0 ? "+" : ""}${fmt(s.total_r, 2)}R`, cls: pnlClass(s.total_r) },
@@ -793,7 +793,9 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
         <div>Zaman dilimi: <b>${c.timeframe}</b></div>
         <div>Pencere: <b>${c.window} mum</b></div>
         ${isR
-          ? `<div>Mod: <b>Top50 (R)</b> — 1R = <b>${fmt(c.risk_per_trade)} USDT</b></div>
+          ? `<div>Mod: <b>Top50 (R)</b> — ${(c.risk_pct || 0) > 0
+                ? `risk: <b>bakiyenin %${fmt(c.risk_pct, 2)}'i</b> (bileşik; 1R her işlemde farklı USDT)`
+                : `1R = <b>${fmt(c.risk_per_trade)} USDT</b> (sabit)`}</div>
              <div>Stop mesafesi bandı: <b>%${fmt(c.min_sl_pct, 1)} – %${fmt(c.max_sl_pct, 0)}</b></div>
              <div>Öğrenme: <b>${c.pooled ? "havuzlu" : "coin bazlı"}</b> · oynatma: <b>${c.interleaved ? "zaman sırasıyla birlikte" : "sembol sembol"}</b></div>`
           : `<div>Kaldıraç: <b>${fmt(c.leverage, 0)}x</b></div>
@@ -915,11 +917,19 @@ function buildBacktestSkeleton() {
           <label>Bakiye (USDT) <input type="number" name="balance" value="10000" min="100" step="100"></label>
           <label class="bt-classic-only">Marjin / İşlem (USDT) <input type="number" name="trade_margin" value="500" min="10" step="10"></label>
           <label class="bt-classic-only">Kaldıraç <input type="number" name="leverage" value="5" min="1" max="50" step="1"></label>
-          <label class="bt-r-only" hidden>1R = Risk / İşlem (USDT) <input type="number" name="risk_per_trade" value="100" min="1" step="any"></label>
+          <label class="bt-r-only" hidden>Risk türü
+            <select name="risk_kind" id="bt-risk-kind">
+              <option value="fixed">Sabit (her işlem aynı USDT)</option>
+              <option value="pct">Bakiyenin %'si (bileşik büyüme)</option>
+            </select>
+          </label>
+          <label class="bt-r-only bt-risk-fixed" hidden>1R = Risk / İşlem (USDT) <input type="number" name="risk_per_trade" value="100" min="1" step="any"></label>
+          <label class="bt-r-only bt-risk-pct" hidden>Risk / İşlem (% bakiye) <input type="number" name="risk_pct" value="1" min="0.05" step="any"></label>
         </div>
         <div class="bt-hint bt-r-only" id="bt-top50-info" hidden>
           <b>Top50 (R) modu:</b> her işlem tam 1R riskler (SL'e çarpan = -1R), pozisyon büyüklüğü stop mesafesine göre
-          ayarlanır. Evren, çalıştırınca <code>data/universe_top50.json</code>'dan alınan, OKX'te hacme göre ilk 50 kripto
+          ayarlanır. Risk <b>sabit</b> (her işlem aynı USDT, canlı profillerdeki gibi) ya da <b>bakiyenin %'si</b>
+          (açılış anındaki gerçekleşmiş bakiyenin yüzdesi, kazandıkça risk büyür: bileşik) olabilir. Evren, çalıştırınca <code>data/universe_top50.json</code>'dan alınan, OKX'te hacme göre ilk 50 kripto
           listesidir (hisse/ETF/emtia perp'leri hariç; yeterli geçmişi olmayan yeni coinler atlanır). Coinler canlı botla aynı
           şekilde zaman sırasıyla birlikte oynatılır, öğrenen ajan havuzludur, üst zaman dilimi filtresi ileriye bakmaz.
           <br>Veri tarayıcıdan OKX'ten çekilir: <b>4h + birkaç ay</b> önerilir; 15m veya çok uzun aralıklar dakikalarca sürebilir.
@@ -1002,8 +1012,17 @@ function setupHbBacktestForm() {
       document.getElementById("bt-timeframe-select").disabled = false;
     }
     strategySelect.disabled = isR;  // Top50 (R) yalniz Elliott Wave (FormData disabled alani gondermez, asagida elle verilir)
+    applyRiskKind();
+  }
+  // Risk turu: sabit USDT (1R) veya bakiyenin %'si (bilesik). Yalniz Top50 (R) modunda gorunur.
+  function applyRiskKind() {
+    const isR = modeSelect.value === "top50r";
+    const pct = form.risk_kind.value === "pct";
+    form.querySelectorAll(".bt-risk-fixed").forEach(el => { el.hidden = !isR || pct; });
+    form.querySelectorAll(".bt-risk-pct").forEach(el => { el.hidden = !isR || !pct; });
   }
   modeSelect.addEventListener("change", applyBacktestMode);
+  form.risk_kind.addEventListener("change", applyRiskKind);
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -1037,8 +1056,12 @@ function setupHbBacktestForm() {
         return;
       }
       // canli r50 profilleriyle ayni: sabit risk (1R), stop mesafesi bandi, havuzlu ogrenme, zaman sirasiyla birlikte
+      const pctMode = fd.get("risk_kind") === "pct";
       Object.assign(baseParams, {
-        riskPerTrade: Number(fd.get("risk_per_trade")), minSlPct: tf === "15m" ? 0.4 : 0.5, maxSlPct: 30,
+        // bilesik mod: riskPct > 0 (motorda riskPerTrade'e gore oncelikli), sabit mod: riskPerTrade
+        riskPct: pctMode ? Number(fd.get("risk_pct")) : 0,
+        riskPerTrade: pctMode ? 0 : Number(fd.get("risk_per_trade")),
+        minSlPct: tf === "15m" ? 0.4 : 0.5, maxSlPct: 30,
         leverage: 100,  // sadece teminat muhasebesi icin (pozisyon boyutunu stop mesafesi belirler)
         pooled: true, interleaved: true,
       });

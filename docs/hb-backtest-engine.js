@@ -349,6 +349,10 @@ class HbPaperAccount {
       // kadar USDT riskler, pozisyon stop mesafesine gore boyutlanir; minSlPct/maxSlPct stop
       // mesafesi (giris fiyatinin %'si) icin izin verilen aralik (0 = kapali).
       riskPerTrade: 0, minSlPct: 0, maxSlPct: 0,
+      // riskPct > 0 (YALNIZ backtest): her islemin riski, ACILDIGI ANDAKI gerceklesmis
+      // bakiyenin bu yuzdesi (bilesik buyume) -- kazandikca risk buyur, kaybettikce kuculur.
+      // riskPerTrade'e gore ONCELIKLIDIR. Canli profiller sabit riskPerTrade kullanir.
+      riskPct: 0,
     }, cfg);
     this.startingBalance = cfg.startingBalance;
     this.balance = cfg.startingBalance;
@@ -372,10 +376,12 @@ class HbPaperAccount {
     if (tp <= 0 || sl <= 0) return null;
     if (this.sameDirectionCount(side) >= this.maxSameDirection) return null;
     let margin, notional, size, riskAmount;
-    if (this.riskPerTrade > 0) {
+    if (this.riskPerTrade > 0 || this.riskPct > 0) {
       const slPct = (riskPerUnit / entry) * 100;
       if (slPct < this.minSlPct || (this.maxSlPct > 0 && slPct > this.maxSlPct)) return null;
-      riskAmount = this.riskPerTrade;
+      // Bilesik mod: risk = acilis anindaki (gerceklesmis) bakiyenin yuzdesi. Bakiye <= 0 ise islem acilmaz.
+      riskAmount = this.riskPct > 0 ? (this.riskPct / 100) * this.balance : this.riskPerTrade;
+      if (riskAmount <= 0) return null;
       size = riskAmount / riskPerUnit;
       notional = size * entry;
       margin = notional / this.leverage;  // leverage burada sadece teminat muhasebesi icin
@@ -682,12 +688,12 @@ async function runHbBacktest({
   maxSameDirection = 3, breakevenR = 1.0, partialTpR = 1.5, partialTpFraction = 0.5,
   trailGivebackPct = 0.5, epsilon = 0.25, onProgress,
   // Top50 (R) modu: sabit risk + havuzlu ogrenme + coinleri zaman sirasiyla birlikte oynat
-  riskPerTrade = 0, minSlPct = 0, maxSlPct = 0, pooled = false, interleaved = false,
+  riskPerTrade = 0, minSlPct = 0, maxSlPct = 0, pooled = false, interleaved = false, riskPct = 0,
 }) {
   const account = new HbPaperAccount({
     startingBalance: balance, tradeMargin, maxOpenPositions: maxOpen, leverage,
     maxPortfolioRiskPct, maxSameDirection, breakevenR, partialTpR, partialTpFraction, trailGivebackPct,
-    riskPerTrade, minSlPct, maxSlPct,
+    riskPerTrade, minSlPct, maxSlPct, riskPct,
   });
   const learner = new HbLearner(strategy, epsilon, pooled);
   const okxBar = HB_OKX_BAR[timeframe];
@@ -783,7 +789,8 @@ async function runHbBacktest({
       max_same_direction: account.maxSameDirection, breakeven_r: account.breakevenR,
       partial_tp_r: account.partialTpR, partial_tp_fraction: account.partialTpFraction,
       trail_giveback_pct: account.trailGivebackPct, epsilon: learner.epsilon,
-      risk_per_trade: account.riskPerTrade, min_sl_pct: account.minSlPct, max_sl_pct: account.maxSlPct,
+      risk_per_trade: account.riskPerTrade, risk_pct: account.riskPct,
+      min_sl_pct: account.minSlPct, max_sl_pct: account.maxSlPct,
       pooled: learner.pooled, interleaved,
     },
     summary,
