@@ -74,6 +74,16 @@ yönetimi) **daha geniş bir evrende ve sabit riskle** izler:
   anlamsız küçük bir pozisyon üretir).
 - **Öğrenme havuzlu:** 50 coin x 12 kombinasyonu ayrı ayrı öğrenmek anlamsız olduğundan
   tüm coinlerin sonuçları tek istatistikte toplanır (`PooledLearner`).
+- **"Kaldıraç" yerine pozisyon büyüklüğü:** bu profillerde `--leverage 100` yalnızca
+  teminat muhasebesi içindir (pozisyonu stop mesafesi boyutlar, kaldıraç değil), bu yüzden
+  panelde "Kaldıraç/Margin" gösterilmez; yerine her işlemin **pozisyon büyüklüğü (notional)**
+  ve genel **efektif kaldıraç** (açık pozisyonların toplamı / bakiye) görünür.
+- **Backtest sekmesinde de çalıştırabilirsin:** panelde Backtest → "Mod: Top50 (R)" seçilince
+  `data/universe_top50.json` listesindeki 50 coin, canlı profillerle aynı kurallarla (sabit risk,
+  havuzlu öğrenme, coinler zaman sırasıyla birlikte, üst zaman dilimi filtresi ileriye bakmadan)
+  tarayıcıda geçmiş veride koşturulur ve sonuç R cinsinden gösterilir. Tarayıcı motoru, aynı
+  pencerede Python'daki canlı mantıkla işlem işlem karşılaştırıldı (40/40 işlem birebir aynı).
+  4h + birkaç ay önerilir; 15m veya çok uzun aralıklar dakikalarca sürer.
 - **Dikkat:** komisyon ve slipaj modellenmez (özellikle 15m'de dar stoplarla
   sonuçları iyimser gösterir) ve hacim sıralamasının alt ucundaki coinlerde
   (~10M USDT/gün) gerçek dolum zor olurdu. `--top-n 100` ile evren genişletilebilir.

@@ -197,18 +197,26 @@ def try_open_position(exchange, symbol, timeframe, limit, learner: Learner, acco
         param_key=params.key(),
     )
     if pos:
+        # Sabit risk modunda "kaldirac/margin" sadece teminat muhasebesi icin (anlamsiz ve
+        # yaniltici, orn. 100x); asil bilgi pozisyon buyuklugu ve riskidir.
+        size_str = (f"pozisyon={pos.notional:.0f} USDT risk={pos.risk_amount:.0f} USDT" if account.risk_per_trade > 0
+                    else f"kaldirac={pos.leverage}x margin={pos.margin:.2f}")
         log(f">>> SANAL ISLEM ACILDI ({strategy}): {direction} {symbol} | entry={entry:.6f} "
-            f"tp={tp:.6f} sl={sl:.6f} | kaldirac={pos.leverage}x margin={pos.margin:.2f} | {extra}")
+            f"tp={tp:.6f} sl={sl:.6f} | {size_str} | {extra}")
         if notify:
             emoji = "📈" if direction == "BUY" else "📉"
-            tp_pct = _leveraged_pct(entry, tp, direction, pos.leverage)
-            sl_pct = _leveraged_pct(entry, sl, direction, pos.leverage)
+            # Sabit risk modunda bookkeeping kaldiraci (orn. 100x) ile yuzde hesaplamak anlamsiz:
+            # sadece fiyat hareketi yuzdesi (kaldirac 1x) gosterilir.
+            pct_lev = 1.0 if account.risk_per_trade > 0 else pos.leverage
+            tp_pct = _leveraged_pct(entry, tp, direction, pct_lev)
+            sl_pct = _leveraged_pct(entry, sl, direction, pct_lev)
             send_telegram(
                 f"{emoji} <b>{direction} {_display_symbol(symbol)}</b>  ({strategy.upper()})\n\n"
                 f"Giriş  <code>{entry:.6f}</code>\n"
                 f"Hedef  <code>{tp:.6f}</code>   ({tp_pct:+.1f}%)\n"
                 f"Stop   <code>{sl:.6f}</code>   ({sl_pct:+.1f}%)\n\n"
-                f"{pos.leverage:g}x kaldıraç · {pos.margin:.0f} USDT marjin"
+                + (f"Pozisyon {pos.notional:.0f} USDT · risk {pos.risk_amount:.0f} USDT (1R)" if account.risk_per_trade > 0
+                   else f"{pos.leverage:g}x kaldıraç · {pos.margin:.0f} USDT marjin")
             )
 
 

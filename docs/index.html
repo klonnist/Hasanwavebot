@@ -136,6 +136,7 @@
   }
   .hist-toggle-btn:hover { background: var(--accent); color: #0b0f14; }
 
+  [hidden] { display: none !important; }
   tr.low-n { opacity: .55; }
   .n-warn {
     display: inline-block; font-size: 9.5px; color: var(--muted); border: 1px solid var(--panel-border);
@@ -199,6 +200,10 @@ function computeStats(account) {
     open_positions: openPositions.length,
     unrealized_pnl: unrealizedPnl,
     funding_total: fundingTotal,
+    // Efektif kaldirac = acik pozisyonlarin toplam buyuklugu / bakiye (sabit risk
+    // modunda "kaldirac" alani sadece teminat muhasebesi icin, gercek maruziyet bu).
+    effective_leverage: account.balance > 0
+      ? openPositions.reduce((s, p) => s + (p.notional || 0), 0) / account.balance : 0,
   };
   // PARTIAL_TP kayitlari tamamlanmis bir islem degil (pozisyon hala acik,
   // trailing stop ile devam ediyor) -- islem sayisi/kazanma oranindan haric.
@@ -376,6 +381,7 @@ function renderCards(p, stats) {
       { label: "Toplam R", value: `${stats.total_r >= 0 ? "+" : ""}${fmt(stats.total_r, 2)}R`, cls: pnlClass(stats.total_r) },
       { label: "Ort. R / İşlem", value: `${stats.avg_r >= 0 ? "+" : ""}${fmt(stats.avg_r, 3)}R`, cls: pnlClass(stats.avg_r) },
       { label: "Profit Factor", value: stats.profit_factor === null ? "-" : fmt(stats.profit_factor, 2) },
+      { label: "Efektif Kaldıraç", value: `${fmt(stats.effective_leverage, 2)}x` },
     );
   }
   document.getElementById(`cards-${p.key}`).innerHTML = cards.map(c => `
@@ -397,7 +403,7 @@ function renderOpenPositions(p, account) {
     <table>
       <thead><tr>
         <th>Sembol</th><th>Yön</th><th>Giriş</th><th>Anlık Fiyat</th><th>Anlık K/Z</th><th>Anlık R</th>
-        <th>TP</th><th>SL</th><th>Durum</th><th>Kaldıraç</th><th>Margin (USDT)</th><th>Risk (USDT)</th><th>Funding</th><th>Açılış</th>
+        <th>TP</th><th>SL</th><th>Durum</th>${p.rMode ? "<th>Pozisyon (USDT)</th>" : "<th>Kaldıraç</th><th>Margin (USDT)</th>"}<th>Risk (USDT)</th><th>Funding</th><th>Açılış</th>
       </tr></thead>
       <tbody>
         ${positions.map(pos => `
@@ -414,8 +420,9 @@ function renderOpenPositions(p, account) {
               <span class="badge ${pos.breakeven_done ? "on" : ""}">başabaş</span>
               <span class="badge ${pos.partial_tp_done ? "on" : ""}">kısmi+trail</span>
             </td>
-            <td>${fmt(pos.leverage, 0)}x</td>
-            <td>${fmt(pos.margin)}</td>
+            ${p.rMode
+              ? `<td>${fmt(pos.notional, 0)}</td>`
+              : `<td>${fmt(pos.leverage, 0)}x</td><td>${fmt(pos.margin)}</td>`}
             <td>${fmt(pos.risk_amount)}</td>
             <td class="${pnlClass(-(pos.funding_paid || 0))}">${(pos.funding_paid || 0) > 0 ? "-" : "+"}${fmt(Math.abs(pos.funding_paid || 0))}</td>
             <td>${fmtTime(pos.open_time)}</td>
@@ -465,7 +472,7 @@ function renderHistory(p, account) {
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>Kaldıraç</th><th>K/Z (USDT)</th><th>Funding</th><th>R</th><th>Kapanış</th>
+        <th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>${p.rMode ? "Pozisyon (USDT)" : "Kaldıraç"}</th><th>K/Z (USDT)</th><th>Funding</th><th>R</th><th>Kapanış</th>
       </tr></thead>
       <tbody>
         ${history.map(t => {
@@ -487,7 +494,7 @@ function renderHistory(p, account) {
             <td class="${sonucCls}">${sonucLabel}</td>
             <td>${fmt(t.entry, 4)}</td>
             <td>${fmt(t.exit, 4)}</td>
-            <td>${fmt(t.leverage, 0)}x</td>
+            <td>${p.rMode ? (t.notional != null ? fmt(t.notional, 0) : "-") : `${fmt(t.leverage, 0)}x`}</td>
             <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}${t.partial_taken ? " *" : ""}</td>
             <td class="${pnlClass(-(t.funding_paid || 0))}">${(t.funding_paid || 0) > 0 ? "-" : "+"}${fmt(Math.abs(t.funding_paid || 0))}</td>
             <td class="${pnlClass(t.r_multiple)}">${fmt(t.r_multiple, 2)}</td>
@@ -633,14 +640,14 @@ function computeSymbolRowsFromTrades(trades) {
     .sort((a, b) => b.total_pnl - a.total_pnl);
 }
 
-function buildSymbolPerfTable(rows) {
+function buildSymbolPerfTable(rows, showR = false) {
   if (!rows || rows.length === 0) {
     return `<div class="empty">Kapanmış işlem yok.</div>`;
   }
   return `
     <table>
       <thead><tr>
-        <th>Coin</th><th>İşlem</th><th>Kazanan</th><th>Başabaş</th><th>Kaybeden</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th>
+        <th>Coin</th><th>İşlem</th><th>Kazanan</th><th>Başabaş</th><th>Kaybeden</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th>${showR ? "<th>Toplam R</th>" : ""}
       </tr></thead>
       <tbody>
         ${rows.map(r => `
@@ -652,6 +659,7 @@ function buildSymbolPerfTable(rows) {
             <td class="neg">${r.losses}</td>
             <td>%${fmt(r.win_rate, 1)}</td>
             <td class="${pnlClass(r.total_pnl)}">${r.total_pnl >= 0 ? "+" : ""}${fmt(r.total_pnl)}</td>
+            ${showR ? `<td class="${pnlClass(r.total_r || 0)}">${(r.total_r || 0) >= 0 ? "+" : ""}${fmt(r.total_r || 0, 2)}R</td>` : ""}
           </tr>
         `).join("")}
       </tbody>
@@ -707,6 +715,15 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
     { label: "Başabaş", value: s.breakeven || 0 },
     { label: "Max Drawdown", value: `%${fmt(s.max_drawdown_pct, 1)}`, cls: "neg" },
   ];
+  // Sabit risk (R) modunda R bazli metrikler (eski raporlarda risk_per_trade yoktur, kartlar eklenmez).
+  const isR = (c.risk_per_trade || 0) > 0;
+  if (isR) {
+    cards.splice(6, 0,
+      { label: "Toplam R", value: `${s.total_r >= 0 ? "+" : ""}${fmt(s.total_r, 2)}R`, cls: pnlClass(s.total_r) },
+      { label: "Ort. R / İşlem", value: `${s.avg_r >= 0 ? "+" : ""}${fmt(s.avg_r, 3)}R`, cls: pnlClass(s.avg_r) },
+      { label: "Profit Factor", value: s.profit_factor == null ? "-" : fmt(s.profit_factor, 2) },
+    );
+  }
 
   const lbRows = (r.leaderboard || []).map(row => `
     <tr class="${row.low_n ? "low-n" : ""}" ${row.low_n ? `title="Az veri (n=${row.n}) — bu satırdaki sonuç istatistiksel olarak henüz güvenilir değil"` : ""}>
@@ -758,7 +775,7 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
         Hangi coinde daha çok kazandırdığını/kaybettirdiğini burada kıyaslayabilirsin — TÜM işlemlerden hesaplanır,
         aşağıdaki işlem tablosu ne kadar kısaltılmış olursa olsun bu rakamlar tamdır.
       </div>
-      <div class="table-wrap">${buildSymbolPerfTable(bySymbolRows)}</div>
+      <div class="table-wrap">${buildSymbolPerfTable(bySymbolRows, isR)}</div>
     </section>
 
     <section>
@@ -775,8 +792,12 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
         <div>Strateji: <b>${c.strategy}</b></div>
         <div>Zaman dilimi: <b>${c.timeframe}</b></div>
         <div>Pencere: <b>${c.window} mum</b></div>
-        <div>Kaldıraç: <b>${fmt(c.leverage, 0)}x</b></div>
-        <div>İşlem başına teminat: <b>${fmt(c.trade_margin)} USDT</b></div>
+        ${isR
+          ? `<div>Mod: <b>Top50 (R)</b> — 1R = <b>${fmt(c.risk_per_trade)} USDT</b></div>
+             <div>Stop mesafesi bandı: <b>%${fmt(c.min_sl_pct, 1)} – %${fmt(c.max_sl_pct, 0)}</b></div>
+             <div>Öğrenme: <b>${c.pooled ? "havuzlu" : "coin bazlı"}</b> · oynatma: <b>${c.interleaved ? "zaman sırasıyla birlikte" : "sembol sembol"}</b></div>`
+          : `<div>Kaldıraç: <b>${fmt(c.leverage, 0)}x</b></div>
+             <div>İşlem başına teminat: <b>${fmt(c.trade_margin)} USDT</b></div>`}
         <div>Max eşzamanlı pozisyon: <b>${c.max_open}</b></div>
         <div>Max portföy riski: <b>%${fmt(c.max_portfolio_risk_pct, 1)}</b></div>
         <div>Başabaş / Kısmi: <b>${fmt(c.breakeven_r, 1)}R / ${fmt(c.partial_tp_r, 1)}R</b></div>
@@ -862,8 +883,14 @@ function buildBacktestSkeleton() {
       <h2>Yeni Backtest — kendi tarih aralığınızı seçin (tarayıcınızda anında çalışır)</h2>
       <form id="bt-run-form">
         <div class="bt-form-grid">
+          <label>Mod
+            <select name="mode" id="bt-mode-select">
+              <option value="classic">Klasik (seçtiğin coinler, sabit teminat)</option>
+              <option value="top50r">Top50 (R): hacme göre ilk 50 kripto, sabit risk</option>
+            </select>
+          </label>
           <label>Strateji
-            <select name="strategy">
+            <select name="strategy" id="bt-strategy-select">
               <option value="wave">Elliott Wave (trend takip)</option>
               <option value="vwap">VWAP (ortalamaya dönüş)</option>
             </select>
@@ -876,7 +903,7 @@ function buildBacktestSkeleton() {
               <option value="1d">1 Gün</option>
             </select>
           </label>
-          <label class="bt-compare-label">
+          <label class="bt-compare-label bt-classic-only">
             <span>&nbsp;</span>
             <span class="bt-compare-check">
               <input type="checkbox" name="compare_timeframes" id="bt-compare-tf">
@@ -886,10 +913,19 @@ function buildBacktestSkeleton() {
           <label>Başlangıç <input type="date" name="from" required></label>
           <label>Bitiş <input type="date" name="to"></label>
           <label>Bakiye (USDT) <input type="number" name="balance" value="10000" min="100" step="100"></label>
-          <label>Marjin / İşlem (USDT) <input type="number" name="trade_margin" value="500" min="10" step="10"></label>
-          <label>Kaldıraç <input type="number" name="leverage" value="5" min="1" max="50" step="1"></label>
+          <label class="bt-classic-only">Marjin / İşlem (USDT) <input type="number" name="trade_margin" value="500" min="10" step="10"></label>
+          <label class="bt-classic-only">Kaldıraç <input type="number" name="leverage" value="5" min="1" max="50" step="1"></label>
+          <label class="bt-r-only" hidden>1R = Risk / İşlem (USDT) <input type="number" name="risk_per_trade" value="100" min="1" step="any"></label>
         </div>
-        <div class="bt-coins">
+        <div class="bt-hint bt-r-only" id="bt-top50-info" hidden>
+          <b>Top50 (R) modu:</b> her işlem tam 1R riskler (SL'e çarpan = -1R), pozisyon büyüklüğü stop mesafesine göre
+          ayarlanır. Evren, çalıştırınca <code>data/universe_top50.json</code>'dan alınan, OKX'te hacme göre ilk 50 kripto
+          listesidir (hisse/ETF/emtia perp'leri hariç; yeterli geçmişi olmayan yeni coinler atlanır). Coinler canlı botla aynı
+          şekilde zaman sırasıyla birlikte oynatılır, öğrenen ajan havuzludur, üst zaman dilimi filtresi ileriye bakmaz.
+          <br>Veri tarayıcıdan OKX'ten çekilir: <b>4h + birkaç ay</b> önerilir; 15m veya çok uzun aralıklar dakikalarca sürebilir.
+          Komisyon/slipaj modellenmez.
+        </div>
+        <div class="bt-coins bt-classic-only">
           <button type="button" class="bt-coins-toggle" id="bt-coins-toggle">Tümünü kaldır</button>
           ${coinBoxes}
         </div>
@@ -946,13 +982,37 @@ function setupHbBacktestForm() {
     toggleBtn.textContent = allChecked ? "Tümünü seç" : "Tümünü kaldır";
   });
 
+  const modeSelect = document.getElementById("bt-mode-select");
+  const strategySelect = document.getElementById("bt-strategy-select");
+  const BT_MODE_DEFAULTS = {
+    classic: { window: 150, max_open: 5, max_portfolio_risk_pct: 8, max_same_direction: 3 },
+    top50r: { window: 300, max_open: 10, max_portfolio_risk_pct: 11, max_same_direction: 6 },  // canli r50 profilleriyle ayni
+  };
+  function applyBacktestMode() {
+    const isR = modeSelect.value === "top50r";
+    form.querySelectorAll(".bt-classic-only").forEach(el => { el.hidden = isR; });
+    form.querySelectorAll(".bt-r-only").forEach(el => { el.hidden = !isR; });
+    for (const [k, v] of Object.entries(BT_MODE_DEFAULTS[isR ? "top50r" : "classic"])) {
+      form.querySelector(`[name=${k}]`).value = v;
+    }
+    if (isR) {
+      strategySelect.value = "wave";
+      const cmp = document.getElementById("bt-compare-tf");
+      cmp.checked = false;
+      document.getElementById("bt-timeframe-select").disabled = false;
+    }
+    strategySelect.disabled = isR;  // Top50 (R) yalniz Elliott Wave (FormData disabled alani gondermez, asagida elle verilir)
+  }
+  modeSelect.addEventListener("change", applyBacktestMode);
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const fd = new FormData(form);
+    const isR = fd.get("mode") === "top50r";
     const symbols = fd.getAll("symbol");
     const progress = document.getElementById("bt-progress");
     const btn = form.querySelector(".bt-run-btn");
-    if (!symbols.length) { progress.innerHTML = `<span class="bt-error">En az bir coin seçmelisin.</span>`; return; }
+    if (!isR && !symbols.length) { progress.innerHTML = `<span class="bt-error">En az bir coin seçmelisin.</span>`; return; }
 
     const sinceMs = hbDateInputToMs(fd.get("from"), false);
     const untilVal = fd.get("to");
@@ -960,7 +1020,7 @@ function setupHbBacktestForm() {
     if (sinceMs >= untilMs) { progress.innerHTML = `<span class="bt-error">Başlangıç tarihi bitişten önce olmalı.</span>`; return; }
 
     const baseParams = {
-      strategy: fd.get("strategy"), symbols, sinceMs, untilMs,
+      strategy: isR ? "wave" : fd.get("strategy"), symbols, sinceMs, untilMs,
       window: Number(fd.get("window")), balance: Number(fd.get("balance")),
       tradeMargin: Number(fd.get("trade_margin")), leverage: Number(fd.get("leverage")),
       maxOpen: Number(fd.get("max_open")), maxPortfolioRiskPct: Number(fd.get("max_portfolio_risk_pct")),
@@ -968,12 +1028,33 @@ function setupHbBacktestForm() {
       partialTpR: Number(fd.get("partial_tp_r")), partialTpFraction: Number(fd.get("partial_tp_fraction")),
       trailGivebackPct: Number(fd.get("trail_giveback_pct")), epsilon: Number(fd.get("epsilon")),
     };
-    const compareAll = fd.get("compare_timeframes") === "on";
+    if (isR) {
+      const tf = fd.get("timeframe");
+      // Tahmini istek sayisi (OKX history-candles sayfa basina 100 mum, 50 coin) -- uzun suruyorsa uyar.
+      const candles = (untilMs - sinceMs) / HB_BAR_MS[tf] + baseParams.window;
+      const requests = Math.ceil(candles / 100) * 50;
+      if (requests > 800 && !confirm(`Bu aralık için OKX'e yaklaşık ${requests} istek gidecek (tahmini ${Math.ceil(requests * 0.3 / 60)} dakika). Devam edilsin mi?`)) {
+        return;
+      }
+      // canli r50 profilleriyle ayni: sabit risk (1R), stop mesafesi bandi, havuzlu ogrenme, zaman sirasiyla birlikte
+      Object.assign(baseParams, {
+        riskPerTrade: Number(fd.get("risk_per_trade")), minSlPct: tf === "15m" ? 0.4 : 0.5, maxSlPct: 30,
+        leverage: 100,  // sadece teminat muhasebesi icin (pozisyon boyutunu stop mesafesi belirler)
+        pooled: true, interleaved: true,
+      });
+    }
+    const compareAll = !isR && fd.get("compare_timeframes") === "on";
 
     btn.disabled = true;
     btn.textContent = "Çalışıyor…";
     document.getElementById("bt-detail").innerHTML = "";
     try {
+      if (isR) {
+        progress.textContent = "Top50 evren listesi alınıyor…";
+        const uni = await fetchJson("universe_top50.json");
+        baseParams.symbols = (uni.symbols || []).map(s => s.split("/")[0]);
+        if (baseParams.symbols.length < 10) throw new Error("evren listesi alınamadı");
+      }
       if (compareAll) {
         const timeframes = ["15m", "1h", "4h", "1d"];
         const reportsByTf = {};

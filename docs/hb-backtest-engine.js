@@ -165,16 +165,23 @@ function hbHigherTimeframeTrend(candlesHtf, smaPeriod = 50) {
   return lastClose > sma ? "up" : "down";
 }
 
-function hbHtfSliceUpTo(candlesHtf, ts, lookback = 60) {
+function hbHtfSliceUpTo(candlesHtf, ts, lookback = 60, cutoffShiftMs = 0) {
   // backtest.py'deki _htf_slice_up_to() ile ayni: candlesHtf icinde zamani ts'den
   // SONRA olan hicbir bari DAHIL ETMEDEN (ileriye bakma/lookahead hatasi
   // yapmadan), o ana kadarki son `lookback` bari dondurur. candlesHtf
   // zaman sirali oldugu icin basit bir ikili arama yeterli.
+  //
+  // cutoffShiftMs: bir ust-TF mumunun zaman damgasi ACILIS zamanidir; ts anindaki
+  // ust-TF mumu henuz kapanmamis olabilir (kapanisi gelecekte) -- varsayilan 0
+  // davranisi bu kucuk sizintiyi korur (eski sonuclarla birebir ayni). Top50 (R)
+  // modu `islem mumunun kapanisi - ust TF suresi` (negatif) verir, boylece SADECE
+  // o an kapanmis ust-TF mumlari kullanilir.
   if (!candlesHtf || !candlesHtf.length) return candlesHtf;
+  const cutoff = ts + cutoffShiftMs;
   let lo = 0, hi = candlesHtf.length;
   while (lo < hi) {
     const mid = (lo + hi) >> 1;
-    if (candlesHtf[mid].timestamp <= ts) lo = mid + 1; else hi = mid;
+    if (candlesHtf[mid].timestamp <= cutoff) lo = mid + 1; else hi = mid;
   }
   return candlesHtf.slice(Math.max(0, lo - lookback), lo);
 }
@@ -273,14 +280,19 @@ function hbParamKey(p, strategy) {
 }
 
 class HbLearner {
-  constructor(strategy, epsilon = 0.25) {
+  // pooled: tum coinlerin sonuclari TEK istatistikte toplanir (learner.py PooledLearner ile
+  // ayni) -- 50 coin x 12 kombinasyonu ayri ayri ogrenmek anlamsiz, havuzlu ogrenme cok
+  // daha hizli yakinsar.
+  constructor(strategy, epsilon = 0.25, pooled = false) {
     this.strategy = strategy;
     this.epsilon = epsilon;
+    this.pooled = pooled;
     this.grid = strategy === "wave" ? hbBuildWaveGrid() : hbBuildVwapGrid();
     this.stats = new Map();
     this.symbolStats = new Map();
   }
   select(symbol) {
+    if (this.pooled) symbol = "ALL";
     const unexplored = this.grid.filter(p => !this.symbolStats.has(`${symbol}|${JSON.stringify(hbParamKey(p, this.strategy))}`));
     if (unexplored.length) return unexplored[Math.floor(Math.random() * unexplored.length)];
     if (Math.random() < this.epsilon) return this.grid[Math.floor(Math.random() * this.grid.length)];
@@ -298,6 +310,7 @@ class HbLearner {
   update(symbol, keyArr, reward, outcome) {
     // outcome: "win" (pnl>0) / "breakeven" (pnl==0) / "loss" (pnl<0) -- basabas
     // ne kazanc ne kayiptir, ayri kovada tutulur (bkz. paper_account.py stats()).
+    if (this.pooled) symbol = "ALL";
     const key = JSON.stringify(keyArr);
     for (const [map, k] of [[this.stats, key], [this.symbolStats, `${symbol}|${key}`]]) {
       const s = map.get(k) || { n: 0, rewardSum: 0, wins: 0, breakeven: 0, losses: 0 };
@@ -332,6 +345,10 @@ class HbPaperAccount {
     Object.assign(this, {
       tradeMargin: 500, maxOpenPositions: 5, leverage: 1, maxPortfolioRiskPct: 8, maxSameDirection: 3,
       breakevenR: 1.0, partialTpR: 1.5, partialTpFraction: 0.5, trailGivebackPct: 0.5,
+      // Sabit risk modu (paper_account.py ile ayni): riskPerTrade > 0 ise her islem 1R = bu
+      // kadar USDT riskler, pozisyon stop mesafesine gore boyutlanir; minSlPct/maxSlPct stop
+      // mesafesi (giris fiyatinin %'si) icin izin verilen aralik (0 = kapali).
+      riskPerTrade: 0, minSlPct: 0, maxSlPct: 0,
     }, cfg);
     this.startingBalance = cfg.startingBalance;
     this.balance = cfg.startingBalance;
@@ -350,11 +367,24 @@ class HbPaperAccount {
     if (this.openPositions.has(symbol) || !this.canOpenNew()) return null;
     const riskPerUnit = Math.abs(entry - sl);
     if (riskPerUnit <= 0) return null;
+    // Negatif/sifir fiyat hedefi hicbir zaman gerceklesemez -- gecersiz kurulum
+    // (paper_account.py ile ayni koruma).
+    if (tp <= 0 || sl <= 0) return null;
     if (this.sameDirectionCount(side) >= this.maxSameDirection) return null;
-    const margin = this.tradeMargin;
-    const notional = margin * this.leverage;
-    const size = notional / entry;
-    const riskAmount = size * riskPerUnit;
+    let margin, notional, size, riskAmount;
+    if (this.riskPerTrade > 0) {
+      const slPct = (riskPerUnit / entry) * 100;
+      if (slPct < this.minSlPct || (this.maxSlPct > 0 && slPct > this.maxSlPct)) return null;
+      riskAmount = this.riskPerTrade;
+      size = riskAmount / riskPerUnit;
+      notional = size * entry;
+      margin = notional / this.leverage;  // leverage burada sadece teminat muhasebesi icin
+    } else {
+      margin = this.tradeMargin;
+      notional = margin * this.leverage;
+      size = notional / entry;
+      riskAmount = size * riskPerUnit;
+    }
     if (this.usedMargin() + margin > this.balance) return null;
     if (this.openRiskTotal() + riskAmount > this.balance * (this.maxPortfolioRiskPct / 100)) return null;
 
@@ -445,6 +475,9 @@ class HbPaperAccount {
       symbol: pos.symbol, side: pos.side, entry: pos.entry, exit: exitPrice,
       result: hitTp ? "TP" : "SL", pnl: hbRound(totalPnl, 4), final_leg_pnl: hbRound(finalLegPnl, 4),
       partial_taken: pos.partialTpDone, r_multiple: hbRound(totalR, 3),
+      // Acilistaki pozisyon buyuklugu (kismi kardan once) -- paper_account.py ile ayni.
+      notional: Math.abs(pos.entry - (pos.initialSl || pos.sl)) > 0
+        ? hbRound((initialRisk / Math.abs(pos.entry - (pos.initialSl || pos.sl))) * pos.entry, 2) : null,
       param_key: pos.paramKey, leverage: pos.leverage, funding_paid: 0,
       open_time: pos.openTime, close_time: this.nowIso(), balance_after: hbRound(this.balance, 4),
     };
@@ -458,13 +491,18 @@ class HbPaperAccount {
     const realizedPnl = hbRound(this.balance - this.startingBalance, 2);
     const completed = this.history.filter(t => t.result === "TP" || t.result === "SL");
     if (!completed.length) {
-      return { trades: 0, win_rate: 0, breakeven: 0, total_pnl: realizedPnl, balance: hbRound(this.balance, 2), open_positions: this.openPositions.size, unrealized_pnl: unrealizedPnl };
+      return { trades: 0, win_rate: 0, breakeven: 0, total_r: 0, avg_r: 0, profit_factor: null, total_pnl: realizedPnl, balance: hbRound(this.balance, 2), open_positions: this.openPositions.size, unrealized_pnl: unrealizedPnl };
     }
     // pnl>0 kazanc, pnl==0 basabas (ne kazanc ne kayip), pnl<0 kayip.
     const wins = completed.filter(t => t.pnl > 0).length;
     const breakeven = completed.filter(t => t.pnl === 0).length;
+    const totalR = completed.reduce((s, t) => s + (t.r_multiple || 0), 0);
+    const grossWin = completed.reduce((s, t) => s + (t.pnl > 0 ? t.pnl : 0), 0);
+    const grossLoss = completed.reduce((s, t) => s + (t.pnl < 0 ? -t.pnl : 0), 0);
     return {
       trades: completed.length, win_rate: hbRound((100 * wins) / completed.length, 1), breakeven,
+      total_r: hbRound(totalR, 2), avg_r: hbRound(totalR / completed.length, 3),
+      profit_factor: grossLoss > 0 ? hbRound(grossWin / grossLoss, 2) : null,
       total_pnl: realizedPnl, balance: hbRound(this.balance, 2),
       open_positions: this.openPositions.size, unrealized_pnl: unrealizedPnl,
     };
@@ -486,9 +524,11 @@ function hbUpdateLearnerOnClose(result, symbol, learner) {
   learner.update(symbol, result.param_key, result.r_multiple, outcome);
 }
 
-function hbReplaySymbol(candles, symbol, strategy, window, learner, account, candlesHtf = null) {
-  for (let i = window; i < candles.length; i++) {
-    const windowDf = candles.slice(i - window, i + 1);
+// Tek bir sembolun tek bir mumunu isler (acik pozisyon yonetimi VEYA yeni kurulum arama).
+// hbReplaySymbol (sembol sembol, eski mod) ve hbReplayInterleaved (tum coinler zaman
+// sirasiyla birlikte, Top50 R modu) ayni mantigi paylasir.
+function hbProcessBar(candles, i, symbol, strategy, window, learner, account, candlesHtf, htfShiftMs) {
+  {
     const barClose = candles[i].close;
     const barHigh = candles[i].high;
     const barLow = candles[i].low;
@@ -514,6 +554,9 @@ function hbReplaySymbol(candles, symbol, strategy, window, learner, account, can
         account.checkAndClose(symbol, barClose);
       }
     } else {
+      // main.py ile ayni: kapasite doluysa kurulum aramaya (ve ajanin rastgele secimine) gerek yok.
+      if (!account.canOpenNew()) return;
+      const windowDf = candles.slice(i - window, i + 1);
       const params = learner.select(symbol);
       let direction = null, entry, tp, sl;
       if (strategy === "wave") {
@@ -530,7 +573,7 @@ function hbReplaySymbol(candles, symbol, strategy, window, learner, account, can
         }
 
         if (setup && candlesHtf) {
-          const htfWindow = hbHtfSliceUpTo(candlesHtf, barTs);
+          const htfWindow = hbHtfSliceUpTo(candlesHtf, barTs, 60, htfShiftMs);
           const trend = hbHigherTimeframeTrend(htfWindow);
           if (trend === "down" && setup.direction === "BUY") setup = null;
           else if (trend === "up" && setup.direction === "SELL") setup = null;
@@ -549,21 +592,59 @@ function hbReplaySymbol(candles, symbol, strategy, window, learner, account, can
   }
 }
 
+// Eski mod: semboller sirayla, her biri kendi tarihsel mum dizisi uzerinden (backtest.py ile ayni).
+function hbReplaySymbol(candles, symbol, strategy, window, learner, account, candlesHtf = null) {
+  for (let i = window; i < candles.length; i++) {
+    hbProcessBar(candles, i, symbol, strategy, window, learner, account, candlesHtf, 0);
+  }
+}
+
+// Yeni mod: TUM coinler zaman sirasiyla BIRLIKTE oynatilir -- canli botla ayni sekilde ortak
+// hesabin portfoy limitleri (max acik pozisyon, ayni yon, toplam risk) gercekten zaman
+// icinde birbirini kisitlar (sembol sembol oynatmada bu limitler fiilen hic baglamaz).
+// data: [{ symbol, candles, candlesHtf }] -- evren sirasi (hacim sirasi) korunur.
+async function hbReplayInterleaved(data, strategy, window, learner, account, sinceMs, untilMs, htfShiftMs, onProgress) {
+  const idx = new Map();
+  const tsSet = new Set();
+  for (const d of data) {
+    const m = new Map();
+    d.candles.forEach((c, i) => {
+      m.set(c.timestamp, i);
+      if (c.timestamp >= sinceMs && c.timestamp <= untilMs) tsSet.add(c.timestamp);
+    });
+    idx.set(d.symbol, m);
+  }
+  const allTs = [...tsSet].sort((a, b) => a - b);
+  for (let k = 0; k < allTs.length; k++) {
+    const ts = allTs[k];
+    for (const d of data) {
+      const i = idx.get(d.symbol).get(ts);
+      if (i === undefined || i < window) continue;
+      hbProcessBar(d.candles, i, d.symbol, strategy, window, learner, account, d.candlesHtf, htfShiftMs);
+    }
+    if (k % 60 === 0) {
+      onProgress?.(`Zaman sırasıyla taranıyor: ${k}/${allTs.length} mum`);
+      await hbSleep(0);
+    }
+  }
+}
+
 function hbBuildSymbolRows(history) {
   const completed = history.filter(t => t.result === "TP" || t.result === "SL");
   const bySymbol = new Map();
   for (const t of completed) {
-    const s = bySymbol.get(t.symbol) || { n: 0, wins: 0, breakeven: 0, pnl: 0 };
+    const s = bySymbol.get(t.symbol) || { n: 0, wins: 0, breakeven: 0, pnl: 0, r: 0 };
     s.n += 1;
     if (t.pnl > 0) s.wins += 1;
     else if (t.pnl === 0) s.breakeven += 1;
     s.pnl += t.pnl;
+    s.r += t.r_multiple || 0;
     bySymbol.set(t.symbol, s);
   }
   const rows = [...bySymbol.entries()].map(([symbol, s]) => ({
     symbol, n: s.n, wins: s.wins, breakeven: s.breakeven, losses: s.n - s.wins - s.breakeven,
     win_rate: s.n ? hbRound((100 * s.wins) / s.n, 1) : 0,
-    total_pnl: hbRound(s.pnl, 2), low_n: s.n < HB_MIN_RELIABLE_N,
+    total_pnl: hbRound(s.pnl, 2), total_r: hbRound(s.r, 2), low_n: s.n < HB_MIN_RELIABLE_N,
   }));
   rows.sort((a, b) => b.total_pnl - a.total_pnl);
   return rows;
@@ -600,18 +681,50 @@ async function runHbBacktest({
   balance = 10000, tradeMargin = 500, leverage = 1, maxOpen = 5, maxPortfolioRiskPct = 8,
   maxSameDirection = 3, breakevenR = 1.0, partialTpR = 1.5, partialTpFraction = 0.5,
   trailGivebackPct = 0.5, epsilon = 0.25, onProgress,
+  // Top50 (R) modu: sabit risk + havuzlu ogrenme + coinleri zaman sirasiyla birlikte oynat
+  riskPerTrade = 0, minSlPct = 0, maxSlPct = 0, pooled = false, interleaved = false,
 }) {
   const account = new HbPaperAccount({
     startingBalance: balance, tradeMargin, maxOpenPositions: maxOpen, leverage,
     maxPortfolioRiskPct, maxSameDirection, breakevenR, partialTpR, partialTpFraction, trailGivebackPct,
+    riskPerTrade, minSlPct, maxSlPct,
   });
-  const learner = new HbLearner(strategy, epsilon);
+  const learner = new HbLearner(strategy, epsilon, pooled);
   const okxBar = HB_OKX_BAR[timeframe];
   const warmupMs = HB_BAR_MS[timeframe] * window;
   const higherTf = strategy === "wave" ? HB_HIGHER_TIMEFRAME[timeframe] : null;
   if (higherTf) onProgress?.(`Üst zaman dilimi trend filtresi aktif: ${timeframe} -> ${higherTf}`);
 
-  for (const symbol of symbols) {
+  if (interleaved) {
+    // Once tum coinlerin verisini cek, sonra zaman sirasiyla birlikte oynat. Ust zaman dilimi
+    // filtresi ILERIYE BAKMADAN: yalniz o islem mumunun kapanisinda KAPANMIS ust-TF mumlari.
+    const htfShiftMs = higherTf ? HB_BAR_MS[timeframe] - HB_BAR_MS[higherTf] : 0;
+    const data = [];
+    for (let k = 0; k < symbols.length; k++) {
+      const symbol = symbols[k];
+      onProgress?.(`[${k + 1}/${symbols.length}] ${symbol}: OKX'ten veri çekiliyor…`);
+      let candles, candlesHtf = null;
+      try {
+        candles = await hbFetchHistoryCandles(hbInstId(symbol), okxBar, sinceMs - warmupMs, untilMs);
+        if (higherTf) {
+          try {
+            candlesHtf = await hbFetchHistoryCandles(hbInstId(symbol), HB_OKX_BAR[higherTf],
+              sinceMs - HB_BAR_MS[higherTf] * 62, untilMs);
+          } catch (e) { candlesHtf = null; }
+        }
+      } catch (e) {
+        onProgress?.(`${symbol}: veri alınamadı, atlandı (${e.message})`);
+        continue;
+      }
+      if (candles.length < window + 5) continue;  // yeni listelenmis coin: yeterli gecmis yok
+      data.push({ symbol, candles, candlesHtf });
+    }
+    onProgress?.(`${data.length}/${symbols.length} coin için yeterli veri var, taranıyor…`);
+    await hbReplayInterleaved(data, strategy, window, learner, account, sinceMs, untilMs, htfShiftMs, onProgress);
+    symbols = data.map(d => d.symbol);
+  }
+
+  for (const symbol of (interleaved ? [] : symbols)) {
     onProgress?.(`${symbol}: OKX'ten veri çekiliyor…`);
     let candles;
     try {
@@ -656,6 +769,7 @@ async function runHbBacktest({
     total_pnl: s.total_pnl,
     total_pnl_pct: account.startingBalance ? hbRound((100 * s.total_pnl) / account.startingBalance, 2) : 0,
     trades: s.trades, win_rate: s.win_rate, breakeven: s.breakeven || 0,
+    total_r: s.total_r, avg_r: s.avg_r, profit_factor: s.profit_factor,
     max_drawdown_pct: hbRound(dd, 2), open_at_end: s.open_positions,
   };
 
@@ -669,6 +783,8 @@ async function runHbBacktest({
       max_same_direction: account.maxSameDirection, breakeven_r: account.breakevenR,
       partial_tp_r: account.partialTpR, partial_tp_fraction: account.partialTpFraction,
       trail_giveback_pct: account.trailGivebackPct, epsilon: learner.epsilon,
+      risk_per_trade: account.riskPerTrade, min_sl_pct: account.minSlPct, max_sl_pct: account.maxSlPct,
+      pooled: learner.pooled, interleaved,
     },
     summary,
     leaderboard: learner.leaderboardRows(12),

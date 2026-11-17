@@ -333,6 +333,7 @@ class PaperAccount:
         total_pnl = pos.partial_pnl_realized + final_leg_pnl
         initial_risk = pos.initial_risk_amount if pos.initial_risk_amount else pos.risk_amount
         total_r = total_pnl / initial_risk if initial_risk > 0 else 0.0
+        initial_sl = pos.initial_sl if pos.initial_sl else pos.sl
 
         result = {
             "symbol": pos.symbol,
@@ -343,6 +344,10 @@ class PaperAccount:
             "pnl": round(total_pnl, 4),
             "final_leg_pnl": round(final_leg_pnl, 4),
             "partial_taken": pos.partial_tp_done,
+            # Acilistaki pozisyon buyuklugu (kismi kardan once). Sabit risk modunda
+            # kaldirac anlamsiz (sadece teminat muhasebesi), asil bilgi budur.
+            "notional": round(initial_risk / abs(pos.entry - initial_sl) * pos.entry, 2)
+                        if initial_sl and abs(pos.entry - initial_sl) > 0 else None,
             "r_multiple": round(total_r, 3),
             "param_key": pos.param_key,
             "leverage": pos.leverage,
