@@ -3,6 +3,11 @@
  * (OKX's public market-data API allows cross-origin requests). No API key, no
  * server. Mirrors the Python logic bar-for-bar so results match the CLI tool.
  */
+// index.html bu bayraklari kontrol eder: tarayici ESKI bir motoru onbellekten kullaniyorsa (yeni index.html +
+// eski motor karisimi) Top50 (R) modu riskPerTrade/interleaved parametrelerini sessizce YOK SAYAR ve
+// 500 x 100 = 50.000 USDT'lik pozisyonlarla yanlis sonuc uretir -- bunu engellemek icin.
+const HB_ENGINE_FEATURES = { riskPerTrade: true, riskPct: true, interleaved: true };
+
 const HB_OKX_BASE = "https://www.okx.com";
 
 const HB_BAR_MS = {

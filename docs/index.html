@@ -157,7 +157,8 @@
 <div class="tabs" id="tabs"></div>
 <div id="profiles"></div>
 
-<script src="hb-backtest-engine.js"></script>
+<!-- ?v= : motor degistiginde artir (tarayici/CDN onbellegi eski motoru yeni sayfayla karistirmasin) -->
+<script src="hb-backtest-engine.js?v=4"></script>
 <script>
 const OWNER = "klonnist";
 const REPO = "Hasanwavebot";
@@ -1048,6 +1049,12 @@ function setupHbBacktestForm() {
       trailGivebackPct: Number(fd.get("trail_giveback_pct")), epsilon: Number(fd.get("epsilon")),
     };
     if (isR) {
+      // Eski bir backtest motoru onbellekten gelmisse Top50 (R) parametrelerini yok sayar ve cok buyuk pozisyonlarla
+      // YANLIS sonuc verir -- calistirmak yerine acikca uyar.
+      if (typeof HB_ENGINE_FEATURES === "undefined" || !HB_ENGINE_FEATURES.riskPct || !HB_ENGINE_FEATURES.interleaved) {
+        progress.innerHTML = `<span class="bt-error">Tarayıcın eski backtest motorunu önbellekten kullanıyor; Top50 (R) modu bu haliyle yanlış (çok büyük pozisyonlu) sonuç verir. Sayfayı Ctrl+F5 (Mac: Cmd+Shift+R) ile tamamen yenileyip tekrar dene.</span>`;
+        return;
+      }
       const tf = fd.get("timeframe");
       // Tahmini istek sayisi (OKX history-candles sayfa basina 100 mum, 50 coin) -- uzun suruyorsa uyar.
       const candles = (untilMs - sinceMs) / HB_BAR_MS[tf] + baseParams.window;
