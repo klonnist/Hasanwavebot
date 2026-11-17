@@ -6,7 +6,7 @@
 // index.html bu bayraklari kontrol eder: tarayici ESKI bir motoru onbellekten kullaniyorsa (yeni index.html +
 // eski motor karisimi) Top50 (R) modu riskPerTrade/interleaved parametrelerini sessizce YOK SAYAR ve
 // 500 x 100 = 50.000 USDT'lik pozisyonlarla yanlis sonuc uretir -- bunu engellemek icin.
-const HB_ENGINE_FEATURES = { riskPerTrade: true, riskPct: true, interleaved: true, universe: true };
+const HB_ENGINE_FEATURES = { riskPerTrade: true, riskPct: true, interleaved: true, universe: true, tradeLevels: true };
 
 const HB_OKX_BASE = "https://www.okx.com";
 
@@ -491,7 +491,7 @@ class HbPaperAccount {
     if (partialEvent) {
       const record = {
         symbol: pos.symbol, side: pos.side, result: "PARTIAL_TP",
-        entry: pos.entry, exit: partialEvent.price,
+        entry: pos.entry, exit: partialEvent.price, tp: pos.tp, initial_sl: pos.initialSl || pos.sl,
         pnl: hbRound(partialEvent.pnl, 4), r_multiple: hbRound(this.partialTpR, 3),
         param_key: pos.paramKey, leverage: pos.leverage, funding_paid: 0,
         open_time: pos.openTime, close_time: this.nowIso(), balance_after: hbRound(this.balance, 4),
@@ -518,6 +518,7 @@ class HbPaperAccount {
 
     const result = {
       symbol: pos.symbol, side: pos.side, entry: pos.entry, exit: exitPrice,
+      tp: pos.tp, initial_sl: pos.initialSl || pos.sl,   // grafik icin: hedef ve acilistaki orijinal stop
       result: hitTp ? "TP" : "SL", pnl: hbRound(totalPnl, 4), final_leg_pnl: hbRound(finalLegPnl, 4),
       partial_taken: pos.partialTpDone, r_multiple: hbRound(totalR, 3),
       // Acilistaki pozisyon buyuklugu (kismi kardan once) -- paper_account.py ile ayni.

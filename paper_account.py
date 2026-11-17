@@ -38,6 +38,11 @@ class Position:
     partial_pnl_realized: float = 0.0  # kismi kar alimindan simdiye kadar gerceklesen toplam USDT
 
 
+def initial_sl_for_record(pos: "Position") -> float:
+    """Acilistaki orijinal stop (yoksa guncel sl) -- history kayitlarina yazilir."""
+    return pos.initial_sl if pos.initial_sl else pos.sl
+
+
 class PaperAccount:
     def __init__(self, state_path: str, starting_balance: float = 10000.0,
                  trade_margin: float = 500.0, max_open_positions: int = 5,
@@ -295,6 +300,7 @@ class PaperAccount:
             record = {
                 "symbol": pos.symbol, "side": pos.side, "result": "PARTIAL_TP",
                 "entry": pos.entry, "exit": partial_event["price"],
+                "tp": pos.tp, "initial_sl": initial_sl_for_record(pos),
                 "pnl": round(partial_event["pnl"], 4), "r_multiple": round(self.partial_tp_r, 3),
                 "param_key": pos.param_key, "leverage": pos.leverage, "funding_paid": 0.0,
                 "open_time": pos.open_time, "close_time": self._now_iso(),
@@ -340,6 +346,9 @@ class PaperAccount:
             "side": pos.side,
             "entry": pos.entry,
             "exit": exit_price,
+            # Grafik icin: islemin hedefi ve ACILISTAKI orijinal stopu (pos.sl basabas/trailing ile oynayabilir).
+            "tp": pos.tp,
+            "initial_sl": initial_sl,
             "result": "TP" if hit_tp else "SL",
             "pnl": round(total_pnl, 4),
             "final_leg_pnl": round(final_leg_pnl, 4),

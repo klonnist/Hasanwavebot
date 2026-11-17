@@ -87,6 +87,13 @@ yönetimi) **daha geniş bir evrende ve sabit riskle** izler:
   liste bugünün hacim sıralamasıdır (geçmiş dönemin değil), bu hafif bir geriye dönük yanlılık yaratır. Tarayıcı motoru, aynı
   pencerede Python'daki canlı mantıkla işlem işlem karşılaştırıldı (40/40 işlem birebir aynı).
   4h + birkaç ay önerilir; 15m veya çok uzun aralıklar dakikalarca sürer.
+- **İşlem grafikleri:** panelde her açık pozisyonun, geçmiş işlemin ve backtest işleminin yanındaki
+  **Grafik** düğmesi, işlemi mumların üzerinde gösterir: giriş oku, **TP**, **stop**, 1R (başabaş) ve
+  1.5R (kısmi kâr) seviyeleri, kısmi kâr ve çıkış işaretleri. Mumlar tarayıcıdan OKX'in herkese açık
+  API'sinden çekilir; grafik kütüphanesi (TradingView `lightweight-charts`) ilk tıklamada jsDelivr'den
+  yüklenir. Kapanan işlem kayıtlarına artık `tp` ve `initial_sl` (açılıştaki orijinal stop) yazılır;
+  bu alanlar eklenmeden önceki eski kayıtlarda eksik seviyeler giriş/çıkış ve R değerinden geri hesaplanır
+  (hesaplanamıyorsa grafikte "kayıt yok" yazar).
 - **Dikkat:** komisyon ve slipaj modellenmez (özellikle 15m'de dar stoplarla
   sonuçları iyimser gösterir) ve hacim sıralamasının alt ucundaki coinlerde
   (~10M USDT/gün) gerçek dolum zor olurdu. `--top-n 100` ile evren genişletilebilir.
