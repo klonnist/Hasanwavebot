@@ -174,3 +174,21 @@ class Learner:
             flag = "  (az veri)" if n < self.MIN_RELIABLE_N else ""
             lines.append(f"{first_val:>6.1f} {p.tp_mult:>6.3f} {n:>4} {win_rate:>7.1f}% {breakeven:>8} {avg_r:>7.2f}{flag}")
         return "\n".join(lines) if len(lines) > 1 else "Henuz yeterli veri yok."
+
+
+class PooledLearner(Learner):
+    """Tum coinlerin sonuclarini TEK istatistikte toplayan ogrenen ajan.
+
+    Genis evrenlerde (orn. 50 coin x 12 kombinasyon) coin bazli ogrenme anlamsiz:
+    her coin icin ayri ayri 12 kombinasyonu denemek cok uzun surer ve her bucket'ta
+    birkac islem olur. Burada sembol hep ayni sabit anahtara cevrilir, boylece ayni
+    kombinasyonun tum coinlerdeki sonuclari birlikte birikir ve ajan cok daha hizli
+    yakinsar. Cagri imzalari Learner ile ayni, main.py'de sadece sinif degisir."""
+
+    POOL_KEY = "ALL"
+
+    def select(self, symbol: str):
+        return super().select(self.POOL_KEY)
+
+    def update(self, symbol: str, key: tuple, reward: float, outcome: str):
+        super().update(self.POOL_KEY, key, reward, outcome)

@@ -45,7 +45,22 @@ class PaperAccount:
                  max_same_direction: int = 3,
                  breakeven_r: float = 1.0, partial_tp_r: float = 1.5,
                  partial_tp_fraction: float = 0.5, trail_giveback_pct: float = 0.5,
-                 persist: bool = True):
+                 persist: bool = True, risk_per_trade: float = 0.0, min_sl_pct: float = 0.0,
+                 max_sl_pct: float = 0.0):
+        # risk_per_trade > 0: SABIT RISK modu ("1R" = bu tutar, USDT). Pozisyon
+        # buyuklugu sabit teminat x kaldirac yerine stop mesafesine gore ayarlanir
+        # (size = risk_per_trade / stop mesafesi), boylece SL'e carpan her islem
+        # tam -1R kaybettirir ve r_multiple dogrudan pnl / risk_per_trade olur.
+        # min_sl_pct: bu modda stop mesafesi (girisin yuzdesi olarak) bundan darsa
+        # sinyal reddedilir -- dar stop, devasa notional ve (modellenmeyen) komisyon
+        # nedeniyle sahte "edge" uretir.
+        # max_sl_pct (0 = kapali): stop mesafesi bundan genisse reddet -- genis
+        # evrende volatil kucuk coinlerde dalga-1 fiyatin buyuk kismi olabiliyor
+        # (ornegin stop girisin %69 otesinde); bu durumda 1R'lik pozisyon
+        # anlamsiz derecede kucuk olur ve TP/SL fiilen hic tetiklenmez.
+        self.risk_per_trade = risk_per_trade
+        self.min_sl_pct = min_sl_pct
+        self.max_sl_pct = max_sl_pct
         # persist=False: _save() cagrilarini diske yazmadan atlar (backtest.py'nin
         # tarih araligi replay'i icin). check_and_close() ACIK bir pozisyon HENUZ
         # kapanmamis olsa bile (sadece anlik kar/zarar guncellemesi icin) her
@@ -138,6 +153,10 @@ class PaperAccount:
         risk_per_unit = abs(entry - sl)
         if risk_per_unit <= 0:
             return None
+        # Negatif/sifir fiyat hedefi (orn. SELL'de TP = p2 - dalga1 x 1.618 fiyati
+        # asarsa) hicbir zaman gerceklesemez -- gecersiz kurulum.
+        if tp <= 0 or sl <= 0:
+            return None
 
         # Yon konsantrasyonu tavani: acik pozisyonlarin hepsi ayni yonde
         # (hepsi BUY veya hepsi SELL) birikemez -- piyasa genelinin tek yonlu
@@ -151,10 +170,20 @@ class PaperAccount:
         # miktarda "sermaye" kullanir, riske edilen tutar ise stop mesafesine
         # gore degisir (asagida hesaplanan risk_amount, sadece bilgi/rapor
         # ve portfoy risk tavani icin kullanilir).
-        margin = self.trade_margin
-        notional = margin * self.leverage
-        size = notional / entry
-        risk_amount = size * risk_per_unit
+        if self.risk_per_trade > 0:
+            # Sabit risk modu: pozisyon, stop mesafesine gore boyutlanir.
+            sl_pct = risk_per_unit / entry * 100
+            if sl_pct < self.min_sl_pct or (self.max_sl_pct > 0 and sl_pct > self.max_sl_pct):
+                return None
+            risk_amount = self.risk_per_trade
+            size = risk_amount / risk_per_unit
+            notional = size * entry
+            margin = notional / self.leverage  # leverage burada sadece teminat muhasebesi icin
+        else:
+            margin = self.trade_margin
+            notional = margin * self.leverage
+            size = notional / entry
+            risk_amount = size * risk_per_unit
 
         # Yetersiz teminat kontrolu: gercek bir borsada oldugu gibi, acik pozisyonlarin
         # toplam margin'i mevcut bakiyeyi asamaz.
@@ -340,6 +369,7 @@ class PaperAccount:
         if not completed:
             return {
                 "trades": 0, "win_rate": 0.0, "breakeven": 0, "total_pnl": realized_pnl,
+                "total_r": 0.0, "avg_r": 0.0,
                 "balance": round(self.balance, 2), "open_positions": len(self.open_positions),
                 "unrealized_pnl": unrealized_pnl, "funding_total": funding_total,
             }
@@ -349,10 +379,13 @@ class PaperAccount:
         # pnl<0 kayip. "SL" etiketi sadece hangi fiyat seviyesine carptigini gosterir.
         wins = sum(1 for t in completed if t["pnl"] > 0)
         breakeven = sum(1 for t in completed if t["pnl"] == 0)
+        total_r = sum(t["r_multiple"] for t in completed)
         return {
             "trades": len(completed),
             "win_rate": round(100 * wins / len(completed), 1),
             "breakeven": breakeven,
+            "total_r": round(total_r, 2),
+            "avg_r": round(total_r / len(completed), 3),
             "total_pnl": realized_pnl,
             "balance": round(self.balance, 2),
             "open_positions": len(self.open_positions),

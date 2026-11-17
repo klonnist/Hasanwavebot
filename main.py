@@ -34,7 +34,7 @@ from datetime import datetime, timezone
 
 import ccxt
 
-from data_feed import build_exchange, fetch_ohlcv, fetch_last_price, fetch_funding_rate
+from data_feed import build_exchange, fetch_ohlcv, fetch_last_price, fetch_funding_rate, load_or_refresh_universe
 from wave_detector import (
     zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams,
     wave1_has_internal_structure, higher_timeframe_trend,
@@ -50,7 +50,7 @@ HIGHER_TIMEFRAME = {
     "1d": "1w",
 }
 from paper_account import PaperAccount
-from learner import Learner
+from learner import Learner, PooledLearner
 from telegram_notify import send_telegram, telegram_enabled
 
 # Populer coinler (OKX'te USDT paritesi olan, yuksek islem hacimli basliklar).
@@ -414,11 +414,32 @@ def main():
     parser.add_argument("--telegram-notify", action="store_true",
                          help="Islem acilis/kapanis/kismi-kar sinyallerini Telegram'a gonder "
                               "(TELEGRAM_BOT_TOKEN ve TELEGRAM_CHAT_ID ortam degiskenleri gerekir)")
+    parser.add_argument("--top-n", type=int, default=0,
+                         help="> 0 ise --symbols yerine OKX USDT-M swap'larindan 24s hacme gore ilk N KRIPTO "
+                              "coin taranir (hisse/ETF/emtia perp'leri ve yeni listelemeler haric); sadece swap")
+    parser.add_argument("--universe-file", default="./data/universe_top50.json",
+                         help="--top-n evreninin onbellek dosyasi (profiller ayni listeyi paylasir, gunluk yenilenir)")
+    parser.add_argument("--risk-per-trade", type=float, default=0.0,
+                         help="> 0 ise SABIT RISK modu: her islem 1R = bu kadar USDT riskler, pozisyon stop "
+                              "mesafesine gore boyutlanir (--trade-margin kullanilmaz); SL tam -1R'dir")
+    parser.add_argument("--min-sl-pct", type=float, default=0.0,
+                         help="Sabit risk modunda stop mesafesi (giris fiyatinin %%'si) bundan darsa sinyal atlanir")
+    parser.add_argument("--max-sl-pct", type=float, default=0.0,
+                         help="Sabit risk modunda stop mesafesi (giris fiyatinin %%'si) bundan genisse sinyal atlanir "
+                              "(0 = kapali)")
+    parser.add_argument("--pooled-learning", action="store_true",
+                         help="Ogrenen ajan tum coinlerin sonuclarini tek istatistikte toplar (genis evrenler icin)")
     args = parser.parse_args()
 
-    symbols = [normalize_symbol(s.strip(), args.market) for s in args.symbols.split(",") if s.strip()]
+    if args.top_n > 0 and args.market != "swap":
+        parser.error("--top-n sadece --market swap ile kullanilabilir")
 
     exchange = build_exchange(args.market)
+    if args.top_n > 0:
+        symbols = load_or_refresh_universe(exchange, args.universe_file, n=args.top_n)
+    else:
+        symbols = [normalize_symbol(s.strip(), args.market) for s in args.symbols.split(",") if s.strip()]
+
     account = PaperAccount(
         state_path=f"{args.data_dir}/account_state.json",
         starting_balance=args.balance,
@@ -431,11 +452,18 @@ def main():
         partial_tp_r=args.partial_tp_r,
         partial_tp_fraction=args.partial_tp_fraction,
         trail_giveback_pct=args.trail_giveback_pct,
+        risk_per_trade=args.risk_per_trade,
+        min_sl_pct=args.min_sl_pct,
+        max_sl_pct=args.max_sl_pct,
     )
-    learner = Learner(state_path=f"{args.data_dir}/learner_state.json", epsilon=args.epsilon, strategy=args.strategy)
+    learner_cls = PooledLearner if args.pooled_learning else Learner
+    learner = learner_cls(state_path=f"{args.data_dir}/learner_state.json", epsilon=args.epsilon, strategy=args.strategy)
 
     log(f"Ajan baslatildi | strateji={args.strategy} | market={args.market} | {len(symbols)} coin izleniyor: {', '.join(symbols)}")
-    log(f"Sanal bakiye={account.balance} USDT | islem_basina_teminat={args.trade_margin} USDT | kaldirac={args.leverage}x "
+    sizing = (f"sabit_risk_1R={args.risk_per_trade} USDT (stop araligi=%{args.min_sl_pct}-%{args.max_sl_pct or 'sinirsiz'})"
+              if args.risk_per_trade > 0
+              else f"islem_basina_teminat={args.trade_margin} USDT")
+    log(f"Sanal bakiye={account.balance} USDT | {sizing} | kaldirac={args.leverage}x "
         f"| max_ayni_anda_pozisyon={args.max_open} | max_portfoy_riski=%{args.max_portfolio_risk_pct} "
         f"| max_ayni_yon={args.max_same_direction}")
 

@@ -1,6 +1,14 @@
 """OKX veri cekme yardimcilari."""
+import json
+import os
+import time
+from datetime import datetime, timezone
+
 import ccxt
 import pandas as pd
+
+# Evrenden her zaman cikarilan stablecoin tabanli kontratlar.
+_STABLE_BASES = {"USDC", "USDG", "FDUSD", "DAI", "TUSD", "USDD", "PYUSD", "USDE", "EURT"}
 
 
 def build_exchange(market_type: str) -> ccxt.okx:
@@ -29,3 +37,79 @@ def fetch_funding_rate(exchange: ccxt.okx, symbol: str) -> float:
     info = exchange.fetch_funding_rate(symbol)
     rate = info.get("fundingRate")
     return float(rate) if rate is not None else 0.0
+
+
+def fetch_top_crypto_symbols(exchange: ccxt.okx, n: int = 50, min_age_days: int = 60) -> list:
+    """OKX USDT-M swap'lari arasindan 24 saatlik USDT hacmine gore ilk `n` KRIPTO sembolu dondurur.
+
+    OKX'in swap listesinde hisse/ETF (instCategory 3) ve emtia (4) perp'leri de var
+    (NVDA, SOXL, XAU...) -- ilk 50'nin ~%40'i bunlar, o yuzden yalniz instCategory 1
+    (kripto) alinir. ccxt'de OKX swap icin `quoteVolume` None geliyor; gercek USDT
+    hacmi volCcy24h (baz coin cinsinden 24s hacim) x son fiyattir. Listelenmesinden
+    `min_age_days` gun gecmemis coinler elenir (4h icin 300 mumluk gecmis gerekiyor).
+    """
+    exchange.load_markets()
+    tickers = exchange.fetch_tickers()
+    now_ms = time.time() * 1000
+    rows = []
+    for sym, t in tickers.items():
+        m = exchange.markets.get(sym)
+        if not m or not m.get("swap") or not m.get("linear") or m.get("settle") != "USDT" or not m.get("active"):
+            continue
+        minfo = m.get("info", {})
+        if str(minfo.get("instCategory")) != "1":
+            continue
+        if (m.get("base") or "").upper() in _STABLE_BASES:
+            continue
+        try:
+            age_days = (now_ms - float(minfo["listTime"])) / 86_400_000
+            tinfo = t.get("info", {})
+            quote_volume = float(tinfo["volCcy24h"]) * float(tinfo["last"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if age_days < min_age_days:
+            continue
+        rows.append((quote_volume, sym))
+    rows.sort(reverse=True)
+    return [sym for _, sym in rows[:n]]
+
+
+def load_or_refresh_universe(exchange: ccxt.okx, path: str, n: int = 50, max_age_hours: float = 24.0,
+                              min_age_days: int = 60) -> list:
+    """Hacme gore ilk `n` kripto evrenini `path` JSON onbellegiyle dondurur.
+
+    Onbellek `max_age_hours`'tan tazeyse ve en az `n` sembol iceriyorsa dosyadan okunur
+    (profiller ayni listeyi paylassin, ticker cagrisi tekrarlanmasin); degilse yeniden
+    hesaplanip yazilir. Yenileme hata verirse (ag vb.) eski onbellek kullanilir, onbellek
+    de yoksa hata yukari firlatilir.
+    """
+    cached = None
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                cached = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            cached = None
+
+    if cached and len(cached.get("symbols", [])) >= n:
+        try:
+            age_h = (datetime.now(timezone.utc) - datetime.fromisoformat(cached["updated_at"])).total_seconds() / 3600
+        except (KeyError, ValueError):
+            age_h = float("inf")
+        if age_h < max_age_hours:
+            return cached["symbols"][:n]
+
+    try:
+        symbols = fetch_top_crypto_symbols(exchange, n=n, min_age_days=min_age_days)
+        if len(symbols) < n:
+            raise RuntimeError(f"evren yetersiz: {len(symbols)} < {n}")
+    except Exception:
+        if cached and cached.get("symbols"):
+            return cached["symbols"][:n]
+        raise
+
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                   "n": n, "symbols": symbols}, f, indent=2)
+    return symbols

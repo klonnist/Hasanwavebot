@@ -31,7 +31,7 @@ from data_feed import build_exchange
 from backtest import fetch_historical_ohlcv
 from telegram_notify import send_telegram, telegram_enabled
 
-DEFAULT_PROFILES = ["15m", "4h", "1d", "vwap"]
+DEFAULT_PROFILES = ["15m", "4h", "1d", "vwap", "r50-15m", "r50-4h"]
 
 
 def _parse_iso(ts: str) -> datetime:

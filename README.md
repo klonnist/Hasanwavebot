@@ -30,19 +30,53 @@ BTC, ETH, SOL, XRP, BNB, DOGE, ADA, AVAX, LINK, TON, ETHFI, NEAR
 ## GitHub Actions ile 7/24 çoklu profil taraması
 
 [`.github/workflows/run-bot.yml`](.github/workflows/run-bot.yml) her 15
-dakikada bir **dört ayrı profili birbirinden bağımsız** tarar; her biri
+dakikada bir **altı ayrı profili birbirinden bağımsız** tarar; her biri
 kendi ayrı sanal 10.000 USDT hesabına ve kendi öğrenen ajanına sahiptir,
 böylece sonuçları birbirinden bağımsız karşılaştırabilirsiniz:
 
-| Profil  | Strateji | Zaman dilimi | Klasör       | Kaldıraç |
+| Profil  | Strateji | Zaman dilimi | Klasör       | Boyutlandırma |
 |---------|----------|--------------|--------------|----------|
-| `15m`   | Elliott Wave (`--strategy wave`) | 15dk | `data/15m/`  | 10x |
-| `4h`    | Elliott Wave (`--strategy wave`) | 4 saat | `data/4h/`   | 5x  |
-| `1d`    | Elliott Wave (`--strategy wave`) | 1 gün | `data/1d/`   | 3x  |
-| `vwap`  | VWAP ortalamaya dönüş (`--strategy vwap`) | 15dk | `data/vwap/` | 10x |
+| `15m`   | Elliott Wave (`--strategy wave`) | 15dk | `data/15m/`  | 500 USDT teminat x 10x |
+| `4h`    | Elliott Wave (`--strategy wave`) | 4 saat | `data/4h/`   | 500 USDT teminat x 5x  |
+| `1d`    | Elliott Wave (`--strategy wave`) | 1 gün | `data/1d/`   | 500 USDT teminat x 3x  |
+| `vwap`  | VWAP ortalamaya dönüş (`--strategy vwap`) | 15dk | `data/vwap/` | 500 USDT teminat x 10x |
+| `r50-15m` | Elliott Wave, **hacme göre ilk 50 kripto** | 15dk | `data/r50-15m/` | sabit risk, 1R = 100 USDT |
+| `r50-4h`  | Elliott Wave, **hacme göre ilk 50 kripto** | 4 saat | `data/r50-4h/` | sabit risk, 1R = 100 USDT |
 
 Sonuçlar [klonnist.github.io/Hasanwavebot](https://klonnist.github.io/Hasanwavebot/)
 adresindeki panelde sekmeler halinde canlı gösterilir.
+
+### R bazlı "Top50" profilleri (`r50-15m`, `r50-4h`)
+
+Mevcut profiller 12 sabit coinde, sabit teminat x kaldıraçla çalışır; bu
+yüzden bir işlemin riski stop mesafesine göre 45 ile 400 USDT arasında
+değişir ve sonuçlar R cinsinden temiz okunmaz. Bu iki profil aynı Elliott
+Wave sinyalini (aynı üç aşamalı doğrulama ve aynı kısmi kâr/trailing
+yönetimi) **daha geniş bir evrende ve sabit riskle** izler:
+
+- **Evren:** OKX USDT-M swap'ları arasında 24 saatlik USDT hacmine göre ilk 50
+  **kripto** (`data_feed.fetch_top_crypto_symbols`). OKX'te hisse/ETF
+  (instCategory 3) ve emtia (4) perp'leri de listelendiğinden (NVDA, SOXL, XAU...)
+  yalnızca kripto kategorisi alınır; listelenmesinden 60 günden az geçmiş
+  coinler (4h için gereken 300 mum yok) ve stablecoin tabanlı kontratlar elenir.
+  Liste günde bir yenilenir ve `data/universe_top50.json` dosyasında iki profil
+  arasında paylaşılır. Evrenden düşen bir coinin açık pozisyonu kapanana kadar
+  izlenmeye devam eder.
+- **Sabit risk:** her işlem tam **1R = 100 USDT** (başlangıç bakiyesinin %1'i,
+  bileşik değil) riskler; pozisyon büyüklüğü `100 / stop mesafesi` olarak
+  ayarlanır. SL'e çarpan işlem tam -1R'dir, kazançlar mevcut yönetimle (1R'de
+  başabaş, 1,5R'de %50 kısmi kâr, sonra trailing) gerçekleşen R'dir. Panelde
+  Toplam R, ortalama R/işlem, profit factor ve coin bazlı R görünür.
+- **Limitler:** en fazla 10 açık pozisyon, aynı yönde en fazla 6, toplam açık risk
+  %11. Stop mesafesi girişin %0,4-30'u (15m) / %0,5-30'u (4h) aralığında olmayan
+  veya hedef fiyatı sıfırın altına düşen kurulumlar atlanır (çok dar stop devasa
+  notional ve gerçekte komisyonla yok olacak bir "edge", çok geniş stop ise
+  anlamsız küçük bir pozisyon üretir).
+- **Öğrenme havuzlu:** 50 coin x 12 kombinasyonu ayrı ayrı öğrenmek anlamsız olduğundan
+  tüm coinlerin sonuçları tek istatistikte toplanır (`PooledLearner`).
+- **Dikkat:** komisyon ve slipaj modellenmez (özellikle 15m'de dar stoplarla
+  sonuçları iyimser gösterir) ve hacim sıralamasının alt ucundaki coinlerde
+  (~10M USDT/gün) gerçek dolum zor olurdu. `--top-n 100` ile evren genişletilebilir.
 
 ## Telegram bildirimleri (şu an KAPALI)
 
@@ -363,6 +397,11 @@ python main.py --strategy vwap --timeframe 15m
 | `--report-every`   | Kaç taramada bir özet rapor yazdırılsın                                 | `10`                         |
 | `--once`           | Tek tarama yap ve çık                                                   | kapalı                       |
 | `--telegram-notify` | Sinyal açılış/kapanış/kısmi kâr bildirimlerini Telegram'a gönder (bkz. yukarı) | kapalı            |
+| `--top-n`          | > 0 ise `--symbols` yerine hacme göre ilk N kripto taranır (sadece swap) | `0` (kapalı) |
+| `--universe-file`  | `--top-n` evreninin günlük yenilenen önbellek dosyası                   | `./data/universe_top50.json` |
+| `--risk-per-trade` | > 0 ise sabit risk modu: 1R = bu kadar USDT, pozisyon stop mesafesine göre boyutlanır | `0` (kapalı) |
+| `--min-sl-pct` / `--max-sl-pct` | Sabit risk modunda izin verilen stop mesafesi aralığı (girişin %'si) | `0` / `0` (sınırsız) |
+| `--pooled-learning` | Öğrenen ajan tüm coinlerin sonuçlarını tek istatistikte toplar         | kapalı            |
 
 ### Örnek çıktı
 

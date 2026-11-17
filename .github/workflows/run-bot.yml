@@ -38,6 +38,17 @@ jobs:
       - name: Scan vwap (15m, VWAP ortalamaya donus, 10x kaldirac, islem basina 500 USDT teminat)
         run: python main.py --strategy vwap --timeframe 15m --leverage 10 --trade-margin 500 --data-dir ./data/vwap --once
 
+      # R bazli Top50 profilleri: OKX'te 24s hacme gore ilk 50 KRIPTO coin, sabit risk (1R = 100 USDT),
+      # havuzlu ogrenme. --leverage 100 yalnizca teminat muhasebesi icin (pozisyon boyutunu stop mesafesi belirler).
+      # continue-on-error: bu adimlar cokerse "Commit updated state" atlanip diger profillerin verisi kaybolmasin.
+      - name: Scan r50-15m (Top50 kripto, 15m, sabit risk 1R=100 USDT)
+        continue-on-error: true
+        run: python main.py --timeframe 15m --top-n 50 --universe-file ./data/universe_top50.json --risk-per-trade 100 --leverage 100 --max-open 10 --max-portfolio-risk-pct 11 --max-same-direction 6 --pooled-learning --min-sl-pct 0.4 --max-sl-pct 30 --data-dir ./data/r50-15m --once
+
+      - name: Scan r50-4h (Top50 kripto, 4h, sabit risk 1R=100 USDT)
+        continue-on-error: true
+        run: python main.py --timeframe 4h --top-n 50 --universe-file ./data/universe_top50.json --risk-per-trade 100 --leverage 100 --max-open 10 --max-portfolio-risk-pct 11 --max-same-direction 6 --pooled-learning --min-sl-pct 0.5 --max-sl-pct 30 --data-dir ./data/r50-4h --once
+
       - name: Commit updated state
         run: |
           git config user.name "github-actions[bot]"

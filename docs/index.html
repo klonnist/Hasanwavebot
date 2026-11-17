@@ -149,7 +149,7 @@
 <div class="sub">
   Veriler GitHub Actions tarafından her 15 dakikada bir güncellenir · repo:
   <a href="https://github.com/klonnist/Hasanwavebot" target="_blank">klonnist/Hasanwavebot</a>
-  · her profil (3 Elliott Wave zaman dilimi + 1 VWAP ortalamaya dönüş) kendi ayrı sanal 10.000 USDT hesabıyla çalışır
+  · her profil (3 Elliott Wave zaman dilimi + 1 VWAP ortalamaya dönüş + 2 "Top50 (R)": hacme göre ilk 50 kripto, sabit risk 1R = 100 USDT) kendi ayrı sanal 10.000 USDT hesabıyla çalışır
 </div>
 <div id="status">Yükleniyor…</div>
 
@@ -168,6 +168,9 @@ const PROFILES = [
   { key: "4h",  dir: "4h",  label: "4 Saat · Swing",    leverage: "5x" },
   { key: "1d",  dir: "1d",  label: "1 Gün · Pozisyon",  leverage: "3x" },
   { key: "vwap", dir: "vwap", label: "VWAP · Ortalamaya Dönüş", leverage: "10x" },
+  // R bazli profiller: hacme gore ilk 50 kripto, sabit risk (1R = 100 USDT), havuzlu ogrenme
+  { key: "r50-15m", dir: "r50-15m", label: "15 Dakika · Top50 (R)", leverage: "1R = 100 USDT", rMode: true },
+  { key: "r50-4h",  dir: "r50-4h",  label: "4 Saat · Top50 (R)",    leverage: "1R = 100 USDT", rMode: true },
 ];
 
 function fmt(n, digits = 2) {
@@ -201,7 +204,7 @@ function computeStats(account) {
   // trailing stop ile devam ediyor) -- islem sayisi/kazanma oranindan haric.
   const completed = history.filter(t => t.result === "TP" || t.result === "SL");
   if (completed.length === 0) {
-    return { trades: 0, win_rate: 0, breakeven: 0, ...base };
+    return { trades: 0, win_rate: 0, breakeven: 0, total_r: 0, avg_r: 0, profit_factor: null, ...base };
   }
   // Kazanma/kayip/basabas GERCEK pnl isaretine gore: pnl>0 kazanc, pnl==0
   // basabas (SL tam basabas seviyesinden vurulmus -- ne kazandirdi ne
@@ -209,10 +212,17 @@ function computeStats(account) {
   // pnl<0 kayip. "SL" etiketi sadece hangi fiyat seviyesine carptigini gosterir.
   const wins = completed.filter(t => t.pnl > 0).length;
   const breakeven = completed.filter(t => t.pnl === 0).length;
+  // R bazli metrikler: r_multiple = toplam pnl / baslangic riski (sabit risk modunda 1R = sabit USDT).
+  const totalR = completed.reduce((s, t) => s + (t.r_multiple || 0), 0);
+  const grossWin = completed.reduce((s, t) => s + (t.pnl > 0 ? t.pnl : 0), 0);
+  const grossLoss = completed.reduce((s, t) => s + (t.pnl < 0 ? -t.pnl : 0), 0);
   return {
     trades: completed.length,
     win_rate: 100 * wins / completed.length,
     breakeven,
+    total_r: totalR,
+    avg_r: totalR / completed.length,
+    profit_factor: grossLoss > 0 ? grossWin / grossLoss : null,
     ...base,
   };
 }
@@ -262,16 +272,17 @@ function computeSymbolStats(account) {
   const completed = (account.history || []).filter(t => t.result === "TP" || t.result === "SL");
   const bySymbol = {};
   for (const t of completed) {
-    const s = bySymbol[t.symbol] || (bySymbol[t.symbol] = { n: 0, wins: 0, breakeven: 0, pnl: 0 });
+    const s = bySymbol[t.symbol] || (bySymbol[t.symbol] = { n: 0, wins: 0, breakeven: 0, pnl: 0, r: 0 });
     s.n += 1;
     if (t.pnl > 0) s.wins += 1;
     else if (t.pnl === 0) s.breakeven += 1;
     s.pnl += t.pnl;
+    s.r += t.r_multiple || 0;
   }
   return Object.entries(bySymbol)
     .map(([symbol, s]) => ({
       symbol, n: s.n, wins: s.wins, breakeven: s.breakeven, losses: s.n - s.wins - s.breakeven,
-      winRate: s.n ? 100 * s.wins / s.n : 0, pnl: s.pnl, lowN: s.n < LOW_N_THRESHOLD,
+      winRate: s.n ? 100 * s.wins / s.n : 0, pnl: s.pnl, r: s.r, lowN: s.n < LOW_N_THRESHOLD,
     }))
     .sort((a, b) => b.pnl - a.pnl);
 }
@@ -286,7 +297,7 @@ function renderSymbolStats(p, account) {
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th>Coin</th><th>İşlem</th><th>Kazanan</th><th>Başabaş</th><th>Kaybeden</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th>
+        <th>Coin</th><th>İşlem</th><th>Kazanan</th><th>Başabaş</th><th>Kaybeden</th><th>Kazanma Oranı</th><th>Toplam K/Z (USDT)</th>${p.rMode ? "<th>Toplam R</th>" : ""}
       </tr></thead>
       <tbody>
         ${rows.map(r => `
@@ -298,6 +309,7 @@ function renderSymbolStats(p, account) {
             <td class="neg">${r.losses}</td>
             <td>%${fmt(r.winRate, 1)}</td>
             <td class="${pnlClass(r.pnl)}">${r.pnl >= 0 ? "+" : ""}${fmt(r.pnl)}</td>
+            ${p.rMode ? `<td class="${pnlClass(r.r)}">${r.r >= 0 ? "+" : ""}${fmt(r.r, 2)}R</td>` : ""}
           </tr>
         `).join("")}
       </tbody>
@@ -357,8 +369,15 @@ function renderCards(p, stats) {
     { label: "Başabaş", value: stats.breakeven || 0 },
     { label: "Toplam İşlem", value: stats.trades },
     { label: "Açık Pozisyon", value: stats.open_positions },
-    { label: "Kaldıraç", value: p.leverage },
+    { label: p.rMode ? "1R (sabit risk)" : "Kaldıraç", value: p.leverage },
   ];
+  if (p.rMode) {
+    cards.splice(5, 0,
+      { label: "Toplam R", value: `${stats.total_r >= 0 ? "+" : ""}${fmt(stats.total_r, 2)}R`, cls: pnlClass(stats.total_r) },
+      { label: "Ort. R / İşlem", value: `${stats.avg_r >= 0 ? "+" : ""}${fmt(stats.avg_r, 3)}R`, cls: pnlClass(stats.avg_r) },
+      { label: "Profit Factor", value: stats.profit_factor === null ? "-" : fmt(stats.profit_factor, 2) },
+    );
+  }
   document.getElementById(`cards-${p.key}`).innerHTML = cards.map(c => `
     <div class="card">
       <div class="label">${c.label}</div>
