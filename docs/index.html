@@ -158,7 +158,7 @@
 <div id="profiles"></div>
 
 <!-- ?v= : motor degistiginde artir (tarayici/CDN onbellegi eski motoru yeni sayfayla karistirmasin) -->
-<script src="hb-backtest-engine.js?v=4"></script>
+<script src="hb-backtest-engine.js?v=5"></script>
 <script>
 const OWNER = "klonnist";
 const REPO = "Hasanwavebot";
@@ -794,7 +794,7 @@ function renderBacktestDetail(r, targetId = "bt-detail") {
         <div>Zaman dilimi: <b>${c.timeframe}</b></div>
         <div>Pencere: <b>${c.window} mum</b></div>
         ${isR
-          ? `<div>Mod: <b>Top50 (R)</b> — ${(c.risk_pct || 0) > 0
+          ? `<div>Mod: <b>Hacim evreni (R)</b>${c.universe_n ? ` — hacme göre ilk <b>${c.universe_n}</b> kripto` : ""} — ${(c.risk_pct || 0) > 0
                 ? `risk: <b>bakiyenin %${fmt(c.risk_pct, 2)}'i</b> (bileşik; 1R her işlemde farklı USDT)`
                 : `1R = <b>${fmt(c.risk_per_trade)} USDT</b> (sabit)`}</div>
              <div>Stop mesafesi bandı: <b>%${fmt(c.min_sl_pct, 1)} – %${fmt(c.max_sl_pct, 0)}</b></div>
@@ -889,7 +889,15 @@ function buildBacktestSkeleton() {
           <label>Mod
             <select name="mode" id="bt-mode-select">
               <option value="classic">Klasik (seçtiğin coinler, sabit teminat)</option>
-              <option value="top50r">Top50 (R): hacme göre ilk 50 kripto, sabit risk</option>
+              <option value="top50r">Hacim evreni (R): hacme göre ilk N kripto, R bazlı risk</option>
+            </select>
+          </label>
+          <label class="bt-r-only" hidden>Evren (24s hacme göre ilk)
+            <select name="universe_n" id="bt-universe-n">
+              <option value="10">10 coin</option>
+              <option value="25">25 coin</option>
+              <option value="50" selected>50 coin (canlı Top50 profilleri)</option>
+              <option value="100">100 coin</option>
             </select>
           </label>
           <label>Strateji
@@ -928,12 +936,14 @@ function buildBacktestSkeleton() {
           <label class="bt-r-only bt-risk-pct" hidden>Risk / İşlem (% bakiye) <input type="number" name="risk_pct" value="1" min="0.05" step="any"></label>
         </div>
         <div class="bt-hint bt-r-only" id="bt-top50-info" hidden>
-          <b>Top50 (R) modu:</b> her işlem tam 1R riskler (SL'e çarpan = -1R), pozisyon büyüklüğü stop mesafesine göre
+          <b>Hacim evreni (R) modu:</b> her işlem tam 1R riskler (SL'e çarpan = -1R), pozisyon büyüklüğü stop mesafesine göre
           ayarlanır. Risk <b>sabit</b> (her işlem aynı USDT, canlı profillerdeki gibi) ya da <b>bakiyenin %'si</b>
-          (açılış anındaki gerçekleşmiş bakiyenin yüzdesi, kazandıkça risk büyür: bileşik) olabilir. Evren, çalıştırınca <code>data/universe_top50.json</code>'dan alınan, OKX'te hacme göre ilk 50 kripto
-          listesidir (hisse/ETF/emtia perp'leri hariç; yeterli geçmişi olmayan yeni coinler atlanır). Coinler canlı botla aynı
+          (açılış anındaki gerçekleşmiş bakiyenin yüzdesi, kazandıkça risk büyür: bileşik) olabilir. Evren, çalıştırma anında
+          OKX'ten alınan <b>24 saatlik hacme göre ilk N kripto</b>dur (10 / 25 / 50 / 100; hisse/ETF/emtia perp'leri ve stablecoin'ler
+          hariç, listelenmesinden 60 günden az geçmiş coinler hariç; yeterli geçmişi olmayan coinler atlanır). Dikkat: liste
+          <b>bugünün</b> hacim sıralamasıdır, geçmiş dönemin değil (hafif bir geriye dönük yanlılık). Coinler canlı botla aynı
           şekilde zaman sırasıyla birlikte oynatılır, öğrenen ajan havuzludur, üst zaman dilimi filtresi ileriye bakmaz.
-          <br>Veri tarayıcıdan OKX'ten çekilir: <b>4h + birkaç ay</b> önerilir; 15m veya çok uzun aralıklar dakikalarca sürebilir.
+          <br>Veri tarayıcıdan OKX'ten çekilir: <b>4h + birkaç ay</b> önerilir; 15m, çok uzun aralıklar veya 100 coin dakikalarca sürebilir.
           Komisyon/slipaj modellenmez.
         </div>
         <div class="bt-coins bt-classic-only">
@@ -1051,14 +1061,16 @@ function setupHbBacktestForm() {
     if (isR) {
       // Eski bir backtest motoru onbellekten gelmisse Top50 (R) parametrelerini yok sayar ve cok buyuk pozisyonlarla
       // YANLIS sonuc verir -- calistirmak yerine acikca uyar.
-      if (typeof HB_ENGINE_FEATURES === "undefined" || !HB_ENGINE_FEATURES.riskPct || !HB_ENGINE_FEATURES.interleaved) {
+      if (typeof HB_ENGINE_FEATURES === "undefined" || !HB_ENGINE_FEATURES.riskPct || !HB_ENGINE_FEATURES.interleaved
+          || !HB_ENGINE_FEATURES.universe) {
         progress.innerHTML = `<span class="bt-error">Tarayıcın eski backtest motorunu önbellekten kullanıyor; Top50 (R) modu bu haliyle yanlış (çok büyük pozisyonlu) sonuç verir. Sayfayı Ctrl+F5 (Mac: Cmd+Shift+R) ile tamamen yenileyip tekrar dene.</span>`;
         return;
       }
       const tf = fd.get("timeframe");
       // Tahmini istek sayisi (OKX history-candles sayfa basina 100 mum, 50 coin) -- uzun suruyorsa uyar.
       const candles = (untilMs - sinceMs) / HB_BAR_MS[tf] + baseParams.window;
-      const requests = Math.ceil(candles / 100) * 50;
+      const universeN = Number(fd.get("universe_n")) || 50;
+      const requests = Math.ceil(candles / 100) * universeN;
       if (requests > 800 && !confirm(`Bu aralık için OKX'e yaklaşık ${requests} istek gidecek (tahmini ${Math.ceil(requests * 0.3 / 60)} dakika). Devam edilsin mi?`)) {
         return;
       }
@@ -1080,10 +1092,11 @@ function setupHbBacktestForm() {
     document.getElementById("bt-detail").innerHTML = "";
     try {
       if (isR) {
-        progress.textContent = "Top50 evren listesi alınıyor…";
-        const uni = await fetchJson("universe_top50.json");
-        baseParams.symbols = (uni.symbols || []).map(s => s.split("/")[0]);
-        if (baseParams.symbols.length < 10) throw new Error("evren listesi alınamadı");
+        const n = Number(fd.get("universe_n")) || 50;
+        progress.textContent = `Hacme göre ilk ${n} kripto listesi OKX'ten alınıyor…`;
+        baseParams.symbols = await hbFetchTopCryptoUniverse(n);
+        baseParams.universeN = n;
+        if (baseParams.symbols.length < Math.min(n, 10)) throw new Error("evren listesi alınamadı");
       }
       if (compareAll) {
         const timeframes = ["15m", "1h", "4h", "1d"];

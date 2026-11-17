@@ -78,10 +78,13 @@ yönetimi) **daha geniş bir evrende ve sabit riskle** izler:
   teminat muhasebesi içindir (pozisyonu stop mesafesi boyutlar, kaldıraç değil), bu yüzden
   panelde "Kaldıraç/Margin" gösterilmez; yerine her işlemin **pozisyon büyüklüğü (notional)**
   ve genel **efektif kaldıraç** (açık pozisyonların toplamı / bakiye) görünür.
-- **Backtest sekmesinde de çalıştırabilirsin:** panelde Backtest → "Mod: Top50 (R)" seçilince
-  `data/universe_top50.json` listesindeki 50 coin, canlı profillerle aynı kurallarla (sabit risk,
-  havuzlu öğrenme, coinler zaman sırasıyla birlikte, üst zaman dilimi filtresi ileriye bakmadan)
-  tarayıcıda geçmiş veride koşturulur ve sonuç R cinsinden gösterilir. Tarayıcı motoru, aynı
+- **Backtest sekmesinde de çalıştırabilirsin:** panelde Backtest → "Mod: Hacim evreni (R)" seçilince
+  evren olarak OKX'te 24 saatlik hacme göre **ilk 10 / 25 / 50 / 100 kripto** seçilebilir (liste çalıştırma
+  anında OKX'in herkese açık API'sinden hesaplanır, canlı profillerin Python mantığıyla aynıdır: 10/25/50/100
+  için aynı coinler, aynı sırada). Risk **sabit** (USDT) ya da **bakiyenin %'si** (bileşik) seçilebilir.
+  Canlı profillerle aynı kurallarla (havuzlu öğrenme, coinler zaman sırasıyla birlikte, üst zaman dilimi
+  filtresi ileriye bakmadan) tarayıcıda geçmiş veride koşturulur ve sonuç R cinsinden gösterilir. Not:
+  liste bugünün hacim sıralamasıdır (geçmiş dönemin değil), bu hafif bir geriye dönük yanlılık yaratır. Tarayıcı motoru, aynı
   pencerede Python'daki canlı mantıkla işlem işlem karşılaştırıldı (40/40 işlem birebir aynı).
   4h + birkaç ay önerilir; 15m veya çok uzun aralıklar dakikalarca sürer.
 - **Dikkat:** komisyon ve slipaj modellenmez (özellikle 15m'de dar stoplarla

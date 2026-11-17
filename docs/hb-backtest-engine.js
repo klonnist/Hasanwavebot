@@ -6,7 +6,7 @@
 // index.html bu bayraklari kontrol eder: tarayici ESKI bir motoru onbellekten kullaniyorsa (yeni index.html +
 // eski motor karisimi) Top50 (R) modu riskPerTrade/interleaved parametrelerini sessizce YOK SAYAR ve
 // 500 x 100 = 50.000 USDT'lik pozisyonlarla yanlis sonuc uretir -- bunu engellemek icin.
-const HB_ENGINE_FEATURES = { riskPerTrade: true, riskPct: true, interleaved: true };
+const HB_ENGINE_FEATURES = { riskPerTrade: true, riskPct: true, interleaved: true, universe: true };
 
 const HB_OKX_BASE = "https://www.okx.com";
 
@@ -23,6 +23,40 @@ const HB_OKX_BAR = { "1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m", "1h": "
 const HB_HIGHER_TIMEFRAME = { "15m": "4h", "4h": "1d", "1d": "1w" };
 
 const HB_POPULAR_COINS = ["BTC", "ETH", "SOL", "XRP", "BNB", "DOGE", "ADA", "AVAX", "LINK", "TON", "ETHFI", "NEAR"];
+
+// Evrenden her zaman cikarilan stablecoin tabanli kontratlar (data_feed.py ile ayni liste).
+const HB_STABLE_BASES = new Set(["USDC", "USDG", "FDUSD", "DAI", "TUSD", "USDD", "PYUSD", "USDE", "EURT"]);
+
+// OKX USDT-M swap'lari arasindan 24 saatlik USDT hacmine gore ilk `n` KRIPTO coin (baz ad: "BTC", "ETH"...).
+// data_feed.fetch_top_crypto_symbols ile ayni kurallar: yalniz instCategory 1 (kripto; hisse/ETF=3 ve
+// emtia=4 perp'leri haric), stablecoin tabanlilar ve listelenmesinden `minAgeDays` gun gecmemis coinler
+// haric, hacim = volCcy24h (baz coin cinsinden 24s hacim) x son fiyat. Herkese acik uc noktalar, API
+// anahtari gerekmez (OKX tarayicidan CORS'a izin veriyor).
+async function hbFetchTopCryptoUniverse(n, minAgeDays = 60) {
+  const [instRes, tickRes] = await Promise.all([
+    fetch(`${HB_OKX_BASE}/api/v5/public/instruments?instType=SWAP`).then(r => r.json()),
+    fetch(`${HB_OKX_BASE}/api/v5/market/tickers?instType=SWAP`).then(r => r.json()),
+  ]);
+  if (instRes.code !== "0" || tickRes.code !== "0") {
+    throw new Error(`OKX API hatasi: ${instRes.msg || tickRes.msg || instRes.code || tickRes.code}`);
+  }
+  const inst = new Map(instRes.data.map(d => [d.instId, d]));
+  const now = Date.now();
+  const rows = [];
+  for (const t of tickRes.data) {
+    const d = inst.get(t.instId);
+    if (!d || d.settleCcy !== "USDT" || d.ctType !== "linear" || d.state !== "live") continue;
+    if (String(d.instCategory) !== "1") continue;
+    const base = d.instId.split("-")[0];
+    if (HB_STABLE_BASES.has(base.toUpperCase())) continue;
+    if ((now - Number(d.listTime)) / 86_400_000 < minAgeDays) continue;
+    const quoteVolume = Number(t.volCcy24h) * Number(t.last);
+    if (!Number.isFinite(quoteVolume)) continue;
+    rows.push([quoteVolume, base]);
+  }
+  rows.sort((a, b) => b[0] - a[0]);
+  return rows.slice(0, n).map(r => r[1]);
+}
 
 function hbInstId(base) { return `${base}-USDT-SWAP`; }
 function hbSleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -694,6 +728,7 @@ async function runHbBacktest({
   trailGivebackPct = 0.5, epsilon = 0.25, onProgress,
   // Top50 (R) modu: sabit risk + havuzlu ogrenme + coinleri zaman sirasiyla birlikte oynat
   riskPerTrade = 0, minSlPct = 0, maxSlPct = 0, pooled = false, interleaved = false, riskPct = 0,
+  universeN = 0,  // sadece rapora yazilir: evren "hacme gore ilk N kripto" ise N
 }) {
   const account = new HbPaperAccount({
     startingBalance: balance, tradeMargin, maxOpenPositions: maxOpen, leverage,
@@ -796,7 +831,7 @@ async function runHbBacktest({
       trail_giveback_pct: account.trailGivebackPct, epsilon: learner.epsilon,
       risk_per_trade: account.riskPerTrade, risk_pct: account.riskPct,
       min_sl_pct: account.minSlPct, max_sl_pct: account.maxSlPct,
-      pooled: learner.pooled, interleaved,
+      pooled: learner.pooled, interleaved, universe_n: universeN,
     },
     summary,
     leaderboard: learner.leaderboardRows(12),
