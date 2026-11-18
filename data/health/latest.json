@@ -1,13 +1,13 @@
 {
-  "checked_at": "2026-11-17T15:35:42+00:00",
-  "ok": false,
-  "issues": [
-    "Son tarama 424 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
-  ],
+  "checked_at": "2026-11-18T00:37:45+00:00",
+  "ok": true,
+  "issues": [],
   "profiles_checked": [
     "15m",
     "4h",
     "1d",
-    "vwap"
+    "vwap",
+    "r50-15m",
+    "r50-4h"
   ]
 }
