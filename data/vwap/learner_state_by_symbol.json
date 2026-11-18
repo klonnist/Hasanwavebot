@@ -91,9 +91,9 @@
     "breakeven": 1
   },
   "[\"ETHFI/USDT:USDT\", 1.5, 0.75, 0.5]": {
-    "n": 21,
-    "reward_sum": 17.412,
-    "wins": 10,
+    "n": 22,
+    "reward_sum": 20.169,
+    "wins": 11,
     "losses": 11,
     "breakeven": 0
   },
