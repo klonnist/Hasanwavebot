@@ -1,5 +1,5 @@
 {
-  "balance": 10756.98353391849,
+  "balance": 10813.770738369116,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -1835,37 +1835,33 @@
       "open_time": "2026-11-17T18:00:24+00:00",
       "close_time": "2026-11-19T21:50:45+00:00",
       "balance_after": 10756.9835
-    }
-  ],
-  "open_positions": {
-    "DOGE/USDT:USDT": {
+    },
+    {
       "symbol": "DOGE/USDT:USDT",
       "side": "SELL",
       "entry": 0.05752,
+      "exit": 0.056866719999999996,
       "tp": 0.056866719999999996,
-      "sl": 0.05878672,
-      "risk_amount": 110.11126564673148,
-      "size": 86926.28650904034,
+      "initial_sl": 0.05878672,
+      "result": "TP",
+      "pnl": 56.7872,
+      "final_leg_pnl": 56.7872,
+      "partial_taken": false,
+      "notional": 5000.0,
+      "r_multiple": 0.516,
       "param_key": [
         0.8,
         1.618,
         0.382
       ],
-      "open_time": "2026-11-19T21:50:46+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-19T21:50:46+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.05752,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 0.05878672,
-      "initial_risk_amount": 110.11126564673148,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
-    },
+      "open_time": "2026-11-19T21:50:46+00:00",
+      "close_time": "2026-11-20T02:51:10+00:00",
+      "balance_after": 10813.7707
+    }
+  ],
+  "open_positions": {
     "LINK/USDT:USDT": {
       "symbol": "LINK/USDT:USDT",
       "side": "SELL",
@@ -1885,11 +1881,39 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-19T21:50:47+00:00",
       "funding_paid": 0.0,
-      "last_price": 8.886,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 8.833,
+      "unrealized_pnl": 29.8222,
+      "unrealized_r": 0.138,
       "initial_sl": 9.269902,
       "initial_risk_amount": 216.0150799009683,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0
+    },
+    "BTC/USDT:USDT": {
+      "symbol": "BTC/USDT:USDT",
+      "side": "SELL",
+      "entry": 61731.2,
+      "tp": 60067.7056,
+      "sl": 63388.441399999996,
+      "risk_amount": 134.23045396817162,
+      "size": 0.08099631952724069,
+      "param_key": [
+        2.5,
+        1.272,
+        0.382
+      ],
+      "open_time": "2026-11-20T02:51:09+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-11-20T02:51:09+00:00",
+      "funding_paid": 0.0,
+      "last_price": 61731.2,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 63388.441399999996,
+      "initial_risk_amount": 134.23045396817162,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0
