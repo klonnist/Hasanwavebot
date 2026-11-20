@@ -51,7 +51,14 @@ class PaperAccount:
                  breakeven_r: float = 1.0, partial_tp_r: float = 1.5,
                  partial_tp_fraction: float = 0.5, trail_giveback_pct: float = 0.5,
                  persist: bool = True, risk_per_trade: float = 0.0, min_sl_pct: float = 0.0,
-                 max_sl_pct: float = 0.0):
+                 max_sl_pct: float = 0.0, partial_at_level: bool = False):
+        # partial_at_level (YALNIZ BACKTEST icin, canli bot varsayilan False): mum ucu (high/low) ile
+        # calisan backtest'te kismi kar, mumun EN UC fiyatindan degil tam partial_tp_r (1.5R) SEVIYESINDEN
+        # alinir (limit emri gibi); ayrica TP 1.5R'den yakinsa fiyat once TP'ye degecegi icin kismi kar
+        # hic tetiklenmez (TP once dolar) ve kismi kardan sonra ayni mumda TP/SL kontrolu atlanmaz.
+        # Aksi halde backtest, kismi kar alan islemleri mumun en iyi fiyatindan tamamen kapatmis gibi
+        # hesaplar ve sonuclari sisirir.
+        self.partial_at_level = partial_at_level
         # risk_per_trade > 0: SABIT RISK modu ("1R" = bu tutar, USDT). Pozisyon
         # buyuklugu sabit teminat x kaldirac yerine stop mesafesine gore ayarlanir
         # (size = risk_per_trade / stop mesafesi), boylece SL'e carpan her islem
@@ -258,9 +265,16 @@ class PaperAccount:
         partial_event = None
         # 2) Kismi kar alma: belirli bir R'a ulasinca pozisyonun bir kismini
         # hemen nakde cevir, kalanini kosturmaya devam et.
-        if not pos.partial_tp_done and r >= self.partial_tp_r:
+        fill_price = last_price
+        skip_partial = False
+        if self.partial_at_level:
+            sgn = 1 if pos.side == "BUY" else -1
+            fill_price = pos.entry + sgn * self.partial_tp_r * risk_per_unit      # tam 1.5R seviyesi
+            # TP bu seviyeden once geliyorsa (TP <= 1.5R) fiyat once TP'ye degdi: kismi kar yok, TP tum pozisyonu kapatir.
+            skip_partial = abs(pos.tp - pos.entry) <= self.partial_tp_r * risk_per_unit + 1e-12
+        if not pos.partial_tp_done and r >= self.partial_tp_r and not skip_partial:
             partial_size = pos.size * self.partial_tp_fraction
-            partial_pnl = ((last_price - pos.entry) if pos.side == "BUY" else (pos.entry - last_price)) * partial_size
+            partial_pnl = ((fill_price - pos.entry) if pos.side == "BUY" else (pos.entry - fill_price)) * partial_size
             self.balance += partial_pnl
             pos.partial_pnl_realized += partial_pnl
             pos.size -= partial_size
@@ -274,8 +288,8 @@ class PaperAccount:
             # "2 x kismi kar" kadar guvence altina alinmis olur ("risksiz kalan
             # pozisyon" / risk-free runner). Asagidaki (3) adim buradan itibaren
             # devam eder, sadece bu tabanin USTUNE cikan ek kazanci geri verir.
-            pos.sl = max(pos.sl, last_price) if pos.side == "BUY" else min(pos.sl, last_price)
-            partial_event = {"price": last_price, "pnl": partial_pnl}
+            pos.sl = max(pos.sl, fill_price) if pos.side == "BUY" else min(pos.sl, fill_price)
+            partial_event = {"price": fill_price, "pnl": partial_pnl}
 
         # 3) Trailing stop: kismi alindiktan sonra, fiyat ilerledikce SL'i
         # kazancin en fazla trail_giveback_pct kadarini geri verecek sekilde
@@ -296,6 +310,7 @@ class PaperAccount:
             return None
 
         partial_event = self._manage_position(pos, last_price)
+        partial_record = None
         if partial_event:
             record = {
                 "symbol": pos.symbol, "side": pos.side, "result": "PARTIAL_TP",
@@ -308,7 +323,9 @@ class PaperAccount:
             }
             self.history.append(record)
             self._save()
-            return record  # bu tur sadece kismi kar alindi -- TP/SL kontrolu bir sonraki taramada
+            if not self.partial_at_level:
+                return record  # bu tur sadece kismi kar alindi -- TP/SL kontrolu bir sonraki taramada
+            partial_record = record  # backtest modu: ayni fiyatla TP/SL kontrolune devam (mum icinde TP de gelmis olabilir)
 
         # Mark-to-market: pozisyon kapanmasa bile anlik kar/zarari her taramada guncelle
         # (kismi alindiysa KALAN boyut uzerinden).
@@ -325,7 +342,7 @@ class PaperAccount:
 
         if not hit_tp and not hit_sl:
             self._save()
-            return None
+            return partial_record
 
         exit_price = pos.tp if hit_tp else pos.sl
         if pos.side == "BUY":

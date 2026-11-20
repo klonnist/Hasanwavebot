@@ -87,6 +87,14 @@ yönetimi) **daha geniş bir evrende ve sabit riskle** izler:
   liste bugünün hacim sıralamasıdır (geçmiş dönemin değil), bu hafif bir geriye dönük yanlılık yaratır. Tarayıcı motoru, aynı
   pencerede Python'daki canlı mantıkla işlem işlem karşılaştırıldı (40/40 işlem birebir aynı).
   4h + birkaç ay önerilir; 15m veya çok uzun aralıklar dakikalarca sürer.
+- **Backtestte kısmi kâr dolumu (2026-11-20 düzeltmesi):** Backtest, mumun yüksek/düşük değerlerine baktığı
+  için eskiden 1,5R'deki kısmi kârı mumun **en uç fiyatından** alıyor, stopu da o fiyata çekip aynı mumda
+  kalan yarıyı da aynı fiyattan kapatıyordu (her kısmi kâr alan işlem mumun en iyi fiyatından tamamen
+  kapanmış gibi sayılıyordu; sonuçlar fazla iyimserdi). Artık (`partial_at_level`) kısmi kâr tam 1,5R
+  seviyesinden alınır, TP 1,5R'den yakınsa TP önce dolar ve kısmi kârdan sonra aynı mumda TP/stop
+  kontrolü sürer. 4h Top50 testinde toplam R yaklaşık dörtte birine indi. Bu düzeltmeden önce üretilmiş
+  backtest raporları ("mum ucu · iyimser" etiketi) fazla iyimserdir. Canlı bot kuralı değişmedi
+  (canlıda 1 dakikalık mumun ucu kullanılır; etkisi çok küçüktür).
 - **İşlem grafikleri:** panelde her açık pozisyonun, geçmiş işlemin ve backtest işleminin yanındaki
   **Grafik** düğmesi, işlemi mumların üzerinde gösterir: giriş oku, **TP**, **stop**, 1R (başabaş) ve
   1.5R (kısmi kâr) seviyeleri, kısmi kâr ve çıkış işaretleri. Mumlar tarayıcıdan OKX'in herkese açık

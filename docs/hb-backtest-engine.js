@@ -6,7 +6,7 @@
 // index.html bu bayraklari kontrol eder: tarayici ESKI bir motoru onbellekten kullaniyorsa (yeni index.html +
 // eski motor karisimi) Top50 (R) modu riskPerTrade/interleaved parametrelerini sessizce YOK SAYAR ve
 // 500 x 100 = 50.000 USDT'lik pozisyonlarla yanlis sonuc uretir -- bunu engellemek icin.
-const HB_ENGINE_FEATURES = { riskPerTrade: true, riskPct: true, interleaved: true, universe: true, tradeLevels: true };
+const HB_ENGINE_FEATURES = { riskPerTrade: true, riskPct: true, interleaved: true, universe: true, tradeLevels: true, partialAtLevel: true };
 
 const HB_OKX_BASE = "https://www.okx.com";
 
@@ -460,6 +460,9 @@ class HbPaperAccount {
       // bakiyenin bu yuzdesi (bilesik buyume) -- kazandikca risk buyur, kaybettikce kuculur.
       // riskPerTrade'e gore ONCELIKLIDIR. Canli profiller sabit riskPerTrade kullanir.
       riskPct: 0,
+      // paper_account.py partial_at_level ile ayni: kismi kar mum ucundan degil tam partialTpR seviyesinden
+      // alinir; TP bu seviyeden yakinsa TP once dolar; kismi kardan sonra ayni mumda TP/SL kontrolu surer.
+      partialAtLevel: false,
     }, cfg);
     this.startingBalance = cfg.startingBalance;
     this.balance = cfg.startingBalance;
@@ -524,9 +527,15 @@ class HbPaperAccount {
       pos.breakevenDone = true;
     }
     let partialEvent = null;
-    if (!pos.partialTpDone && r >= this.partialTpR) {
+    let fillPrice = lastPrice, skipPartial = false;
+    if (this.partialAtLevel) {
+      const sgn = pos.side === "BUY" ? 1 : -1;
+      fillPrice = pos.entry + sgn * this.partialTpR * riskPerUnit;                      // tam 1.5R seviyesi
+      skipPartial = Math.abs(pos.tp - pos.entry) <= this.partialTpR * riskPerUnit + 1e-12; // TP once gelir: kismi kar yok
+    }
+    if (!pos.partialTpDone && r >= this.partialTpR && !skipPartial) {
       const partialSize = pos.size * this.partialTpFraction;
-      const partialPnl = (pos.side === "BUY" ? (lastPrice - pos.entry) : (pos.entry - lastPrice)) * partialSize;
+      const partialPnl = (pos.side === "BUY" ? (fillPrice - pos.entry) : (pos.entry - fillPrice)) * partialSize;
       this.balance += partialPnl;
       pos.partialPnlRealized += partialPnl;
       pos.size -= partialSize;
@@ -536,8 +545,8 @@ class HbPaperAccount {
       pos.partialTpDone = true;
       // SL'i DOGRUDAN kismi kar alinan fiyata cek (paper_account.py ile ayni) --
       // kalan pozisyon en kotu ihtimalle de kismi ile ayni seviyeden kapanir.
-      pos.sl = pos.side === "BUY" ? Math.max(pos.sl, lastPrice) : Math.min(pos.sl, lastPrice);
-      partialEvent = { price: lastPrice, pnl: partialPnl };
+      pos.sl = pos.side === "BUY" ? Math.max(pos.sl, fillPrice) : Math.min(pos.sl, fillPrice);
+      partialEvent = { price: fillPrice, pnl: partialPnl };
     }
     if (pos.partialTpDone) {
       if (pos.side === "BUY") {
@@ -556,6 +565,7 @@ class HbPaperAccount {
     if (!pos) return null;
 
     const partialEvent = this.managePosition(pos, lastPrice);
+    let partialRecord = null;
     if (partialEvent) {
       const record = {
         symbol: pos.symbol, side: pos.side, result: "PARTIAL_TP",
@@ -565,7 +575,8 @@ class HbPaperAccount {
         open_time: pos.openTime, close_time: this.nowIso(), balance_after: hbRound(this.balance, 4),
       };
       this.history.push(record);
-      return record;
+      if (!this.partialAtLevel) return record;
+      partialRecord = record;   // backtest modu: ayni fiyatla TP/SL kontrolune devam
     }
 
     const upnl = pos.side === "BUY" ? (lastPrice - pos.entry) * pos.size : (pos.entry - lastPrice) * pos.size;
@@ -575,7 +586,7 @@ class HbPaperAccount {
 
     const hitTp = (pos.side === "BUY" && lastPrice >= pos.tp) || (pos.side === "SELL" && lastPrice <= pos.tp);
     const hitSl = (pos.side === "BUY" && lastPrice <= pos.sl) || (pos.side === "SELL" && lastPrice >= pos.sl);
-    if (!hitTp && !hitSl) return null;
+    if (!hitTp && !hitSl) return partialRecord;
 
     const exitPrice = hitTp ? pos.tp : pos.sl;
     const finalLegPnl = pos.side === "BUY" ? (exitPrice - pos.entry) * pos.size : (pos.entry - exitPrice) * pos.size;
@@ -803,6 +814,7 @@ async function runHbBacktest({
     startingBalance: balance, tradeMargin, maxOpenPositions: maxOpen, leverage,
     maxPortfolioRiskPct, maxSameDirection, breakevenR, partialTpR, partialTpFraction, trailGivebackPct,
     riskPerTrade, minSlPct, maxSlPct, riskPct,
+    partialAtLevel: true,   // kismi kar tam 1.5R seviyesinden (mum ucundan degil) -- bkz. HbPaperAccount
   });
   const learner = new HbLearner(strategy, epsilon, pooled);
   const okxBar = HB_OKX_BAR[timeframe];
@@ -901,6 +913,7 @@ async function runHbBacktest({
       risk_per_trade: account.riskPerTrade, risk_pct: account.riskPct,
       min_sl_pct: account.minSlPct, max_sl_pct: account.maxSlPct,
       pooled: learner.pooled, interleaved, universe_n: universeN,
+      partial_fill: account.partialAtLevel ? "level" : "extreme",
     },
     summary,
     leaderboard: learner.leaderboardRows(12),

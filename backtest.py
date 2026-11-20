@@ -306,7 +306,7 @@ def write_report(report_dir, account: PaperAccount, learner: Learner, symbols, a
             "trade_margin": args.trade_margin, "leverage": args.leverage,
             "max_open": args.max_open, "max_portfolio_risk_pct": args.max_portfolio_risk_pct,
             "max_same_direction": args.max_same_direction,
-            "breakeven_r": args.breakeven_r, "partial_tp_r": args.partial_tp_r,
+            "breakeven_r": args.breakeven_r, "partial_tp_r": args.partial_tp_r, "partial_fill": "level",
             "partial_tp_fraction": args.partial_tp_fraction,
             "trail_giveback_pct": args.trail_giveback_pct, "epsilon": args.epsilon,
         },
@@ -408,6 +408,8 @@ def main():
         max_same_direction=args.max_same_direction,
         breakeven_r=args.breakeven_r, partial_tp_r=args.partial_tp_r,
         partial_tp_fraction=args.partial_tp_fraction, trail_giveback_pct=args.trail_giveback_pct,
+        # Kismi kar mum ucundan degil tam partial_tp_r seviyesinden alinsin (bkz. PaperAccount aciklamasi).
+        partial_at_level=True,
         # Replay sirasinda ARA durumun diske yazilmasina hic gerek yok (sadece
         # sonuc onemli) -- her mumda 2-3 kez check_and_close() cagrildigindan,
         # buyuyen history'i binlerce kez yazmak uzun backtestleri ciddi
