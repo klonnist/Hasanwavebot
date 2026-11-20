@@ -128,14 +128,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-19T23:57:40+00:00",
       "funding_paid": -0.3828948513009,
-      "last_price": 571.55,
-      "unrealized_pnl": 56.6676,
-      "unrealized_r": 0.108,
+      "last_price": 567.25,
+      "unrealized_pnl": 67.5264,
+      "unrealized_r": 0.128,
       "initial_sl": 802.1118,
       "initial_risk_amount": 525.5689489722049,
       "breakeven_done": false,
       "partial_tp_done": false,
-      "partial_pnl_realized": 0.0
+      "partial_pnl_realized": 0.0,
+      "last_check_time": "2026-11-20T05:11:23+00:00"
     }
   }
 }
