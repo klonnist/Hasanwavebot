@@ -65,7 +65,6 @@ POPULAR_COINS = [
     "ADA/USDT",
     "AVAX/USDT",
     "LINK/USDT",
-    "TON/USDT",
     "ETHFI/USDT",
     "NEAR/USDT",
 ]

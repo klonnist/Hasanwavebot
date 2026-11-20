@@ -13,7 +13,7 @@ kaybettirenleri daha az kullanır.
 
 ## Varsayılan izlenen coinler
 
-BTC, ETH, SOL, XRP, BNB, DOGE, ADA, AVAX, LINK, TON, ETHFI, NEAR
+BTC, ETH, SOL, XRP, BNB, DOGE, ADA, AVAX, LINK, ETHFI, NEAR
 (`main.py` içinde `POPULAR_COINS` listesi, `--symbols` ile değiştirilebilir).
 
 > Not: PENGU/USDT 2026-09-19'da listeden çıkarıldı — VWAP (ortalamaya dönüş)
@@ -48,7 +48,7 @@ adresindeki panelde sekmeler halinde canlı gösterilir.
 
 ### R bazlı "Top50" profilleri (`r50-15m`, `r50-4h`)
 
-Mevcut profiller 12 sabit coinde, sabit teminat x kaldıraçla çalışır; bu
+Mevcut profiller 11 sabit coinde, sabit teminat x kaldıraçla çalışır; bu
 yüzden bir işlemin riski stop mesafesine göre 45 ile 400 USDT arasında
 değişir ve sonuçlar R cinsinden temiz okunmaz. Bu iki profil aynı Elliott
 Wave sinyalini (aynı üç aşamalı doğrulama ve aynı kısmi kâr/trailing
@@ -333,7 +333,7 @@ hareketine göre adil bir eşik üretir — sabit yüzdeyle BTC'de hiç sinyal
 için ayrı istatistik tutuyor — BTC'de iyi çalışan kombinasyon DOGE'yu
 etkilemiyor. Bir sembol için yeterli veri (`MIN_SYMBOL_SAMPLES = 3`)
 birikene kadar, o kombinasyonun **tüm semboller genelindeki** ortalaması
-fallback olarak kullanılır, böylece 12 coin × 12 kombinasyon için ayrı ayrı
+fallback olarak kullanılır, böylece 11 coin × 12 kombinasyon için ayrı ayrı
 sıfırdan keşif dönemi yaşanmaz.
 
 Öğrenilen istatistikler ve işlem geçmişi her zaman dilimi klasöründe
@@ -418,7 +418,7 @@ python main.py --strategy vwap --timeframe 15m
 
 | Parametre        | Açıklama                                                        | Varsayılan               |
 |-------------------|---------------------------------------------------------------------|---------------------------|
-| `--symbols`       | Virgülle ayrılmış coin listesi                                       | 10 popüler coin (BTC..TON)|
+| `--symbols`       | Virgülle ayrılmış coin listesi                                       | 11 popüler coin (BTC..NEAR)|
 | `--strategy`      | `wave` (Elliott Wave, trend takip) veya `vwap` (VWAP'a dönüş, mean-reversion) | `wave`      |
 | `--timeframe`      | Mum aralığı (`1m,5m,15m,1h,4h,1d`)                                    | `1h`                       |
 | `--market`         | `swap` (futures) veya `spot`                                          | `swap`                     |
@@ -471,7 +471,7 @@ Ogrenilen en iyi parametre kombinasyonlari:
 ## Notlar / Geliştirme fikirleri
 
 - `--max-open` ve `--max-portfolio-risk-pct` ile eşzamanlı pozisyon
-  sayısını ve toplam riski sınırlayabilirsiniz (örn. 12 coin izlerken
+  sayısını ve toplam riski sınırlayabilirsiniz (örn. 11 coin izlerken
   `--max-open 3 --max-portfolio-risk-pct 5` daha temkinli bir yaklaşımdır).
 - Gerçek emir göndermeye geçmek isterseniz `paper_account.py`'yi referans
   alıp `ccxt`'in `create_order` fonksiyonunu kullanan ayrı bir "live"
