@@ -125,6 +125,8 @@
   .bt-progress { color: var(--muted); font-size: 12.5px; margin-top: 8px; min-height: 18px; }
   .bt-error { color: var(--red); font-size: 12.5px; margin-top: 8px; }
 
+  .bt-del { background: transparent; border: 1px solid var(--panel-border); color: var(--muted); padding: 3px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+  .bt-del:hover { color: var(--red); border-color: var(--red); }
   .hist-controls { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
   .hist-filter {
     background: #0e1219; border: 1px solid var(--panel-border); color: var(--text);
@@ -1011,20 +1013,82 @@ function buildEquitySvg(points, startingBalance) {
   `;
 }
 
+// ---- Bu tarayicida calistirilan backtestlerin gecmisi (localStorage; yalniz bu tarayicida gorunur) ----
+const LOCAL_BT_KEY = "hb_local_backtests_v1";
+const LOCAL_BT_MAX = 25;
+const LOCAL_BT_PER_RUN_TRADES = 500;
+let SERVER_BT_RUNS = [];
+
+function localBtLoad() {
+  try { const a = JSON.parse(localStorage.getItem(LOCAL_BT_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch { return []; }
+}
+function localBtSave(list) {
+  // Kota dolarsa en eski kayitlari at, sonra islem listelerini kisalt; yine olmazsa vazgec (sayfa yine calisir).
+  let l = list.slice(0, LOCAL_BT_MAX);
+  for (let attempt = 0; attempt < 12; attempt++) {
+    try { localStorage.setItem(LOCAL_BT_KEY, JSON.stringify(l)); return true; } catch {
+      if (l.length > 1) l = l.slice(0, -1);
+      else if (l[0] && l[0].trades && l[0].trades.length > 50) l = [{ ...l[0], trades: l[0].trades.slice(-Math.floor(l[0].trades.length / 2)) }];
+      else break;
+    }
+  }
+  return false;
+}
+function localBtAdd(report) {
+  if (!report || !report.config) return;
+  const list = localBtLoad().filter(r => r.id !== report.id);
+  list.unshift({ ...report, trades: (report.trades || []).slice(-LOCAL_BT_PER_RUN_TRADES) });
+  localBtSave(list);
+  renderBacktestList(SERVER_BT_RUNS);
+}
+function localBtRow(r) {
+  const c = r.config, s = r.summary;
+  const isR = (c.risk_per_trade || 0) > 0 || (c.risk_pct || 0) > 0;
+  return {
+    local: true, id: r.id, created_at: r.created_at, strategy: c.strategy, timeframe: c.timeframe,
+    date_from: c.date_from, date_to: c.date_to, symbol_count: (c.symbols || []).length, trades: s.trades,
+    win_rate: s.win_rate, total_pnl: s.total_pnl, total_pnl_pct: s.total_pnl_pct, max_drawdown_pct: s.max_drawdown_pct,
+    total_r: isR ? s.total_r : null,
+    setting: isR ? `Top${c.universe_n || "?"} R · ${(c.risk_pct || 0) > 0 ? "%" + c.risk_pct + " bileşik" : "1R=" + c.risk_per_trade}`
+                 : `klasik · ${c.leverage}x`,
+    fill: c.partial_fill === "level" ? "" : "mum ucu · iyimser",
+  };
+}
+
 function renderBacktestList(runs) {
+  SERVER_BT_RUNS = runs || [];
   const el = document.getElementById("bt-list");
-  if (!runs || runs.length === 0) {
+  const local = localBtLoad().map(localBtRow);
+  if (SERVER_BT_RUNS.length === 0 && local.length === 0) {
     el.innerHTML = `<div class="empty">Henüz backtest çalıştırılmamış — yukarıdaki bağlantıdan başlatabilirsin.</div>`;
     return;
   }
+  const rowHtml = (r) => `
+          <tr>
+            <td>${fmtTime(r.created_at)}${r.local ? ` <span class="badge on">bu tarayıcı</span>` : ""}${r.fill ? ` <span class="n-warn" title="Kısmi kâr mumun en uç fiyatından alınmış varsayıldı; sonuçlar fazla iyimser olabilir">${r.fill}</span>` : ""}</td>
+            <td>${r.strategy}</td>
+            <td>${r.timeframe}</td>
+            <td>${r.date_from} → ${r.date_to}${r.setting ? `<div style="color:var(--muted);font-size:11px">${r.setting}</div>` : ""}</td>
+            <td>${r.symbol_count}</td>
+            <td>${r.trades}</td>
+            <td>%${fmt(r.win_rate, 1)}</td>
+            <td class="${pnlClass(r.total_pnl)}">${r.total_pnl >= 0 ? "+" : ""}${fmt(r.total_pnl)} (${r.total_pnl_pct >= 0 ? "+" : ""}${fmt(r.total_pnl_pct, 1)}%)${r.total_r != null ? `<div style="font-size:11px">${r.total_r >= 0 ? "+" : ""}${fmt(r.total_r, 1)}R</div>` : ""}</td>
+            <td class="neg">%${fmt(r.max_drawdown_pct, 1)}</td>
+            <td>${r.local
+              ? `<button class="bt-open" data-local="${r.id}">Detay</button> <button class="bt-del" data-del="${r.id}" title="Bu kaydı sil">✕</button>`
+              : `<button class="bt-open" data-file="${r.file}">Detay</button>`}</td>
+          </tr>`;
   el.innerHTML = `
+    ${local.length ? `<div class="bt-hint">Bu tarayıcıda çalıştırdığın ${local.length} backtest kayıtlı (yalnızca bu cihazda/tarayıcıda görünür; tarayıcı verisini silersen gider).
+      <button class="bt-coins-toggle" id="bt-clear-local">Hepsini sil</button></div>` : ""}
     <table>
       <thead><tr>
         <th>Çalıştırma</th><th>Strateji</th><th>Periyot</th><th>Tarih Aralığı</th><th>Coin</th>
         <th>İşlem</th><th>Kazanma</th><th>Toplam K/Z</th><th>Max Drawdown</th><th></th>
       </tr></thead>
       <tbody>
-        ${runs.map(r => `
+        ${local.map(rowHtml).join("")}
+        ${SERVER_BT_RUNS.map(r => `
           <tr>
             <td>${fmtTime(r.created_at)}</td>
             <td>${r.strategy}</td>
@@ -1042,7 +1106,21 @@ function renderBacktestList(runs) {
     </table>
   `;
   el.querySelectorAll(".bt-open").forEach(btn => {
-    btn.addEventListener("click", () => openBacktestDetail(btn.dataset.file));
+    btn.addEventListener("click", () => {
+      if (btn.dataset.local) {
+        const rep = localBtLoad().find(x => x.id === btn.dataset.local);
+        if (rep) { renderBacktestDetail(rep); document.getElementById("bt-detail").scrollIntoView({ behavior: "smooth", block: "start" }); }
+      } else {
+        openBacktestDetail(btn.dataset.file);
+      }
+    });
+  });
+  el.querySelectorAll(".bt-del").forEach(btn => {
+    btn.addEventListener("click", () => { localBtSave(localBtLoad().filter(x => x.id !== btn.dataset.del)); renderBacktestList(SERVER_BT_RUNS); });
+  });
+  const clr = document.getElementById("bt-clear-local");
+  if (clr) clr.addEventListener("click", () => {
+    if (confirm("Bu tarayıcıda kayıtlı tüm backtest geçmişi silinsin mi?")) { localBtSave([]); renderBacktestList(SERVER_BT_RUNS); }
   });
 }
 
@@ -1274,7 +1352,11 @@ async function loadBacktests() {
   }
   const runs = index.runs || [];
   renderBacktestList(runs);
-  if (runs.length > 0 && !document.getElementById("bt-detail").dataset.loaded) {
+  const localFirst = localBtLoad()[0];
+  if (localFirst && !document.getElementById("bt-detail").dataset.loaded) {   // bu tarayicidaki en yeni calistirma varsa onu ac
+    document.getElementById("bt-detail").dataset.loaded = "1";
+    renderBacktestDetail(localFirst);
+  } else if (runs.length > 0 && !document.getElementById("bt-detail").dataset.loaded) {
     document.getElementById("bt-detail").dataset.loaded = "1";
     await openBacktestDetail(runs[0].file);  // en yeni calistirmayi otomatik ac
   }
@@ -1540,6 +1622,7 @@ function setupHbBacktestForm() {
             ...baseParams, timeframe: tf,
             onProgress: (msg) => { progress.textContent = `[${tf}] ${msg}`; },
           });
+          localBtAdd(reportsByTf[tf]);
         }
         progress.textContent = "Tamamlandı.";
         renderTimeframeComparison(baseParams.strategy, reportsByTf);
@@ -1550,6 +1633,7 @@ function setupHbBacktestForm() {
           onProgress: (msg) => { progress.textContent = msg; },
         });
         progress.textContent = "Tamamlandı.";
+        localBtAdd(report);
         renderBacktestDetail(report);
         document.getElementById("bt-detail").scrollIntoView({ behavior: "smooth", block: "start" });
       }
