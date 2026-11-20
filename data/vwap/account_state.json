@@ -39918,5 +39918,93 @@
       "balance_after": 21113.3653
     }
   ],
-  "open_positions": {}
+  "open_positions": {
+    "XRP/USDT:USDT": {
+      "symbol": "XRP/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.9061,
+      "tp": 0.9351996547010843,
+      "sl": 0.8887184008040514,
+      "risk_amount": 95.91435380172507,
+      "size": 5518.154729058603,
+      "param_key": [
+        2.5,
+        0.5,
+        0.5
+      ],
+      "open_time": "2026-11-20T18:59:29+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-11-20T18:59:29+00:00",
+      "funding_paid": 0.0,
+      "last_price": 0.9061,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 0.8887184008040514,
+      "initial_risk_amount": 95.91435380172507,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0,
+      "last_check_time": ""
+    },
+    "ETHFI/USDT:USDT": {
+      "symbol": "ETHFI/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.4399,
+      "tp": 0.4753764876038983,
+      "sl": 0.43275179048617285,
+      "risk_amount": 81.24811904781954,
+      "size": 11366.219595362581,
+      "param_key": [
+        1.5,
+        0.75,
+        0.5
+      ],
+      "open_time": "2026-11-20T18:59:30+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-11-20T18:59:30+00:00",
+      "funding_paid": 0.0,
+      "last_price": 0.4399,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 0.43275179048617285,
+      "initial_risk_amount": 81.24811904781954,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0,
+      "last_check_time": ""
+    },
+    "NEAR/USDT:USDT": {
+      "symbol": "NEAR/USDT:USDT",
+      "side": "BUY",
+      "entry": 2.856,
+      "tp": 3.110783885525507,
+      "sl": 2.8113659525994934,
+      "risk_amount": 78.14083928660098,
+      "size": 1750.700280112045,
+      "param_key": [
+        2.0,
+        0.75,
+        0.5
+      ],
+      "open_time": "2026-11-20T18:59:30+00:00",
+      "leverage": 10.0,
+      "notional": 5000.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-11-20T18:59:30+00:00",
+      "funding_paid": 0.0,
+      "last_price": 2.856,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 2.8113659525994934,
+      "initial_risk_amount": 78.14083928660098,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0,
+      "last_check_time": ""
+    }
+  }
 }

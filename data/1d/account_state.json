@@ -1,5 +1,5 @@
 {
-  "balance": 9231.664927036541,
+  "balance": 9336.97323059891,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -106,37 +106,31 @@
       "open_time": "2026-09-22T19:09:47+00:00",
       "close_time": "2026-11-17T00:44:31+00:00",
       "balance_after": 9231.2304
-    }
-  ],
-  "open_positions": {
-    "BNB/USDT:USDT": {
+    },
+    {
       "symbol": "BNB/USDT:USDT",
       "side": "SELL",
       "entry": 593.99,
+      "exit": 552.2399999999998,
       "tp": 552.2399999999998,
-      "sl": 802.1118,
-      "risk_amount": 525.5689489722049,
-      "size": 2.525295038637014,
+      "initial_sl": 802.1118,
+      "result": "TP",
+      "pnl": 105.4311,
+      "final_leg_pnl": 105.4311,
+      "partial_taken": false,
+      "notional": 1500.0,
+      "r_multiple": 0.201,
       "param_key": [
         1.8,
         2.0,
         0.382
       ],
-      "open_time": "2026-11-18T07:57:40+00:00",
       "leverage": 3.0,
-      "notional": 1500.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-20T07:57:40+00:00",
-      "funding_paid": -0.43455250710165,
-      "last_price": 573.5,
-      "unrealized_pnl": 51.7433,
-      "unrealized_r": 0.098,
-      "initial_sl": 802.1118,
-      "initial_risk_amount": 525.5689489722049,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-20T10:56:39+00:00"
+      "funding_paid": -0.3118,
+      "open_time": "2026-11-18T07:57:40+00:00",
+      "close_time": "2026-11-20T15:20:00+00:00",
+      "balance_after": 9336.9732
     }
-  }
+  ],
+  "open_positions": {}
 }
