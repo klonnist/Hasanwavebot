@@ -34,7 +34,7 @@ from datetime import datetime, timezone
 
 import ccxt
 
-from data_feed import build_exchange, fetch_ohlcv, fetch_last_price, fetch_funding_rate, load_or_refresh_universe
+from data_feed import build_exchange, fetch_ohlcv, fetch_ohlcv_since, fetch_last_price, fetch_funding_rate, load_or_refresh_universe
 from wave_detector import (
     zigzag_pivots, detect_wave3_setup, build_signal_levels, atr_pct, WaveParams,
     wave1_has_internal_structure, higher_timeframe_trend,
@@ -297,7 +297,45 @@ def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount
     except Exception as e:
         log(f"{symbol}: funding orani alinamadi (atlaniyor): {e}")
 
-    side = account.open_positions[symbol].side
+    pos0 = account.open_positions[symbol]
+    side = pos0.side
+    # --- Kacirilan zamani telafi: son kontrolden (ilk seferde acilistan) beri gecen TUM 5 dakikalik mumlari
+    # sirayla isle. GitHub'in zamanlanmis calismalari saatlerce gecikebildigi icin yalniz son 20 dakikaya
+    # bakmak, aradaki TP/stop dokunuslarini hic gormuyordu (ve bot sonunda fiyat cok uzaktayken kapatiyordu).
+    # Giris aninda hala oluşmakta olan mum atlanir (giristen ONCEKI fiyat hareketi stopu tetiklememeli).
+    try:
+        since_dt = datetime.fromisoformat(pos0.last_check_time or pos0.open_time)
+        gap_s = (datetime.now(timezone.utc) - since_dt).total_seconds()
+        if gap_s > 20 * 60:
+            tf_c = "5m" if gap_s <= 20 * 3600 else "15m"
+            step_ms = {"5m": 300_000, "15m": 900_000}[tf_c]
+            since_ms = int(since_dt.timestamp() * 1000)
+            first_full = (since_ms // step_ms + 1) * step_ms          # since'ten sonraki ilk TAM mum
+            gap_candles = fetch_ohlcv_since(exchange, symbol, tf_c, first_full)
+            log(f"{symbol}: {gap_s/3600:.1f} saatlik bosluk telafi ediliyor ({len(gap_candles)} adet {tf_c} mum)")
+            for row in gap_candles.itertuples():
+                if not account.has_open_position(symbol):
+                    break
+                # tamamlanmamis (hala olusmakta olan) mumu atla; son 1dk'lik mumlar zaten asagida islenecek
+                if row.timestamp.timestamp() * 1000 + step_ms > time.time() * 1000:
+                    continue
+                adv, fav = _candle_check_order(side, row.high, row.low)
+                real_now = account.now_fn
+                account.now_fn = lambda t=row.timestamp: t.to_pydatetime()   # kayitlara mumun (gercek) zamani yazilsin
+                try:
+                    for p in (adv, fav):
+                        if not account.has_open_position(symbol):
+                            break
+                        rr = account.check_and_close(symbol, p)
+                        if rr is not None:
+                            _handle_close_event(rr, symbol, strategy, learner, account, notify)
+                finally:
+                    account.now_fn = real_now
+            if not account.has_open_position(symbol):
+                return
+    except Exception as e:
+        log(f"{symbol}: gecmis mumlar telafi edilemedi (sadece son mumlara bakilacak): {e}")
+
     try:
         candles = fetch_ohlcv(exchange, symbol, "1m", limit=20)
     except Exception as e:
@@ -337,6 +375,8 @@ def try_close_position(exchange, symbol, learner: Learner, account: PaperAccount
 
     if account.has_open_position(symbol):
         pos = account.open_positions[symbol]
+        pos.last_check_time = datetime.now(timezone.utc).isoformat(timespec="seconds")   # sonraki calisma buradan devam eder
+        account.save()
         sign = "+" if pos.unrealized_pnl >= 0 else ""
         durum = []
         if pos.breakeven_done:
@@ -407,6 +447,9 @@ def main():
     parser.add_argument("--max-same-direction", type=int, default=3,
                          help="Ayni anda ayni yonde (hepsi BUY veya hepsi SELL) acik olabilecek en fazla pozisyon "
                               "sayisi (piyasa genelinin tek yonlu hareketinde toplu vurulma riskine karsi)")
+    parser.add_argument("--no-partial-at-level", action="store_true",
+                         help="ESKI davranis: kismi kar gozlenen fiyattan (mum ucu) alinir ve TP once kontrol edilmez. "
+                              "Varsayilan: kismi kar tam partial-tp-r seviyesinden, TP o seviyeden yakinsa TP once dolar.")
     parser.add_argument("--breakeven-r", type=float, default=1.0,
                          help="Bu R'a ulasinca SL basabasa (giris fiyatina) cekilir")
     parser.add_argument("--partial-tp-r", type=float, default=1.5,
@@ -460,6 +503,7 @@ def main():
         partial_tp_r=args.partial_tp_r,
         partial_tp_fraction=args.partial_tp_fraction,
         trail_giveback_pct=args.trail_giveback_pct,
+        partial_at_level=not args.no_partial_at_level,
         risk_per_trade=args.risk_per_trade,
         min_sl_pct=args.min_sl_pct,
         max_sl_pct=args.max_sl_pct,

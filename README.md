@@ -93,8 +93,16 @@ yönetimi) **daha geniş bir evrende ve sabit riskle** izler:
   kapanmış gibi sayılıyordu; sonuçlar fazla iyimserdi). Artık (`partial_at_level`) kısmi kâr tam 1,5R
   seviyesinden alınır, TP 1,5R'den yakınsa TP önce dolar ve kısmi kârdan sonra aynı mumda TP/stop
   kontrolü sürer. 4h Top50 testinde toplam R yaklaşık dörtte birine indi. Bu düzeltmeden önce üretilmiş
-  backtest raporları ("mum ucu · iyimser" etiketi) fazla iyimserdir. Canlı bot kuralı değişmedi
-  (canlıda 1 dakikalık mumun ucu kullanılır; etkisi çok küçüktür).
+  backtest raporları ("mum ucu · iyimser" etiketi) fazla iyimserdir. **Canlı bot da aynı şekilde
+  düzeltildi** (2026-11-20; eski davranış için `--no-partial-at-level`): bir pozisyon, fiyat TP'yi geçmiş
+  olsa bile önce "1,5R'de kısmi kâr" yazıp o uzak fiyattan satmış sayılabiliyordu (PIEVERSE: +1,78R yazıldı,
+  gerçekçi +0,63R).
+- **Kaçırılan zamanı telafi (canlı bot):** GitHub'ın zamanlanmış çalışmaları 15 dakikada bir değil, günde
+  ancak 4-5 kez (saatler arayla) çalışıyor. Bot eskiden yalnızca son 20 dakikalık mumlara baktığı için
+  çalışmalar arasındaki TP/stop dokunuşlarını hiç görmüyordu. Artık her pozisyon `last_check_time`
+  taşır ve her çalışmada o zamandan beri geçen tüm 5 dakikalık (20 saatten uzun boşlukta 15 dakikalık)
+  mumlar sırayla işlenir; kapanış kaydına dokunuşun gerçek mum zamanı yazılır. İlk çalışmada, bu alanı
+  olmayan açık pozisyonlar açılışlarından itibaren yeniden oynatılır (kaçırılmış kapanışlar telafi edilir).
 - **İşlem grafikleri:** panelde her açık pozisyonun, geçmiş işlemin ve backtest işleminin yanındaki
   **Grafik** düğmesi, işlemi mumların üzerinde gösterir: giriş oku, **TP**, **stop**, 1R (başabaş) ve
   1.5R (kısmi kâr) seviyeleri, kısmi kâr ve çıkış işaretleri. Mumlar tarayıcıdan OKX'in herkese açık

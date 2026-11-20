@@ -36,6 +36,7 @@ class Position:
     breakeven_done: bool = False       # SL basabasa cekildi mi
     partial_tp_done: bool = False      # kismi kar alindi mi
     partial_pnl_realized: float = 0.0  # kismi kar alimindan simdiye kadar gerceklesen toplam USDT
+    last_check_time: str = ""          # fiyat hareketinin en son islendigi zaman (bos = open_time); bot seyrek calisinca kacirilan mumlari telafi icin
 
 
 def initial_sl_for_record(pos: "Position") -> float:

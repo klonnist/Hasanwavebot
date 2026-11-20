@@ -26,6 +26,34 @@ def fetch_ohlcv(exchange: ccxt.okx, symbol: str, timeframe: str, limit: int = 30
     return df
 
 
+_TF_MS = {"1m": 60_000, "5m": 300_000, "15m": 900_000, "1h": 3_600_000, "4h": 14_400_000}
+
+
+def fetch_ohlcv_since(exchange: ccxt.okx, symbol: str, timeframe: str, since_ms: int,
+                      max_candles: int = 1500) -> pd.DataFrame:
+    """since_ms'ten (dahil) simdiye kadar TUM mumlari sayfa sayfa ceker (en eskiden en yeniye).
+
+    Bot seyrek calistiginda (GitHub zamanlanmis calismalari saatlerce gecikebiliyor) iki calisma
+    arasinda olusan fiyat hareketini kacirmamak icin kullanilir."""
+    step = _TF_MS[timeframe]
+    rows, cursor = [], int(since_ms)
+    while len(rows) < max_candles:
+        batch = exchange.fetch_ohlcv(symbol, timeframe=timeframe, since=cursor, limit=100)
+        if not batch:
+            break
+        rows.extend(batch)
+        last_ts = int(batch[-1][0])
+        if last_ts + step <= cursor:
+            break
+        cursor = last_ts + step
+        if cursor > time.time() * 1000:
+            break
+    df = pd.DataFrame(rows, columns=["timestamp", "open", "high", "low", "close", "volume"])
+    df = df.drop_duplicates("timestamp").sort_values("timestamp").reset_index(drop=True)
+    df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms", utc=True)
+    return df
+
+
 def fetch_last_price(exchange: ccxt.okx, symbol: str) -> float:
     ticker = exchange.fetch_ticker(symbol)
     return float(ticker["last"])
