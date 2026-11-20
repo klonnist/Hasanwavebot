@@ -1,9 +1,9 @@
 {
-  "checked_at": "2026-11-20T05:54:48+00:00",
+  "checked_at": "2026-11-20T14:58:17+00:00",
   "ok": false,
   "issues": [
     "[r50-15m] PEPE/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.000004) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-18T17:04:37+00:00 -> 2026-11-19T12:30:00+00:00)",
-    "[r50-4h] PIEVERSE/USDT:USDT: TP olarak kapanan islemin exit fiyati (2.286398) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-17T18:00:58+00:00 -> 2026-11-18T09:45:00+00:00)"
+    "Son tarama 242 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
   ],
   "profiles_checked": [
     "15m",
