@@ -1,5 +1,5 @@
 {
-  "balance": 10764.293492604567,
+  "balance": 10716.399817092899,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -610,95 +610,100 @@
       "open_time": "2026-11-20T18:59:42+00:00",
       "close_time": "2026-11-20T21:40:00+00:00",
       "balance_after": 10764.2935
-    }
-  ],
-  "open_positions": {
-    "IRYS/USDT:USDT": {
+    },
+    {
       "symbol": "IRYS/USDT:USDT",
       "side": "BUY",
       "entry": 0.02193,
+      "exit": 0.01929956,
       "tp": 0.03221,
-      "sl": 0.01929956,
-      "risk_amount": 100.0,
-      "size": 38016.45352108391,
+      "initial_sl": 0.01929956,
+      "result": "SL",
+      "pnl": -100.0,
+      "final_leg_pnl": -100.0,
+      "partial_taken": false,
+      "notional": 833.7,
+      "r_multiple": -1.0,
       "param_key": [
         1.2,
         2.0,
         0.382
       ],
-      "open_time": "2026-11-20T10:56:54+00:00",
       "leverage": 100.0,
-      "notional": 833.7008257173702,
-      "margin": 8.337008257173702,
-      "last_funding_time": "2026-11-20T18:56:54+00:00",
-      "funding_paid": -0.3586156775389635,
-      "last_price": 0.02163,
-      "unrealized_pnl": -11.4049,
-      "unrealized_r": -0.114,
-      "initial_sl": 0.01929956,
-      "initial_risk_amount": 100.0,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-21T00:44:43+00:00"
+      "funding_paid": -2.4649,
+      "open_time": "2026-11-20T10:56:54+00:00",
+      "close_time": "2026-11-21T05:25:00+00:00",
+      "balance_after": 10666.3998
     },
-    "SENT/USDT:USDT": {
+    {
       "symbol": "SENT/USDT:USDT",
       "side": "BUY",
       "entry": 0.02051,
+      "exit": 0.0199771,
       "tp": 0.0218771,
-      "sl": 0.0199771,
-      "risk_amount": 100.0,
-      "size": 187652.46762994956,
+      "initial_sl": 0.0199771,
+      "result": "SL",
+      "pnl": -100.0,
+      "final_leg_pnl": -100.0,
+      "partial_taken": false,
+      "notional": 3848.75,
+      "r_multiple": -1.0,
       "param_key": [
         0.8,
         1.618,
         0.382
       ],
-      "open_time": "2026-11-21T00:44:46+00:00",
       "leverage": 100.0,
-      "notional": 3848.7521110902658,
-      "margin": 38.487521110902655,
-      "last_funding_time": "2026-11-21T00:44:46+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.02051,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 0.0199771,
-      "initial_risk_amount": 100.0,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "open_time": "2026-11-21T00:44:46+00:00",
+      "close_time": "2026-11-21T01:35:00+00:00",
+      "balance_after": 10566.3998
     },
-    "YB/USDT:USDT": {
+    {
+      "symbol": "YB/USDT:USDT",
+      "side": "BUY",
+      "result": "PARTIAL_TP",
+      "entry": 0.04791,
+      "exit": 0.049339320000000006,
+      "tp": 0.05063712,
+      "initial_sl": 0.04695712,
+      "pnl": 75.0,
+      "r_multiple": 1.5,
+      "param_key": [
+        0.8,
+        1.618,
+        0.382
+      ],
+      "leverage": 100.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-11-21T00:44:49+00:00",
+      "close_time": "2026-11-21T01:10:00+00:00",
+      "balance_after": 10641.3998
+    },
+    {
       "symbol": "YB/USDT:USDT",
       "side": "BUY",
       "entry": 0.04791,
+      "exit": 0.049339320000000006,
       "tp": 0.05063712,
-      "sl": 0.04695712,
-      "risk_amount": 100.0,
-      "size": 104945.0088153804,
+      "initial_sl": 0.04695712,
+      "result": "SL",
+      "pnl": 150.0,
+      "final_leg_pnl": 75.0,
+      "partial_taken": true,
+      "notional": 5027.92,
+      "r_multiple": 1.5,
       "param_key": [
         0.8,
         1.618,
         0.382
       ],
-      "open_time": "2026-11-21T00:44:49+00:00",
       "leverage": 100.0,
-      "notional": 5027.915372344875,
-      "margin": 50.27915372344875,
-      "last_funding_time": "2026-11-21T00:44:49+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.04791,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 0.04695712,
-      "initial_risk_amount": 100.0,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "open_time": "2026-11-21T00:44:49+00:00",
+      "close_time": "2026-11-21T01:15:00+00:00",
+      "balance_after": 10716.3998
     }
-  }
+  ],
+  "open_positions": {}
 }

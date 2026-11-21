@@ -1,5 +1,5 @@
 {
-  "balance": 12295.239102582456,
+  "balance": 12781.279216745614,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -519,66 +519,76 @@
       "open_time": "2026-11-15T15:22:47+00:00",
       "close_time": "2026-11-20T19:20:00+00:00",
       "balance_after": 12295.3414
-    }
-  ],
-  "open_positions": {
-    "XRP/USDT:USDT": {
-      "symbol": "XRP/USDT:USDT",
-      "side": "SELL",
-      "entry": 0.9252,
-      "tp": 0.8764000000000001,
-      "sl": 1.0752970000000002,
-      "risk_amount": 405.5798746217038,
-      "size": 2702.1184608733247,
-      "param_key": [
-        1.2,
-        2.0,
-        0.382
-      ],
-      "open_time": "2026-11-14T21:07:23+00:00",
-      "leverage": 5.0,
-      "notional": 2500.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-20T21:07:23+00:00",
-      "funding_paid": 0.9908831327924997,
-      "last_price": 0.9089,
-      "unrealized_pnl": 44.0445,
-      "unrealized_r": 0.109,
-      "initial_sl": 1.0752970000000002,
-      "initial_risk_amount": 405.5798746217038,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-21T00:44:27+00:00"
     },
-    "ETH/USDT:USDT": {
+    {
       "symbol": "ETH/USDT:USDT",
       "side": "SELL",
+      "result": "PARTIAL_TP",
       "entry": 1803.13,
+      "exit": 1547.5926700000005,
       "tp": 1511.6748799999998,
-      "sl": 1803.13,
-      "risk_amount": 236.197916955516,
-      "size": 1.3864779577734272,
+      "initial_sl": 1973.48822,
+      "pnl": 177.1484,
+      "r_multiple": 1.5,
       "param_key": [
         1.8,
         1.272,
         0.382
       ],
-      "open_time": "2026-11-17T18:27:35+00:00",
       "leverage": 5.0,
-      "notional": 2500.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-20T18:27:35+00:00",
-      "funding_paid": 0.138272104169,
-      "last_price": 1624.39,
-      "unrealized_pnl": 247.8191,
-      "unrealized_r": 1.049,
+      "funding_paid": 0.0,
+      "open_time": "2026-11-17T18:27:35+00:00",
+      "close_time": "2026-11-21T04:05:00+00:00",
+      "balance_after": 12472.2702
+    },
+    {
+      "symbol": "ETH/USDT:USDT",
+      "side": "SELL",
+      "entry": 1803.13,
+      "exit": 1547.5926700000005,
+      "tp": 1511.6748799999998,
       "initial_sl": 1973.48822,
-      "initial_risk_amount": 236.197916955516,
-      "breakeven_done": true,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-21T00:44:26+00:00"
+      "result": "SL",
+      "pnl": 354.2969,
+      "final_leg_pnl": 177.1484,
+      "partial_taken": true,
+      "notional": 2500.0,
+      "r_multiple": 1.5,
+      "param_key": [
+        1.8,
+        1.272,
+        0.382
+      ],
+      "leverage": 5.0,
+      "funding_paid": 0.2556,
+      "open_time": "2026-11-17T18:27:35+00:00",
+      "close_time": "2026-11-21T04:10:00+00:00",
+      "balance_after": 12649.4186
+    },
+    {
+      "symbol": "XRP/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.9252,
+      "exit": 0.8764000000000001,
+      "tp": 0.8764000000000001,
+      "initial_sl": 1.0752970000000002,
+      "result": "TP",
+      "pnl": 131.8634,
+      "final_leg_pnl": 131.8634,
+      "partial_taken": false,
+      "notional": 2500.0,
+      "r_multiple": 0.325,
+      "param_key": [
+        1.2,
+        2.0,
+        0.382
+      ],
+      "leverage": 5.0,
+      "funding_paid": 0.9937,
+      "open_time": "2026-11-14T21:07:23+00:00",
+      "close_time": "2026-11-21T03:30:00+00:00",
+      "balance_after": 12781.2792
     }
-  }
+  ],
+  "open_positions": {}
 }
