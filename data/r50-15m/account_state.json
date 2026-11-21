@@ -705,5 +705,35 @@
       "balance_after": 10716.3998
     }
   ],
-  "open_positions": {}
+  "open_positions": {
+    "VVV/USDT:USDT": {
+      "symbol": "VVV/USDT:USDT",
+      "side": "BUY",
+      "entry": 23.085,
+      "tp": 24.531,
+      "sl": 18.778470000000002,
+      "risk_amount": 100.0,
+      "size": 23.22055111656021,
+      "param_key": [
+        2.5,
+        2.0,
+        0.382
+      ],
+      "open_time": "2026-11-21T15:40:09+00:00",
+      "leverage": 100.0,
+      "notional": 536.0464225257924,
+      "margin": 5.360464225257925,
+      "last_funding_time": "2026-11-21T15:40:09+00:00",
+      "funding_paid": 0.0,
+      "last_price": 23.085,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 18.778470000000002,
+      "initial_risk_amount": 100.0,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0,
+      "last_check_time": ""
+    }
+  }
 }

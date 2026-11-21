@@ -28,23 +28,23 @@
     "breakeven": 23
   },
   "[1.5, 0.5, 0.5]": {
-    "n": 135,
-    "reward_sum": 104.407,
-    "wins": 63,
+    "n": 136,
+    "reward_sum": 105.706,
+    "wins": 64,
     "losses": 64,
     "breakeven": 8
   },
   "[1.5, 1.0, 0.5]": {
-    "n": 243,
-    "reward_sum": 193.82700000000006,
-    "wins": 111,
+    "n": 244,
+    "reward_sum": 195.32700000000006,
+    "wins": 112,
     "losses": 116,
     "breakeven": 16
   },
   "[2.5, 0.75, 0.5]": {
-    "n": 252,
-    "reward_sum": 107.548,
-    "wins": 107,
+    "n": 253,
+    "reward_sum": 109.512,
+    "wins": 108,
     "losses": 121,
     "breakeven": 24
   },
