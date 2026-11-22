@@ -493,6 +493,13 @@ function rTag(side, entry, level, riskPrice) {
   return ` (${v > 0 ? "+" : v < 0 ? "−" : ""}${fmt(Math.abs(v), 2)}R)`;
 }
 
+// Kapanmis islem satiri icin TP / ilk SL hucreleri (R parantez icinde). Eski kayitlarda tp/initial_sl yoksa "-".
+function tpSlCells(t) {
+  if (t.tp == null || t.initial_sl == null) return `<td>-</td><td>-</td>`;
+  const risk = Math.abs(t.entry - t.initial_sl);
+  return `<td>${fmt(t.tp, 4)}${rTag(t.side, t.entry, t.tp, risk)}</td><td>${fmt(t.initial_sl, 4)}${rTag(t.side, t.entry, t.initial_sl, risk)}</td>`;
+}
+
 // Bir islemin grafikte cizilecek seviyeleri. Yeni kayitlarda tp/initial_sl yazili; eski kayitlarda
 // bilinenden cikarsama yapilir (TP ile kapandiysa TP = cikis; kismi alinmamis tam stop/tp kapanisindan
 // stop mesafesi = |cikis-giris| / |R|). Bilinmeyen seviye null kalir.
@@ -909,7 +916,7 @@ function renderHistory(p, account) {
   el.innerHTML = `
     <table>
       <thead><tr>
-        <th></th><th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>${p.rMode ? "Pozisyon (USDT)" : "Kaldıraç"}</th><th>K/Z (USDT)</th><th>Funding</th><th>R</th><th>Kapanış</th>
+        <th></th><th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>TP</th><th>SL (ilk)</th><th>${p.rMode ? "Pozisyon (USDT)" : "Kaldıraç"}</th><th>K/Z (USDT)</th><th>Funding</th><th>R</th><th>Kapanış</th>
       </tr></thead>
       <tbody>
         ${history.map(t => {
@@ -932,6 +939,7 @@ function renderHistory(p, account) {
             <td class="${sonucCls}">${sonucLabel}</td>
             <td>${fmt(t.entry, 4)}</td>
             <td>${fmt(t.exit, 4)}</td>
+            ${tpSlCells(t)}
             <td>${p.rMode ? (t.notional != null ? fmt(t.notional, 0) : "-") : `${fmt(t.leverage, 0)}x`}</td>
             <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}${t.partial_taken ? " *" : ""}</td>
             <td class="${pnlClass(-(t.funding_paid || 0))}">${(t.funding_paid || 0) > 0 ? "-" : "+"}${fmt(Math.abs(t.funding_paid || 0))}</td>
@@ -1203,6 +1211,7 @@ function buildTradesTable(trades, bt) {
         <td class="${cls}">${label}</td>
         <td>${fmt(t.entry, 4)}</td>
         <td>${fmt(t.exit, 4)}</td>
+        ${tpSlCells(t)}
         <td class="${pnlClass(t.pnl)}">${t.pnl >= 0 ? "+" : ""}${fmt(t.pnl)}</td>
         <td class="${pnlClass(t.r_multiple)}">${fmt(t.r_multiple, 2)}</td>
         <td>${fmtTime(t.close_time)}</td>
@@ -1211,7 +1220,7 @@ function buildTradesTable(trades, bt) {
   }).join("");
   return `
     <table>
-      <thead><tr><th></th><th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>K/Z (USDT)</th><th>R</th><th>Kapanış</th></tr></thead>
+      <thead><tr><th></th><th>Sembol</th><th>Yön</th><th>Sonuç</th><th>Giriş</th><th>Çıkış</th><th>TP</th><th>SL (ilk)</th><th>K/Z (USDT)</th><th>R</th><th>Kapanış</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   `;
