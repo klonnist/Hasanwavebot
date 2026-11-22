@@ -485,6 +485,14 @@ document.addEventListener("click", (e) => {
   if (ctx) openTradeChart(ctx);
 });
 
+// Bir seviyenin (TP/SL) ilk riske (|giris - ilk stop|) gore R degeri, parantezli metin: " (+1,6R)". Risk bilinmiyorsa "".
+function rTag(side, entry, level, riskPrice) {
+  if (level == null || entry == null || !riskPrice || riskPrice <= 0) return "";
+  const r = (level - entry) * (side === "BUY" ? 1 : -1) / riskPrice;
+  const v = Math.abs(r) < 0.005 ? 0 : r;
+  return ` (${v > 0 ? "+" : v < 0 ? "−" : ""}${fmt(Math.abs(v), 2)}R)`;
+}
+
 // Bir islemin grafikte cizilecek seviyeleri. Yeni kayitlarda tp/initial_sl yazili; eski kayitlarda
 // bilinenden cikarsama yapilir (TP ile kapandiysa TP = cikis; kismi alinmamis tam stop/tp kapanisindan
 // stop mesafesi = |cikis-giris| / |R|). Bilinmeyen seviye null kalir.
@@ -676,8 +684,8 @@ async function openTradeChart(ctx) {
   const drawInfo = () => {
     const infoBits = [
       ["Giriş", px(t.entry)],
-      ["Hedef (TP)", lv.tp != null ? px(lv.tp) + (lv.tpRecomputed ? " (yeniden hesaplandı)" : "") : "kayıt yok"],
-      ["Stop (ilk)", lv.sl != null ? px(lv.sl) : "kayıt yok"],
+      ["Hedef (TP)", lv.tp != null ? px(lv.tp) + (dist ? rTag(t.side, t.entry, lv.tp, dist) : "") + (lv.tpRecomputed ? " (yeniden hesaplandı)" : "") : "kayıt yok"],
+      ["Stop (ilk)", lv.sl != null ? px(lv.sl) + (dist ? rTag(t.side, t.entry, lv.sl, dist) : "") : "kayıt yok"],
       ["Risk:Ödül", rr != null ? `1 : ${fmt(rr, 2)}` : "-"],
     ];
     if (ctx.isOpen) {
@@ -841,8 +849,8 @@ function renderOpenPositions(p, account) {
             <td>${fmt(pos.last_price, 4)}</td>
             <td class="${pnlClass(pos.unrealized_pnl || 0)}">${(pos.unrealized_pnl || 0) >= 0 ? "+" : ""}${fmt(pos.unrealized_pnl || 0)}</td>
             <td class="${pnlClass(pos.unrealized_r || 0)}">${fmt(pos.unrealized_r || 0, 2)}</td>
-            <td>${fmt(pos.tp, 4)}</td>
-            <td>${fmt(pos.sl, 4)}</td>
+            <td>${fmt(pos.tp, 4)}${rTag(pos.side, pos.entry, pos.tp, Math.abs(pos.entry - (pos.initial_sl ?? pos.sl)))}</td>
+            <td>${fmt(pos.sl, 4)}${rTag(pos.side, pos.entry, pos.sl, Math.abs(pos.entry - (pos.initial_sl ?? pos.sl)))}</td>
             <td>
               <span class="badge ${pos.breakeven_done ? "on" : ""}">başabaş</span>
               <span class="badge ${pos.partial_tp_done ? "on" : ""}">kısmi+trail</span>
