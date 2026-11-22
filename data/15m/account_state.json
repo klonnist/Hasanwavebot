@@ -1977,15 +1977,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-22T19:40:17+00:00",
       "funding_paid": 0.0,
-      "last_price": 556.33,
-      "unrealized_pnl": -0.2696,
-      "unrealized_r": -0.006,
+      "last_price": 556.58,
+      "unrealized_pnl": -2.5166,
+      "unrealized_r": -0.058,
       "initial_sl": 561.14348,
       "initial_risk_amount": 43.5329857990293,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-22T20:06:55+00:00"
+      "last_check_time": "2026-11-22T22:04:54+00:00"
     },
     "ADA/USDT:USDT": {
       "symbol": "ADA/USDT:USDT",
@@ -2006,15 +2006,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-22T19:40:18+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.1442,
-      "unrealized_pnl": -3.4698,
-      "unrealized_r": -0.073,
+      "last_price": 0.1441,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
       "initial_sl": 0.14546399999999998,
       "initial_risk_amount": 47.328244274808334,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-22T20:06:55+00:00"
+      "last_check_time": "2026-11-22T22:04:55+00:00"
     }
   }
 }
