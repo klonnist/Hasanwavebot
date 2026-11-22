@@ -1,10 +1,10 @@
 {
   "[\"ALL\", 1.8, 2.0, 0.382]": {
-    "n": 2,
-    "reward_sum": 0.526,
-    "wins": 1,
+    "n": 4,
+    "reward_sum": 0.29400000000000004,
+    "wins": 2,
     "breakeven": 0,
-    "losses": 1
+    "losses": 2
   },
   "[\"ALL\", 1.2, 1.272, 0.382]": {
     "n": 1,
@@ -21,9 +21,9 @@
     "losses": 1
   },
   "[\"ALL\", 2.5, 1.618, 0.382]": {
-    "n": 2,
-    "reward_sum": 2.075,
-    "wins": 2,
+    "n": 3,
+    "reward_sum": 3.575,
+    "wins": 3,
     "breakeven": 0,
     "losses": 0
   },
