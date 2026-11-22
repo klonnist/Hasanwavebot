@@ -42,6 +42,8 @@ böylece sonuçları birbirinden bağımsız karşılaştırabilirsiniz:
 | `vwap`  | VWAP ortalamaya dönüş (`--strategy vwap`) | 15dk | `data/vwap/` | 500 USDT teminat x 10x |
 | `r50-15m` | Elliott Wave, **hacme göre ilk 50 kripto** | 15dk | `data/r50-15m/` | sabit risk, 1R = 100 USDT |
 | `r50-4h`  | Elliott Wave, **hacme göre ilk 50 kripto** | 4 saat | `data/r50-4h/` | sabit risk, 1R = 100 USDT |
+| `r100-15m` | Elliott Wave, **hacme göre ilk 100 kripto** | 15dk | `data/r100-15m/` | sabit risk, 1R = 100 USDT |
+| `r100-4h`  | Elliott Wave, **hacme göre ilk 100 kripto** | 4 saat | `data/r100-4h/` | sabit risk, 1R = 100 USDT |
 
 Sonuçlar [klonnist.github.io/Hasanwavebot](https://klonnist.github.io/Hasanwavebot/)
 adresindeki panelde sekmeler halinde canlı gösterilir.
@@ -413,6 +415,8 @@ python main.py --symbols BTC/USDT,ETH/USDT --market spot --trade-margin 250 --ep
 # VWAP (ortalamaya donus) stratejisiyle calistir
 python main.py --strategy vwap --timeframe 15m
 ```
+
+> **Top100 profilleri (`r100-15m`, `r100-4h`):** Top50 ile birebir aynı kurallar, limitler (10 açık, aynı yönde 6, %11 risk) ve ayrı sanal hesap; tek fark evrenin 100 coin olması (`data/universe_top100.json`). Amaç evren genişliğinin sonucu değiştirip değiştirmediğini canlı karşılaştırmak.
 
 ### Parametreler
 
