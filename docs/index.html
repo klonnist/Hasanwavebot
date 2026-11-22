@@ -193,7 +193,7 @@
 <div class="sub">
   Veriler GitHub Actions tarafından her 15 dakikada bir güncellenir · repo:
   <a href="https://github.com/klonnist/Hasanwavebot" target="_blank">klonnist/Hasanwavebot</a>
-  · her profil (3 Elliott Wave zaman dilimi + 1 VWAP ortalamaya dönüş + 2 "Top50 (R)" + 2 "Top100 (R)": hacme göre ilk 50/100 kripto, sabit risk 1R = 100 USDT) kendi ayrı sanal 10.000 USDT hesabıyla çalışır
+  · her profil (3 Elliott Wave zaman dilimi + 1 VWAP ortalamaya dönüş + 2 "Top50 (R)" + 2 "Top100 (R)" + 2 "Top50 limitsiz (R)": hacme göre ilk 50/100 kripto, sabit risk 1R = 100 USDT; limitsiz olanlarda açık pozisyon sınırı yok) kendi ayrı sanal 10.000 USDT hesabıyla çalışır
 </div>
 <div id="status">Yükleniyor…</div>
 
@@ -219,6 +219,8 @@ const PROFILES = [
   { key: "r50-4h",  dir: "r50-4h",  label: "4 Saat · Top50 (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "4h" },
   { key: "r100-15m", dir: "r100-15m", label: "15 Dakika · Top100 (R)", leverage: "1R = 100 USDT", rMode: true, tf: "15m" },
   { key: "r100-4h",  dir: "r100-4h",  label: "4 Saat · Top100 (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "4h" },
+  { key: "r50u-15m", dir: "r50u-15m", label: "15 Dakika · Top50 limitsiz (R)", leverage: "1R = 100 USDT", rMode: true, tf: "15m" },
+  { key: "r50u-4h",  dir: "r50u-4h",  label: "4 Saat · Top50 limitsiz (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "4h" },
 ];
 
 function fmt(n, digits = 2) {

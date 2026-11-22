@@ -44,9 +44,15 @@ böylece sonuçları birbirinden bağımsız karşılaştırabilirsiniz:
 | `r50-4h`  | Elliott Wave, **hacme göre ilk 50 kripto** | 4 saat | `data/r50-4h/` | sabit risk, 1R = 100 USDT |
 | `r100-15m` | Elliott Wave, **hacme göre ilk 100 kripto** | 15dk | `data/r100-15m/` | sabit risk, 1R = 100 USDT |
 | `r100-4h`  | Elliott Wave, **hacme göre ilk 100 kripto** | 4 saat | `data/r100-4h/` | sabit risk, 1R = 100 USDT |
+| `r50u-15m` | Elliott Wave, ilk 50 kripto, **limitsiz** | 15dk | `data/r50u-15m/` | sabit risk, 1R = 100 USDT |
+| `r50u-4h`  | Elliott Wave, ilk 50 kripto, **limitsiz** | 4 saat | `data/r50u-4h/` | sabit risk, 1R = 100 USDT |
 
 Sonuçlar [klonnist.github.io/Hasanwavebot](https://klonnist.github.io/Hasanwavebot/)
 adresindeki panelde sekmeler halinde canlı gösterilir.
+
+> **Top100 profilleri (`r100-15m`, `r100-4h`):** Top50 ile birebir aynı kurallar, limitler (10 açık, aynı yönde 6, %11 risk) ve ayrı sanal hesap; tek fark evrenin 100 coin olması (`data/universe_top100.json`). Amaç evren genişliğinin sonucu değiştirip değiştirmediğini canlı karşılaştırmak.
+
+> **Limitsiz ölçüm profilleri (`r50u-15m`, `r50u-4h`):** Top50 ile aynı evren ve kurallar, ama açık pozisyon / aynı yön / portföy risk tavanı yok (coin başına tek pozisyon). Limitler tarama sırasına göre iyi sinyalleri kesip örneklemi yarıya indiriyordu (4h backtest, 6 rejim × 3 tohum: limitli +8R / 576 işlem / maxDD %19, limitsiz +56R / 1150 işlem / maxDD %32 / en fazla 31 açık). Bu hesaplar gerçekçi risk göstermek için değil, sinyal kalitesini daha hızlı ölçmek içindir; komisyon/slipaj yok.
 
 ### R bazlı "Top50" profilleri (`r50-15m`, `r50-4h`)
 
@@ -415,8 +421,6 @@ python main.py --symbols BTC/USDT,ETH/USDT --market spot --trade-margin 250 --ep
 # VWAP (ortalamaya donus) stratejisiyle calistir
 python main.py --strategy vwap --timeframe 15m
 ```
-
-> **Top100 profilleri (`r100-15m`, `r100-4h`):** Top50 ile birebir aynı kurallar, limitler (10 açık, aynı yönde 6, %11 risk) ve ayrı sanal hesap; tek fark evrenin 100 coin olması (`data/universe_top100.json`). Amaç evren genişliğinin sonucu değiştirip değiştirmediğini canlı karşılaştırmak.
 
 ### Parametreler
 

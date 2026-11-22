@@ -58,6 +58,17 @@ jobs:
         continue-on-error: true
         run: python main.py --timeframe 4h --top-n 100 --universe-file ./data/universe_top100.json --risk-per-trade 100 --leverage 100 --max-open 10 --max-portfolio-risk-pct 11 --max-same-direction 6 --pooled-learning --min-sl-pct 0.5 --max-sl-pct 30 --data-dir ./data/r100-4h --once
 
+      # Limitsiz olcum profilleri: Top50 ile ayni evren/kurallar, fakat acik pozisyon / ayni yon / portfoy risk tavani YOK
+      # (limitler iyi sinyalleri tarama sirasina gore kesiyor ve orneklemi yariya indiriyor -- backtest: +8R -> +56R, maxDD %19 -> %32).
+      # --leverage 10000: yalnizca teminat muhasebesi (teminat bakiyeyi asip islemi engellemesin).
+      - name: Scan r50u-15m (Top50 kripto, 15m, limitsiz, 1R=100 USDT)
+        continue-on-error: true
+        run: python main.py --timeframe 15m --top-n 50 --universe-file ./data/universe_top50.json --risk-per-trade 100 --leverage 10000 --max-open 999 --max-portfolio-risk-pct 1000 --max-same-direction 999 --pooled-learning --min-sl-pct 0.4 --max-sl-pct 30 --data-dir ./data/r50u-15m --once
+
+      - name: Scan r50u-4h (Top50 kripto, 4h, limitsiz, 1R=100 USDT)
+        continue-on-error: true
+        run: python main.py --timeframe 4h --top-n 50 --universe-file ./data/universe_top50.json --risk-per-trade 100 --leverage 10000 --max-open 999 --max-portfolio-risk-pct 1000 --max-same-direction 999 --pooled-learning --min-sl-pct 0.5 --max-sl-pct 30 --data-dir ./data/r50u-4h --once
+
       - name: Commit updated state
         run: |
           git config user.name "github-actions[bot]"
