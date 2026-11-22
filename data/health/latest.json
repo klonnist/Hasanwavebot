@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-21T22:49:45+00:00",
+  "checked_at": "2026-11-22T05:21:33+00:00",
   "ok": false,
   "issues": [
     "[15m] BTC/USDT:USDT: TP olarak kapanan islemin exit fiyati (60067.705600) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-20T02:51:09+00:00 -> 2026-11-20T15:20:00+00:00)",
@@ -8,10 +8,10 @@
     "[vwap] ETHFI/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.432752) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-20T18:59:30+00:00 -> 2026-11-20T19:10:00+00:00)",
     "[vwap] NEAR/USDT:USDT: SL olarak kapanan islemin exit fiyati (2.811366) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-20T18:59:30+00:00 -> 2026-11-20T19:15:00+00:00)",
     "[vwap] ETH/USDT:USDT: TP olarak kapanan islemin exit fiyati (1667.416265) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-21T07:45:12+00:00 -> 2026-11-21T11:30:00+00:00)",
-    "[r50-15m] DOGE/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.055250) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-20T02:51:28+00:00 -> 2026-11-20T15:10:00+00:00)",
+    "[vwap] AVAX/USDT:USDT: SL olarak kapanan islemin exit fiyati (6.634402) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-21T21:11:27+00:00 -> 2026-11-21T21:25:00+00:00)",
     "[r50-15m] XRP/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.888161) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-20T18:59:34+00:00 -> 2026-11-20T20:30:00+00:00)",
     "[r50-15m] IRYS/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.019300) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-20T10:56:54+00:00 -> 2026-11-21T05:25:00+00:00)",
-    "Son tarama 99 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
+    "Son tarama 242 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
   ],
   "profiles_checked": [
     "15m",
