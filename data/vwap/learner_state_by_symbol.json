@@ -650,9 +650,9 @@
     "breakeven": 0
   },
   "[\"DOGE/USDT:USDT\", 1.5, 0.5, 0.5]": {
-    "n": 22,
-    "reward_sum": 36.612,
-    "wins": 13,
+    "n": 23,
+    "reward_sum": 37.602000000000004,
+    "wins": 14,
     "losses": 9,
     "breakeven": 0
   },
