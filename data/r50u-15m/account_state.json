@@ -1,5 +1,5 @@
 {
-  "balance": 10175.024612452424,
+  "balance": 10174.939405850277,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -231,17 +231,46 @@
       "leverage": 10000.0,
       "notional": 1024.6048661081682,
       "margin": 0.10246048661081682,
-      "last_funding_time": "2026-11-23T04:08:20+00:00",
-      "funding_paid": 0.05123024330540841,
-      "last_price": 0.9994,
-      "unrealized_pnl": 29.8593,
-      "unrealized_r": 0.299,
+      "last_funding_time": "2026-11-23T12:08:20+00:00",
+      "funding_paid": 0.13643684545176585,
+      "last_price": 1.0198,
+      "unrealized_pnl": 51.3832,
+      "unrealized_r": 0.514,
       "initial_sl": 0.8763219999999999,
       "initial_risk_amount": 100.0,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-23T05:45:16+00:00"
+      "last_check_time": "2026-11-23T15:56:49+00:00"
+    },
+    "PENGU/USDT:USDT": {
+      "symbol": "PENGU/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.004637,
+      "tp": 0.004826143999999999,
+      "sl": 0.004010144,
+      "risk_amount": 100.0,
+      "size": 159526.27078627323,
+      "param_key": [
+        2.5,
+        1.618,
+        0.382
+      ],
+      "open_time": "2026-11-23T15:56:53+00:00",
+      "leverage": 10000.0,
+      "notional": 739.7233176359489,
+      "margin": 0.07397233176359488,
+      "last_funding_time": "2026-11-23T15:56:53+00:00",
+      "funding_paid": 0.0,
+      "last_price": 0.004637,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 0.004010144,
+      "initial_risk_amount": 100.0,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0,
+      "last_check_time": ""
     }
   }
 }

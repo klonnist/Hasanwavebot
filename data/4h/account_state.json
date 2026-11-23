@@ -1,5 +1,5 @@
 {
-  "balance": 12780.276515095264,
+  "balance": 12176.008774908467,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -588,95 +588,79 @@
       "open_time": "2026-11-14T21:07:23+00:00",
       "close_time": "2026-11-21T03:30:00+00:00",
       "balance_after": 12781.2792
-    }
-  ],
-  "open_positions": {
-    "SOL/USDT:USDT": {
+    },
+    {
       "symbol": "SOL/USDT:USDT",
       "side": "SELL",
       "entry": 69.88,
+      "exit": 75.20706,
       "tp": 49.41,
-      "sl": 75.20706,
-      "risk_amount": 190.57884945621078,
-      "size": 35.77561534058386,
+      "initial_sl": 75.20706,
+      "result": "SL",
+      "pnl": -190.5788,
+      "final_leg_pnl": -190.5788,
+      "partial_taken": false,
+      "notional": 2500.0,
+      "r_multiple": -1.0,
       "param_key": [
         0.8,
         2.0,
         0.382
       ],
-      "open_time": "2026-11-22T08:31:35+00:00",
       "leverage": 5.0,
-      "notional": 2500.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-23T00:31:35+00:00",
-      "funding_paid": 0.09442686407625,
-      "last_price": 71.87,
-      "unrealized_pnl": -71.1935,
-      "unrealized_r": -0.374,
-      "initial_sl": 75.20706,
-      "initial_risk_amount": 190.57884945621078,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-23T05:43:37+00:00"
+      "funding_paid": 0.0753,
+      "open_time": "2026-11-22T08:31:35+00:00",
+      "close_time": "2026-11-23T13:55:00+00:00",
+      "balance_after": 12589.7168
     },
-    "DOGE/USDT:USDT": {
+    {
       "symbol": "DOGE/USDT:USDT",
       "side": "SELL",
       "entry": 0.05479,
+      "exit": 0.05915002,
       "tp": 0.04093002,
-      "sl": 0.05915002,
-      "risk_amount": 198.94232524183244,
-      "size": 45628.76437306078,
+      "initial_sl": 0.05915002,
+      "result": "SL",
+      "pnl": -198.9423,
+      "final_leg_pnl": -198.9423,
+      "partial_taken": false,
+      "notional": 2500.0,
+      "r_multiple": -1.0,
       "param_key": [
         0.8,
         1.618,
         0.382
       ],
-      "open_time": "2026-11-22T08:31:36+00:00",
       "leverage": 5.0,
-      "notional": 2500.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-23T00:31:36+00:00",
-      "funding_paid": 0.008217059836999996,
-      "last_price": 0.05577,
-      "unrealized_pnl": -44.7162,
-      "unrealized_r": -0.225,
-      "initial_sl": 0.05915002,
-      "initial_risk_amount": 198.94232524183244,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-23T05:43:38+00:00"
+      "funding_paid": -0.0799,
+      "open_time": "2026-11-22T08:31:36+00:00",
+      "close_time": "2026-11-23T14:15:00+00:00",
+      "balance_after": 12390.8625
     },
-    "AVAX/USDT:USDT": {
+    {
       "symbol": "AVAX/USDT:USDT",
       "side": "SELL",
       "entry": 6.596,
+      "exit": 7.161884,
       "tp": 4.394,
-      "sl": 7.161884,
-      "risk_amount": 214.4799878714371,
-      "size": 379.0175864160097,
+      "initial_sl": 7.161884,
+      "result": "SL",
+      "pnl": -214.48,
+      "final_leg_pnl": -214.48,
+      "partial_taken": false,
+      "notional": 2500.0,
+      "r_multiple": -1.0,
       "param_key": [
         0.8,
         2.0,
         0.382
       ],
-      "open_time": "2026-11-22T08:31:36+00:00",
       "leverage": 5.0,
-      "notional": 2500.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-23T00:31:36+00:00",
-      "funding_paid": 0.9000577264357501,
-      "last_price": 6.707,
-      "unrealized_pnl": -42.071,
-      "unrealized_r": -0.196,
-      "initial_sl": 7.161884,
-      "initial_risk_amount": 214.4799878714371,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-23T05:43:39+00:00"
+      "funding_paid": 1.2738,
+      "open_time": "2026-11-22T08:31:36+00:00",
+      "close_time": "2026-11-23T14:25:00+00:00",
+      "balance_after": 12176.0088
     }
-  }
+  ],
+  "open_positions": {}
 }
