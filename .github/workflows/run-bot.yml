@@ -2,8 +2,9 @@ name: Run wave bot scan
 
 on:
   schedule:
-    # Her 15 dakikada bir 3 zaman dilimini de tek tek tarar
-    - cron: "*/15 * * * *"
+    # Her 15 dakikada bir tarar. Dakikalar :00/:15/:30/:45 yerine yogun olmayan 7,22,37,52'ye kaydirildi:
+    # GitHub, yogun dakikalardaki zamanlanmis calismalari sik atliyor (27 Eylul'den beri gunde ~4 calisma).
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch: {}
 
 permissions:
