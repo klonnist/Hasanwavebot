@@ -42,13 +42,15 @@ böylece sonuçları birbirinden bağımsız karşılaştırabilirsiniz:
 | `vwap`  | VWAP ortalamaya dönüş (`--strategy vwap`) | 15dk | `data/vwap/` | 500 USDT teminat x 10x |
 | `r50-15m` | Elliott Wave, **hacme göre ilk 50 kripto** | 15dk | `data/r50-15m/` | sabit risk, 1R = 100 USDT |
 | `r50-4h`  | Elliott Wave, **hacme göre ilk 50 kripto** | 4 saat | `data/r50-4h/` | sabit risk, 1R = 100 USDT |
+| `r50-1d`  | Elliott Wave, **hacme göre ilk 50 kripto** | 1 gün | `data/r50-1d/` | sabit risk, 1R = 100 USDT |
 | `r50u-15m` | Elliott Wave, ilk 50 kripto, **limitsiz** | 15dk | `data/r50u-15m/` | sabit risk, 1R = 100 USDT |
 | `r50u-4h`  | Elliott Wave, ilk 50 kripto, **limitsiz** | 4 saat | `data/r50u-4h/` | sabit risk, 1R = 100 USDT |
+| `r50u-1d`  | Elliott Wave, ilk 50 kripto, **limitsiz** | 1 gün | `data/r50u-1d/` | sabit risk, 1R = 100 USDT |
 
 Sonuçlar [klonnist.github.io/Hasanwavebot](https://klonnist.github.io/Hasanwavebot/)
 adresindeki panelde sekmeler halinde canlı gösterilir.
 
-> **Limitsiz ölçüm profilleri (`r50u-15m`, `r50u-4h`):** Top50 ile aynı evren ve kurallar, ama açık pozisyon / aynı yön / portföy risk tavanı yok (coin başına tek pozisyon). Limitler tarama sırasına göre iyi sinyalleri kesip örneklemi yarıya indiriyordu (4h backtest, 6 rejim × 3 tohum: limitli +8R / 576 işlem / maxDD %19, limitsiz +56R / 1150 işlem / maxDD %32 / en fazla 31 açık). Bu hesaplar gerçekçi risk göstermek için değil, sinyal kalitesini daha hızlı ölçmek içindir; komisyon/slipaj yok.
+> **Limitsiz ölçüm profilleri (`r50u-15m`, `r50u-4h`, `r50u-1d`):** Top50 ile aynı evren ve kurallar, ama açık pozisyon / aynı yön / portföy risk tavanı yok (coin başına tek pozisyon). Limitler tarama sırasına göre iyi sinyalleri kesip örneklemi yarıya indiriyordu (4h backtest, 6 rejim × 3 tohum: limitli +8R / 576 işlem / maxDD %19, limitsiz +56R / 1150 işlem / maxDD %32 / en fazla 31 açık). Bu hesaplar gerçekçi risk göstermek için değil, sinyal kalitesini daha hızlı ölçmek içindir; komisyon/slipaj yok.
 
 ### R bazlı "Top50" profilleri (`r50-15m`, `r50-4h`)
 
