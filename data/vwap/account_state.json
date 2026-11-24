@@ -1,5 +1,5 @@
 {
-  "balance": 21564.5323915444,
+  "balance": 21632.689835080102,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -40726,95 +40726,121 @@
       "open_time": "2026-11-23T15:55:09+00:00",
       "close_time": "2026-11-23T19:40:00+00:00",
       "balance_after": 21564.5324
-    }
-  ],
-  "open_positions": {
-    "XRP/USDT:USDT": {
+    },
+    {
       "symbol": "XRP/USDT:USDT",
       "side": "SELL",
       "entry": 0.9393,
+      "exit": 0.9426321357002607,
       "tp": 0.9313121182828108,
-      "sl": 0.9426321357002607,
-      "risk_amount": 17.737334718730416,
-      "size": 5323.1129564569355,
+      "initial_sl": 0.9426321357002607,
+      "result": "SL",
+      "pnl": -17.7373,
+      "final_leg_pnl": -17.7373,
+      "partial_taken": false,
+      "notional": 5000.0,
+      "r_multiple": -1.0,
       "param_key": [
         1.5,
         1.0,
         0.5
       ],
-      "open_time": "2026-11-24T02:53:06+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-24T02:53:06+00:00",
-      "funding_paid": 0.0,
-      "last_price": 0.9393,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 0.9426321357002607,
-      "initial_risk_amount": 17.737334718730416,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "funding_paid": 0.2562,
+      "open_time": "2026-11-24T02:53:06+00:00",
+      "close_time": "2026-11-24T03:00:00+00:00",
+      "balance_after": 21546.5388
     },
-    "DOGE/USDT:USDT": {
+    {
       "symbol": "DOGE/USDT:USDT",
       "side": "SELL",
+      "result": "PARTIAL_TP",
       "entry": 0.05602,
+      "exit": 0.0556987795954345,
       "tp": 0.055632495732723,
-      "sl": 0.056234146936377,
-      "risk_amount": 19.113435949393264,
-      "size": 89253.83791503035,
+      "initial_sl": 0.056234146936377,
+      "pnl": 14.3351,
+      "r_multiple": 1.5,
       "param_key": [
         1.5,
         0.5,
         0.5
       ],
-      "open_time": "2026-11-24T02:53:06+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-24T02:53:06+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.05602,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 0.056234146936377,
-      "initial_risk_amount": 19.113435949393264,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "open_time": "2026-11-24T02:53:06+00:00",
+      "close_time": "2026-11-24T03:05:00+00:00",
+      "balance_after": 21561.02
     },
-    "ADA/USDT:USDT": {
+    {
+      "symbol": "DOGE/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.05602,
+      "exit": 0.055632495732723,
+      "tp": 0.055632495732723,
+      "initial_sl": 0.056234146936377,
+      "result": "TP",
+      "pnl": 31.6282,
+      "final_leg_pnl": 17.2931,
+      "partial_taken": true,
+      "notional": 5000.0,
+      "r_multiple": 1.655,
+      "param_key": [
+        1.5,
+        0.5,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": -0.1461,
+      "open_time": "2026-11-24T02:53:06+00:00",
+      "close_time": "2026-11-24T03:05:00+00:00",
+      "balance_after": 21578.3131
+    },
+    {
       "symbol": "ADA/USDT:USDT",
       "side": "SELL",
+      "result": "PARTIAL_TP",
       "entry": 0.1474,
+      "exit": 0.14579753628318148,
       "tp": 0.14419834203376372,
-      "sl": 0.14846830914454567,
-      "risk_amount": 36.238437738998314,
-      "size": 33921.30257801899,
+      "initial_sl": 0.14846830914454567,
+      "pnl": 27.1788,
+      "r_multiple": 1.5,
       "param_key": [
         2.0,
         1.0,
         0.5
       ],
-      "open_time": "2026-11-24T02:53:06+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-24T02:53:06+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.1474,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "open_time": "2026-11-24T02:53:06+00:00",
+      "close_time": "2026-11-24T03:05:00+00:00",
+      "balance_after": 21605.511
+    },
+    {
+      "symbol": "ADA/USDT:USDT",
+      "side": "SELL",
+      "entry": 0.1474,
+      "exit": 0.14579753628318148,
+      "tp": 0.14419834203376372,
       "initial_sl": 0.14846830914454567,
-      "initial_risk_amount": 36.238437738998314,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "result": "SL",
+      "pnl": 54.3577,
+      "final_leg_pnl": 27.1788,
+      "partial_taken": true,
+      "notional": 5000.0,
+      "r_multiple": 1.5,
+      "param_key": [
+        2.0,
+        1.0,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": -0.0191,
+      "open_time": "2026-11-24T02:53:06+00:00",
+      "close_time": "2026-11-24T03:10:00+00:00",
+      "balance_after": 21632.6898
     }
-  }
+  ],
+  "open_positions": {}
 }
