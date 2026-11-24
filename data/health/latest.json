@@ -1,18 +1,12 @@
 {
-  "checked_at": "2026-11-24T03:51:52+00:00",
+  "checked_at": "2026-11-24T17:02:09+00:00",
   "ok": false,
   "issues": [
     "[15m] BNB/USDT:USDT: SL olarak kapanan islemin exit fiyati (561.143480) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T19:40:17+00:00 -> 2026-11-23T00:30:00+00:00)",
     "[4h] SOL/USDT:USDT: SL olarak kapanan islemin exit fiyati (75.207060) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T08:31:35+00:00 -> 2026-11-23T13:55:00+00:00)",
-    "[r50-15m] ZEC/USDT:USDT: SL olarak kapanan islemin exit fiyati (813.135060) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T19:40:34+00:00 -> 2026-11-23T09:20:00+00:00)",
-    "[r50-15m] PIEVERSE/USDT:USDT: SL olarak kapanan islemin exit fiyati (3.181107) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T20:07:11+00:00 -> 2026-11-23T14:40:00+00:00)",
     "[r50-15m] NIGHT/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.051794) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-23T05:44:02+00:00 -> 2026-11-23T14:10:00+00:00)",
     "[r50-15m] ZRO/USDT:USDT: SL olarak kapanan islemin exit fiyati (1.207529) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T20:07:18+00:00 -> 2026-11-23T07:15:00+00:00)",
-    "[r100-15m] ZRO/USDT:USDT: SL olarak kapanan islemin exit fiyati (1.207529) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T20:07:47+00:00 -> 2026-11-23T07:15:00+00:00)",
-    "[r100-15m] ETHFI/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.521877) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T20:07:47+00:00 -> 2026-11-23T13:55:00+00:00)",
-    "[r100-15m] CAP/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.106450) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-23T15:55:59+00:00 -> 2026-11-23T19:05:00+00:00)",
-    "[r100-4h] UP/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.172512) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T22:06:13+00:00 -> 2026-11-23T18:10:00+00:00)",
-    "Son tarama 60 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
+    "[r50-15m] TRUMP/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.821400) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-24T13:32:51+00:00 -> 2026-11-24T15:05:00+00:00)"
   ],
   "profiles_checked": [
     "15m",
@@ -21,8 +15,6 @@
     "vwap",
     "r50-15m",
     "r50-4h",
-    "r100-15m",
-    "r100-4h",
     "r50u-15m",
     "r50u-4h"
   ]
