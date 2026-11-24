@@ -662,5 +662,35 @@
       "balance_after": 12176.0088
     }
   ],
-  "open_positions": {}
+  "open_positions": {
+    "BTC/USDT:USDT": {
+      "symbol": "BTC/USDT:USDT",
+      "side": "SELL",
+      "entry": 60164.0,
+      "tp": 50549.1256,
+      "sl": 68780.67139999999,
+      "risk_amount": 358.04930689448804,
+      "size": 0.04155308822551692,
+      "param_key": [
+        1.8,
+        1.272,
+        0.382
+      ],
+      "open_time": "2026-11-24T02:52:50+00:00",
+      "leverage": 5.0,
+      "notional": 2500.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-11-24T02:52:50+00:00",
+      "funding_paid": 0.0,
+      "last_price": 60164.0,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 68780.67139999999,
+      "initial_risk_amount": 358.04930689448804,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0,
+      "last_check_time": ""
+    }
+  }
 }
