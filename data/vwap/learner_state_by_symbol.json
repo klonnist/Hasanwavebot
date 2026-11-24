@@ -49,10 +49,10 @@
     "breakeven": 2
   },
   "[\"BTC/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 52,
-    "reward_sum": 91.50299999999997,
+    "n": 53,
+    "reward_sum": 90.50299999999997,
     "wins": 30,
-    "losses": 21,
+    "losses": 22,
     "breakeven": 1
   },
   "[\"NEAR/USDT:USDT\", 2.0, 1.0, 0.5]": {
@@ -70,10 +70,10 @@
     "breakeven": 0
   },
   "[\"SOL/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 5,
-    "reward_sum": -1.191,
+    "n": 6,
+    "reward_sum": -2.191,
     "wins": 1,
-    "losses": 3,
+    "losses": 4,
     "breakeven": 1
   },
   "[\"XRP/USDT:USDT\", 2.5, 0.75, 0.5]": {
@@ -350,10 +350,10 @@
     "breakeven": 0
   },
   "[\"ETH/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 6,
-    "reward_sum": -0.07500000000000018,
+    "n": 7,
+    "reward_sum": -1.0750000000000002,
     "wins": 2,
-    "losses": 4,
+    "losses": 5,
     "breakeven": 0
   },
   "[\"DOGE/USDT:USDT\", 1.5, 0.75, 0.5]": {
