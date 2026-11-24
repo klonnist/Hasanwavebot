@@ -1,5 +1,5 @@
 {
-  "balance": 12176.325342197108,
+  "balance": 12176.575342197108,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -682,15 +682,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-24T18:52:50+00:00",
       "funding_paid": -0.316567288641,
-      "last_price": 59855.3,
-      "unrealized_pnl": 12.8274,
-      "unrealized_r": 0.036,
+      "last_price": 60016.2,
+      "unrealized_pnl": 6.1415,
+      "unrealized_r": 0.017,
       "initial_sl": 68780.67139999999,
       "initial_risk_amount": 358.04930689448804,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-24T18:59:20+00:00"
+      "last_check_time": "2026-11-24T23:15:04+00:00"
     },
     "BNB/USDT:USDT": {
       "symbol": "BNB/USDT:USDT",
@@ -709,17 +709,17 @@
       "leverage": 5.0,
       "notional": 2500.0,
       "margin": 500.0,
-      "last_funding_time": "2026-11-24T13:32:33+00:00",
-      "funding_paid": 0.0,
-      "last_price": 549.72,
-      "unrealized_pnl": -7.8925,
-      "unrealized_r": -0.023,
+      "last_funding_time": "2026-11-24T21:32:33+00:00",
+      "funding_paid": -0.25,
+      "last_price": 549.63,
+      "unrealized_pnl": -7.4819,
+      "unrealized_r": -0.022,
       "initial_sl": 623.94604,
       "initial_risk_amount": 346.52110439971545,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-24T18:59:21+00:00"
+      "last_check_time": "2026-11-24T23:15:05+00:00"
     }
   }
 }

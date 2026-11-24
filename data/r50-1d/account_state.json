@@ -1,0 +1,36 @@
+{
+  "balance": 10000.0,
+  "starting_balance": 10000.0,
+  "history": [],
+  "open_positions": {
+    "PEPE/USDT:USDT": {
+      "symbol": "PEPE/USDT:USDT",
+      "side": "SELL",
+      "entry": 3.4723e-06,
+      "tp": 2.3007078e-06,
+      "sl": 4.1065078e-06,
+      "risk_amount": 100.0,
+      "size": 157677026.3626528,
+      "param_key": [
+        0.8,
+        1.618,
+        0.382
+      ],
+      "open_time": "2026-11-24T23:15:49+00:00",
+      "leverage": 100.0,
+      "notional": 547.5019386390394,
+      "margin": 5.475019386390394,
+      "last_funding_time": "2026-11-24T23:15:49+00:00",
+      "funding_paid": 0.0,
+      "last_price": 3.4723e-06,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 4.1065078e-06,
+      "initial_risk_amount": 100.0,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0,
+      "last_check_time": ""
+    }
+  }
+}
