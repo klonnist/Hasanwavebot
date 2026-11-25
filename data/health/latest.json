@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-11-24T17:02:09+00:00",
+  "checked_at": "2026-11-25T01:57:25+00:00",
   "ok": false,
   "issues": [
-    "[15m] BNB/USDT:USDT: SL olarak kapanan islemin exit fiyati (561.143480) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T19:40:17+00:00 -> 2026-11-23T00:30:00+00:00)",
     "[4h] SOL/USDT:USDT: SL olarak kapanan islemin exit fiyati (75.207060) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T08:31:35+00:00 -> 2026-11-23T13:55:00+00:00)",
     "[r50-15m] NIGHT/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.051794) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-23T05:44:02+00:00 -> 2026-11-23T14:10:00+00:00)",
     "[r50-15m] ZRO/USDT:USDT: SL olarak kapanan islemin exit fiyati (1.207529) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-22T20:07:18+00:00 -> 2026-11-23T07:15:00+00:00)",
-    "[r50-15m] TRUMP/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.821400) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-24T13:32:51+00:00 -> 2026-11-24T15:05:00+00:00)"
+    "[r50-15m] TRUMP/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.821400) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-24T13:32:51+00:00 -> 2026-11-24T15:05:00+00:00)",
+    "Son tarama 163 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
   ],
   "profiles_checked": [
     "15m",
@@ -15,7 +15,9 @@
     "vwap",
     "r50-15m",
     "r50-4h",
+    "r50-1d",
     "r50u-15m",
-    "r50u-4h"
+    "r50u-4h",
+    "r50u-1d"
   ]
 }
