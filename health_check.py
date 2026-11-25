@@ -95,7 +95,10 @@ def check_recent_trades(exchange, data: dict, profile: str, hours: int, max_chec
         exit_price = t["exit"]
         try:
             since_ms = int(_parse_iso(t["open_time"]).timestamp() * 1000)
-            until_ms = int(_parse_iso(t["close_time"]).timestamp() * 1000) + 60_000
+            # Bosluk telafisinde close_time, dokunusun oldugu 5m/15m mumun BASLANGICI olarak kaydedilir;
+            # dokunus mumun icinde herhangi bir dakikada olabilir. Pencere en az bir 15m mumu kapsamali,
+            # yoksa gercek cikislar "dogrulanamadi" diye yanlis alarm veriyor.
+            until_ms = int(_parse_iso(t["close_time"]).timestamp() * 1000) + 16 * 60_000
         except (KeyError, ValueError):
             continue
 
