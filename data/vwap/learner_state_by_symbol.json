@@ -217,9 +217,9 @@
     "breakeven": 0
   },
   "[\"XRP/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 28,
-    "reward_sum": 22.291999999999994,
-    "wins": 12,
+    "n": 29,
+    "reward_sum": 23.791999999999994,
+    "wins": 13,
     "losses": 14,
     "breakeven": 2
   },
