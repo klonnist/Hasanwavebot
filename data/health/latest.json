@@ -1,15 +1,8 @@
 {
-  "checked_at": "2026-11-25T16:52:41+00:00",
+  "checked_at": "2026-11-26T01:38:11+00:00",
   "ok": false,
   "issues": [
-    "[r50-15m] TRUMP/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.821400) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-24T13:32:51+00:00 -> 2026-11-24T15:05:00+00:00)",
-    "[r50-15m] MON/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.009919) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-24T23:15:23+00:00 -> 2026-11-25T04:15:00+00:00)",
-    "[r50-15m] OKB/USDT:USDT: TP olarak kapanan islemin exit fiyati (79.420000) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-24T02:53:17+00:00 -> 2026-11-25T04:40:00+00:00)",
-    "[r50-15m] NEAR/USDT:USDT: TP olarak kapanan islemin exit fiyati (2.760884) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-24T02:53:11+00:00 -> 2026-11-25T14:15:00+00:00)",
-    "[r50-15m] SUI/USDT:USDT: TP olarak kapanan islemin exit fiyati (0.631850) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-24T16:24:44+00:00 -> 2026-11-25T11:25:00+00:00)",
-    "[r50u-15m] PEPE/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.000004) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-25T05:31:18+00:00 -> 2026-11-25T06:10:00+00:00)",
-    "[r50u-15m] PENGU/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.004010) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-23T15:56:53+00:00 -> 2026-11-25T14:30:00+00:00)",
-    "Son tarama 53 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
+    "Son tarama 85 dakika once baslamis (beklenen ~15dk) -- Actions duraklamis olabilir."
   ],
   "profiles_checked": [
     "15m",
