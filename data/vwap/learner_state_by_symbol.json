@@ -482,9 +482,9 @@
     "breakeven": 13
   },
   "[\"SOL/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 95,
-    "reward_sum": 70.04799999999999,
-    "wins": 47,
+    "n": 96,
+    "reward_sum": 71.54799999999999,
+    "wins": 48,
     "losses": 34,
     "breakeven": 14
   },
@@ -531,9 +531,9 @@
     "breakeven": 1
   },
   "[\"ADA/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 24,
-    "reward_sum": 47.923,
-    "wins": 18,
+    "n": 25,
+    "reward_sum": 49.423,
+    "wins": 19,
     "losses": 6,
     "breakeven": 0
   },
