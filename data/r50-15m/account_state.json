@@ -1,5 +1,5 @@
 {
-  "balance": 11360.03108446388,
+  "balance": 11359.741402359941,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -1737,17 +1737,17 @@
       "leverage": 100.0,
       "notional": 900.0991634671625,
       "margin": 9.000991634671625,
-      "last_funding_time": "2026-11-25T16:00:07+00:00",
-      "funding_paid": 0.0,
-      "last_price": 0.304,
-      "unrealized_pnl": 66.109,
-      "unrealized_r": 0.661,
+      "last_funding_time": "2026-11-26T00:00:07+00:00",
+      "funding_paid": -0.058927952814198235,
+      "last_price": 0.3152,
+      "unrealized_pnl": 101.7061,
+      "unrealized_r": 1.017,
       "initial_sl": 0.25173680000000004,
       "initial_risk_amount": 100.0,
       "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-25T21:23:16+00:00"
+      "last_check_time": "2026-11-26T00:13:31+00:00"
     },
     "PEPE/USDT:USDT": {
       "symbol": "PEPE/USDT:USDT",
@@ -1766,17 +1766,17 @@
       "leverage": 100.0,
       "notional": 1265.6527589190316,
       "margin": 12.656527589190317,
-      "last_funding_time": "2026-11-25T16:00:07+00:00",
-      "funding_paid": 0.0,
-      "last_price": 3.4928e-06,
-      "unrealized_pnl": -78.6294,
-      "unrealized_r": -0.786,
+      "last_funding_time": "2026-11-26T00:00:07+00:00",
+      "funding_paid": 0.3486100567537744,
+      "last_price": 3.503e-06,
+      "unrealized_pnl": -82.5551,
+      "unrealized_r": -0.826,
       "initial_sl": 3.5483264e-06,
       "initial_risk_amount": 100.0,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-25T21:23:15+00:00"
+      "last_check_time": "2026-11-26T00:13:31+00:00"
     }
   }
 }
