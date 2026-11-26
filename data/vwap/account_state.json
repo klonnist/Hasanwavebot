@@ -1,5 +1,5 @@
 {
-  "balance": 21535.22891275343,
+  "balance": 21512.987496236958,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -41284,6 +41284,30 @@
       "open_time": "2026-11-26T16:53:20+00:00",
       "close_time": "2026-11-26T17:16:00+00:00",
       "balance_after": 21535.2289
+    },
+    {
+      "symbol": "ETHFI/USDT:USDT",
+      "side": "BUY",
+      "entry": 0.438,
+      "exit": 0.4360516519131569,
+      "tp": 0.45523314443004326,
+      "initial_sl": 0.4360516519131569,
+      "result": "SL",
+      "pnl": -22.2414,
+      "final_leg_pnl": -22.2414,
+      "partial_taken": false,
+      "notional": 5000.0,
+      "r_multiple": -1.0,
+      "param_key": [
+        2.0,
+        0.75,
+        0.5
+      ],
+      "leverage": 10.0,
+      "funding_paid": 0.0,
+      "open_time": "2026-11-26T17:31:27+00:00",
+      "close_time": "2026-11-26T17:46:09+00:00",
+      "balance_after": 21512.9875
     }
   ],
   "open_positions": {
@@ -41306,15 +41330,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-26T17:15:57+00:00",
       "funding_paid": 0.0,
-      "last_price": 60437.6,
-      "unrealized_pnl": 5.4129,
-      "unrealized_r": 0.43,
+      "last_price": 60400.1,
+      "unrealized_pnl": 8.512,
+      "unrealized_r": 0.677,
       "initial_sl": 60655.34199200195,
       "initial_risk_amount": 12.581338146471246,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-26T17:31:23+00:00"
+      "last_check_time": "2026-11-26T17:46:04+00:00"
     },
     "XRP/USDT:USDT": {
       "symbol": "XRP/USDT:USDT",
@@ -41335,15 +41359,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-26T17:15:58+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.9482,
-      "unrealized_pnl": 9.4737,
-      "unrealized_r": 0.415,
+      "last_price": 0.948,
+      "unrealized_pnl": 10.5263,
+      "unrealized_r": 0.461,
       "initial_sl": 0.9543359071591346,
       "initial_risk_amount": 22.820563995445674,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-26T17:31:25+00:00"
+      "last_check_time": "2026-11-26T17:46:06+00:00"
     },
     "NEAR/USDT:USDT": {
       "symbol": "NEAR/USDT:USDT",
@@ -41372,36 +41396,7 @@
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-26T17:31:28+00:00"
-    },
-    "ETHFI/USDT:USDT": {
-      "symbol": "ETHFI/USDT:USDT",
-      "side": "BUY",
-      "entry": 0.438,
-      "tp": 0.45523314443004326,
-      "sl": 0.4360516519131569,
-      "risk_amount": 22.241416516473482,
-      "size": 11415.52511415525,
-      "param_key": [
-        2.0,
-        0.75,
-        0.5
-      ],
-      "open_time": "2026-11-26T17:31:27+00:00",
-      "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-26T17:31:27+00:00",
-      "funding_paid": 0.0,
-      "last_price": 0.438,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 0.4360516519131569,
-      "initial_risk_amount": 22.241416516473482,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "last_check_time": "2026-11-26T17:46:10+00:00"
     }
   }
 }
