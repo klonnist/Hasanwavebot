@@ -41567,15 +41567,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-26T18:31:18+00:00",
       "funding_paid": 0.0,
-      "last_price": 554.46,
-      "unrealized_pnl": -7.5864,
-      "unrealized_r": -0.398,
+      "last_price": 555.28,
+      "unrealized_pnl": -14.9922,
+      "unrealized_r": -0.786,
       "initial_sl": 555.7314927620822,
       "initial_risk_amount": 19.069874300803868,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-26T20:01:25+00:00"
+      "last_check_time": "2026-11-26T20:16:13+00:00"
     },
     "ETHFI/USDT:USDT": {
       "symbol": "ETHFI/USDT:USDT",
@@ -41596,15 +41596,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-26T19:01:35+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.4426,
-      "unrealized_pnl": -30.3166,
-      "unrealized_r": -0.561,
+      "last_price": 0.447,
+      "unrealized_pnl": 19.0883,
+      "unrealized_r": 0.353,
       "initial_sl": 0.44048898938910735,
       "initial_risk_amount": 54.019881101421724,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-26T20:01:27+00:00"
+      "last_check_time": "2026-11-26T20:16:15+00:00"
     },
     "XRP/USDT:USDT": {
       "symbol": "XRP/USDT:USDT",
@@ -41625,15 +41625,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-26T19:46:01+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.9514,
-      "unrealized_pnl": 12.0583,
-      "unrealized_r": 0.735,
+      "last_price": 0.9517,
+      "unrealized_pnl": 10.4855,
+      "unrealized_r": 0.639,
       "initial_sl": 0.9568303783519105,
       "initial_risk_amount": 16.411756065379812,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-26T20:01:24+00:00"
+      "last_check_time": "2026-11-26T20:16:11+00:00"
     },
     "BTC/USDT:USDT": {
       "symbol": "BTC/USDT:USDT",
@@ -41654,15 +41654,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-26T20:01:22+00:00",
       "funding_paid": 0.0,
-      "last_price": 60684.7,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 60702.2,
+      "unrealized_pnl": -1.4419,
+      "unrealized_r": -0.239,
       "initial_sl": 60758.00654909081,
       "initial_risk_amount": 6.039953158770831,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "last_check_time": "2026-11-26T20:16:08+00:00"
     }
   }
 }
