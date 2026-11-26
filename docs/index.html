@@ -58,7 +58,6 @@
   }
   .card .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
   .card .value { font-size: 21px; font-weight: 600; margin-top: 6px; }
-  .card .note { color: var(--muted); font-size: 11px; margin-top: 4px; }
   .pos { color: var(--green); }
   .neg { color: var(--red); }
 
@@ -237,17 +236,6 @@ async function fetchJson(path) {
   return res.json();
 }
 
-// Simulasyonda komisyon/slipaj yok; panelde TAHMINI maliyet gosterilir (yon basina, pozisyon buyuklugunun orani).
-const FEE_PER_SIDE = 0.0005;   // OKX taker ~%0,05
-const SLIP_PER_SIDE = 0.0002;  // varsayilan slipaj %0,02
-
-// Kapanan islemlerin acilis pozisyon buyuklugu toplami. Eski kayitlarda "notional" yok: o donemde
-// islemler sabit 500 USDT teminat x kaldirac ile aciliyordu (sabit risk profillerinde hep "notional" var).
-function closedNotional(history) {
-  return history.filter(t => t.result === "TP" || t.result === "SL")
-    .reduce((s, t) => s + (t.notional || (t.leverage <= 10 ? t.leverage * 500 : 0)), 0);
-}
-
 function computeStats(account) {
   const history = account.history || [];
   const openPositions = Object.values(account.open_positions || {});
@@ -257,9 +245,6 @@ function computeStats(account) {
     + openPositions.reduce((s, p) => s + (p.funding_paid || 0), 0);
   const base = {
     total_pnl: account.balance - startingBalance,  // gerceklesen net (funding dahil)
-    // Acilis + kapanis = 2 yon.
-    est_fee: closedNotional(history) * 2 * FEE_PER_SIDE,
-    est_slip: closedNotional(history) * 2 * SLIP_PER_SIDE,
     balance: account.balance,
     open_positions: openPositions.length,
     unrealized_pnl: unrealizedPnl,
@@ -429,15 +414,9 @@ function buildProfileSkeleton(p) {
 }
 
 function renderCards(p, stats) {
-  const netFee = stats.total_pnl - stats.est_fee;
-  const netAll = netFee - stats.est_slip;
   const cards = [
     { label: "Bakiye", value: `${fmt(stats.balance)} USDT` },
     { label: "Toplam K/Z", value: `${stats.total_pnl >= 0 ? "+" : ""}${fmt(stats.total_pnl)} USDT`, cls: pnlClass(stats.total_pnl) },
-    { label: "Komisyon Sonrası (tahmin)", value: `${netFee >= 0 ? "+" : ""}${fmt(netFee)} USDT`, cls: pnlClass(netFee),
-      note: `komisyon −${fmt(stats.est_fee)} (yön başına %0,05)` },
-    { label: "Komisyon + Slipaj (tahmin)", value: `${netAll >= 0 ? "+" : ""}${fmt(netAll)} USDT`, cls: pnlClass(netAll),
-      note: `slipaj −${fmt(stats.est_slip)} (yön başına %0,02)` },
     { label: "Anlık K/Z", value: `${stats.unrealized_pnl >= 0 ? "+" : ""}${fmt(stats.unrealized_pnl)} USDT`, cls: pnlClass(stats.unrealized_pnl) },
     { label: "Funding Maliyeti", value: `${stats.funding_total >= 0 ? "-" : "+"}${fmt(Math.abs(stats.funding_total))} USDT`, cls: stats.funding_total > 0 ? "neg" : "pos" },
     { label: "Kazanma Oranı", value: `%${fmt(stats.win_rate, 1)}` },
@@ -447,7 +426,7 @@ function renderCards(p, stats) {
     { label: p.rMode ? "1R (sabit risk)" : "Kaldıraç", value: p.leverage },
   ];
   if (p.rMode) {
-    cards.splice(7, 0,
+    cards.splice(5, 0,
       { label: "Toplam R", value: `${stats.total_r >= 0 ? "+" : ""}${fmt(stats.total_r, 2)}R`, cls: pnlClass(stats.total_r) },
       { label: "Ort. R / İşlem", value: `${stats.avg_r >= 0 ? "+" : ""}${fmt(stats.avg_r, 3)}R`, cls: pnlClass(stats.avg_r) },
       { label: "Profit Factor", value: stats.profit_factor === null ? "-" : fmt(stats.profit_factor, 2) },
@@ -458,7 +437,6 @@ function renderCards(p, stats) {
     <div class="card">
       <div class="label">${c.label}</div>
       <div class="value ${c.cls || ""}">${c.value}</div>
-      ${c.note ? `<div class="note">${c.note}</div>` : ""}
     </div>
   `).join("");
 }
