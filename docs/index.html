@@ -40,6 +40,10 @@
     cursor: pointer;
   }
   .tab-btn.active { border-color: var(--accent); color: var(--accent); }
+  /* Iki kademeli sekmeler: ustte grup, altta zaman dilimi */
+  .tabs[hidden] { display: none; }
+  #tabs { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--panel-border); }
+  #tabs [data-group="backtest"] { margin-left: auto; }
 
   .profile { display: none; }
   .profile.active { display: block; }
@@ -198,6 +202,7 @@
 <div id="status">Yükleniyor…</div>
 
 <div class="tabs" id="tabs"></div>
+<div class="tabs" id="subtabs"></div>
 <div id="profiles"></div>
 
 <!-- ?v= : motor degistiginde artir (tarayici/CDN onbellegi eski motoru yeni sayfayla karistirmasin) -->
@@ -210,17 +215,17 @@ const RAW = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/data`;
 
 const PROFILES = [
   // tf: islem grafigi icin mum zaman dilimi
-  { key: "15m", dir: "15m", label: "15 Dakika · Scalp", leverage: "10x", tf: "15m" },
-  { key: "4h",  dir: "4h",  label: "4 Saat · Swing",    leverage: "5x", tf: "4h" },
-  { key: "1d",  dir: "1d",  label: "1 Gün · Pozisyon",  leverage: "3x", tf: "1d" },
-  { key: "vwap", dir: "vwap", label: "VWAP · Ortalamaya Dönüş", leverage: "10x", tf: "15m", strategy: "vwap" },
+  { key: "15m", group: "klasik", dir: "15m", label: "15 Dakika · Scalp", leverage: "10x", tf: "15m" },
+  { key: "4h", group: "klasik",  dir: "4h",  label: "4 Saat · Swing",    leverage: "5x", tf: "4h" },
+  { key: "1d", group: "klasik",  dir: "1d",  label: "1 Gün · Pozisyon",  leverage: "3x", tf: "1d" },
+  { key: "vwap", group: "vwap", dir: "vwap", label: "VWAP · Ortalamaya Dönüş", leverage: "10x", tf: "15m", strategy: "vwap" },
   // R bazli profiller: hacme gore ilk 50 kripto, sabit risk (1R = 100 USDT), havuzlu ogrenme
-  { key: "r50-15m", dir: "r50-15m", label: "15 Dakika · Top50 (R)", leverage: "1R = 100 USDT", rMode: true, tf: "15m" },
-  { key: "r50-4h",  dir: "r50-4h",  label: "4 Saat · Top50 (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "4h" },
-  { key: "r50-1d",  dir: "r50-1d",  label: "1 Gün · Top50 (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "1d" },
-  { key: "r50u-15m", dir: "r50u-15m", label: "15 Dakika · Top50 limitsiz (R)", leverage: "1R = 100 USDT", rMode: true, tf: "15m" },
-  { key: "r50u-4h",  dir: "r50u-4h",  label: "4 Saat · Top50 limitsiz (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "4h" },
-  { key: "r50u-1d",  dir: "r50u-1d",  label: "1 Gün · Top50 limitsiz (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "1d" },
+  { key: "r50-15m", group: "top50", dir: "r50-15m", label: "15 Dakika · Top50 (R)", leverage: "1R = 100 USDT", rMode: true, tf: "15m" },
+  { key: "r50-4h", group: "top50",  dir: "r50-4h",  label: "4 Saat · Top50 (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "4h" },
+  { key: "r50-1d", group: "top50",  dir: "r50-1d",  label: "1 Gün · Top50 (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "1d" },
+  { key: "r50u-15m", group: "limitsiz", dir: "r50u-15m", label: "15 Dakika · Top50 limitsiz (R)", leverage: "1R = 100 USDT", rMode: true, tf: "15m" },
+  { key: "r50u-4h", group: "limitsiz",  dir: "r50u-4h",  label: "4 Saat · Top50 limitsiz (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "4h" },
+  { key: "r50u-1d", group: "limitsiz",  dir: "r50u-1d",  label: "1 Gün · Top50 limitsiz (R)",    leverage: "1R = 100 USDT", rMode: true, tf: "1d" },
 ];
 
 function fmt(n, digits = 2) {
@@ -1719,27 +1724,52 @@ function renderTimeframeComparison(strategy, reportsByTf) {
   });
 }
 
-function initTabs() {
-  document.getElementById("tabs").innerHTML = PROFILES.map((p, i) => `
-    <button class="tab-btn ${i === 0 ? "active" : ""}" data-key="${p.key}">${p.label}</button>
-  `).join("") + `<button class="tab-btn" data-key="backtest">📊 Backtest</button>`;
+const TAB_GROUPS = [
+  { key: "klasik", label: "Klasik" },
+  { key: "vwap", label: "VWAP" },
+  { key: "top50", label: "Top50" },
+  { key: "limitsiz", label: "Limitsiz" },
+  { key: "backtest", label: "📊 Backtest" },
+];
+const TF_LABELS = { "15m": "15 dk", "4h": "4 saat", "1d": "1 gün" };
 
-  document.getElementById("profiles").innerHTML = PROFILES.map((p, i) => `
-    <div class="profile ${i === 0 ? "active" : ""}" id="profile-${p.key}">
+function initTabs() {
+  document.getElementById("profiles").innerHTML = PROFILES.map(p => `
+    <div class="profile" id="profile-${p.key}">
       ${buildProfileSkeleton(p)}
     </div>
   `).join("") + `<div class="profile" id="profile-backtest">${buildBacktestSkeleton()}</div>`;
 
   PROFILES.forEach(setupHistoryControls);
 
-  document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".profile").forEach(s => s.classList.remove("active"));
-      btn.classList.add("active");
-      document.getElementById(`profile-${btn.dataset.key}`).classList.add("active");
-    });
+  const tabs = document.getElementById("tabs");
+  const subtabs = document.getElementById("subtabs");
+  tabs.innerHTML = TAB_GROUPS.map(g => `<button class="tab-btn" data-group="${g.key}">${g.label}</button>`).join("");
+
+  let tf = "15m";   // grup degisince secili zaman dilimi korunur
+  function show(group) {
+    const list = PROFILES.filter(p => p.group === group);
+    const current = list.find(p => p.tf === tf) || list[0];   // backtest'te profil yok
+    const key = current ? current.key : "backtest";
+    tabs.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.group === group));
+    document.querySelectorAll(".profile").forEach(s => s.classList.toggle("active", s.id === `profile-${key}`));
+    subtabs.hidden = list.length < 2;
+    subtabs.innerHTML = list.length < 2 ? "" : list.map(p =>
+      `<button class="tab-btn ${p.key === key ? "active" : ""}" data-tf="${p.tf}">${TF_LABELS[p.tf] || p.tf}</button>`).join("");
+    subtabs.dataset.group = group;
+  }
+
+  tabs.addEventListener("click", e => {
+    const btn = e.target.closest(".tab-btn");
+    if (btn) show(btn.dataset.group);
   });
+  subtabs.addEventListener("click", e => {
+    const btn = e.target.closest(".tab-btn");
+    if (!btn) return;
+    tf = btn.dataset.tf;
+    show(subtabs.dataset.group);
+  });
+  show("klasik");
 }
 
 async function loadAll() {
