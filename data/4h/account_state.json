@@ -682,15 +682,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-26T10:52:50+00:00",
       "funding_paid": -1.11850011751175,
-      "last_price": 60489.4,
-      "unrealized_pnl": -13.5214,
-      "unrealized_r": -0.038,
+      "last_price": 60575.3,
+      "unrealized_pnl": -17.0908,
+      "unrealized_r": -0.048,
       "initial_sl": 68780.67139999999,
       "initial_risk_amount": 358.04930689448804,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-26T16:53:11+00:00"
+      "last_check_time": "2026-11-26T17:01:19+00:00"
     },
     "BNB/USDT:USDT": {
       "symbol": "BNB/USDT:USDT",
@@ -711,15 +711,44 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-26T13:32:33+00:00",
       "funding_paid": -1.16859280471675,
-      "last_price": 551.21,
-      "unrealized_pnl": -14.69,
-      "unrealized_r": -0.042,
+      "last_price": 552.08,
+      "unrealized_pnl": -18.6591,
+      "unrealized_r": -0.054,
       "initial_sl": 623.94604,
       "initial_risk_amount": 346.52110439971545,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-26T16:53:12+00:00"
+      "last_check_time": "2026-11-26T17:01:20+00:00"
+    },
+    "AVAX/USDT:USDT": {
+      "symbol": "AVAX/USDT:USDT",
+      "side": "SELL",
+      "entry": 6.604,
+      "tp": 5.524000000000001,
+      "sl": 6.979402,
+      "risk_amount": 142.11159903089046,
+      "size": 378.5584494245912,
+      "param_key": [
+        1.2,
+        2.0,
+        0.382
+      ],
+      "open_time": "2026-11-26T17:01:20+00:00",
+      "leverage": 5.0,
+      "notional": 2500.0,
+      "margin": 500.0,
+      "last_funding_time": "2026-11-26T17:01:20+00:00",
+      "funding_paid": 0.0,
+      "last_price": 6.604,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
+      "initial_sl": 6.979402,
+      "initial_risk_amount": 142.11159903089046,
+      "breakeven_done": false,
+      "partial_tp_done": false,
+      "partial_pnl_realized": 0.0,
+      "last_check_time": ""
     }
   }
 }

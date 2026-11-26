@@ -1,5 +1,5 @@
 {
-  "balance": 21606.963740782474,
+  "balance": 21576.403923738184,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -41188,67 +41188,57 @@
       "open_time": "2026-11-26T00:13:27+00:00",
       "close_time": "2026-11-26T00:15:00+00:00",
       "balance_after": 21606.9637
-    }
-  ],
-  "open_positions": {
-    "XRP/USDT:USDT": {
+    },
+    {
       "symbol": "XRP/USDT:USDT",
       "side": "SELL",
       "entry": 0.9494,
+      "exit": 0.9520464991215992,
       "tp": 0.9453514834911749,
-      "sl": 0.9520464991215992,
-      "risk_amount": 13.937745531910677,
-      "size": 5266.484095218032,
+      "initial_sl": 0.9520464991215992,
+      "result": "SL",
+      "pnl": -13.9377,
+      "final_leg_pnl": -13.9377,
+      "partial_taken": false,
+      "notional": 5000.0,
+      "r_multiple": -1.0,
       "param_key": [
         1.5,
         0.5,
         0.5
       ],
-      "open_time": "2026-11-26T16:53:19+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-26T16:53:19+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.9494,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 0.9520464991215992,
-      "initial_risk_amount": 13.937745531910677,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "open_time": "2026-11-26T16:53:19+00:00",
+      "close_time": "2026-11-26T17:01:28+00:00",
+      "balance_after": 21593.026
     },
-    "DOGE/USDT:USDT": {
+    {
       "symbol": "DOGE/USDT:USDT",
       "side": "SELL",
       "entry": 0.05663,
+      "exit": 0.05681826158194918,
       "tp": 0.05620287533016867,
-      "sl": 0.05681826158194918,
-      "risk_amount": 16.622071512376692,
-      "size": 88292.42450997705,
+      "initial_sl": 0.05681826158194918,
+      "result": "SL",
+      "pnl": -16.6221,
+      "final_leg_pnl": -16.6221,
+      "partial_taken": false,
+      "notional": 5000.0,
+      "r_multiple": -1.0,
       "param_key": [
         1.5,
         0.5,
         0.5
       ],
-      "open_time": "2026-11-26T16:53:19+00:00",
       "leverage": 10.0,
-      "notional": 5000.0,
-      "margin": 500.0,
-      "last_funding_time": "2026-11-26T16:53:19+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.05663,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
-      "initial_sl": 0.05681826158194918,
-      "initial_risk_amount": 16.622071512376692,
-      "breakeven_done": false,
-      "partial_tp_done": false,
-      "partial_pnl_realized": 0.0,
-      "last_check_time": ""
-    },
+      "open_time": "2026-11-26T16:53:19+00:00",
+      "close_time": "2026-11-26T17:01:29+00:00",
+      "balance_after": 21576.4039
+    }
+  ],
+  "open_positions": {
     "LINK/USDT:USDT": {
       "symbol": "LINK/USDT:USDT",
       "side": "SELL",
@@ -41268,15 +41258,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-26T16:53:19+00:00",
       "funding_paid": 0.0,
-      "last_price": 9.171,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 9.199,
+      "unrealized_pnl": -15.2655,
+      "unrealized_r": -0.731,
       "initial_sl": 9.209279530347434,
       "initial_risk_amount": 20.869878065333438,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "last_check_time": "2026-11-26T17:01:31+00:00"
     },
     "ETHFI/USDT:USDT": {
       "symbol": "ETHFI/USDT:USDT",
@@ -41297,15 +41287,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-26T16:53:20+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.439,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 0.44,
+      "unrealized_pnl": 11.3895,
+      "unrealized_r": 0.561,
       "initial_sl": 0.437217209329675,
       "initial_risk_amount": 20.30513291941909,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "last_check_time": "2026-11-26T17:01:32+00:00"
     }
   }
 }
