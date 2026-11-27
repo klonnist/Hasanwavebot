@@ -682,15 +682,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T10:52:50+00:00",
       "funding_paid": -1.3922208728724998,
-      "last_price": 61432.6,
-      "unrealized_pnl": -52.7142,
+      "last_price": 61431.5,
+      "unrealized_pnl": -52.6685,
       "unrealized_r": -0.147,
       "initial_sl": 68780.67139999999,
       "initial_risk_amount": 358.04930689448804,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T13:15:51+00:00"
+      "last_check_time": "2026-11-27T13:31:14+00:00"
     },
     "BNB/USDT:USDT": {
       "symbol": "BNB/USDT:USDT",
@@ -711,15 +711,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T05:32:33+00:00",
       "funding_paid": -1.65538909627275,
-      "last_price": 563.32,
-      "unrealized_pnl": -69.9374,
-      "unrealized_r": -0.202,
+      "last_price": 562.98,
+      "unrealized_pnl": -68.3863,
+      "unrealized_r": -0.197,
       "initial_sl": 623.94604,
       "initial_risk_amount": 346.52110439971545,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T13:15:51+00:00"
+      "last_check_time": "2026-11-27T13:31:15+00:00"
     },
     "AVAX/USDT:USDT": {
       "symbol": "AVAX/USDT:USDT",
@@ -740,15 +740,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T09:01:20+00:00",
       "funding_paid": 0.361864953715,
-      "last_price": 6.776,
-      "unrealized_pnl": -65.1121,
-      "unrealized_r": -0.458,
+      "last_price": 6.777,
+      "unrealized_pnl": -65.4906,
+      "unrealized_r": -0.461,
       "initial_sl": 6.979402,
       "initial_risk_amount": 142.11159903089046,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T13:15:52+00:00"
+      "last_check_time": "2026-11-27T13:31:16+00:00"
     }
   }
 }
