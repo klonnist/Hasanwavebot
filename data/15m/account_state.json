@@ -2217,15 +2217,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T03:01:19+00:00",
       "funding_paid": 0.0,
-      "last_price": 1730.64,
-      "unrealized_pnl": 21.1507,
-      "unrealized_r": 0.126,
+      "last_price": 1728.56,
+      "unrealized_pnl": 15.1159,
+      "unrealized_r": 0.09,
       "initial_sl": 1665.37996,
       "initial_risk_amount": 168.18997882032068,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T10:31:09+00:00"
+      "last_check_time": "2026-11-27T10:45:57+00:00"
     },
     "BNB/USDT:USDT": {
       "symbol": "BNB/USDT:USDT",
@@ -2246,15 +2246,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T06:31:03+00:00",
       "funding_paid": 0.0,
-      "last_price": 564.41,
-      "unrealized_pnl": -16.7753,
-      "unrealized_r": -0.302,
+      "last_price": 564.17,
+      "unrealized_pnl": -18.8942,
+      "unrealized_r": -0.34,
       "initial_sl": 560.01054,
       "initial_risk_amount": 55.618477512316176,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T10:31:10+00:00"
+      "last_check_time": "2026-11-27T10:45:58+00:00"
     },
     "DOGE/USDT:USDT": {
       "symbol": "DOGE/USDT:USDT",
@@ -2275,15 +2275,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T08:01:13+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.05869,
-      "unrealized_pnl": 49.0365,
-      "unrealized_r": 1.211,
+      "last_price": 0.05871,
+      "unrealized_pnl": 50.7571,
+      "unrealized_r": 1.254,
       "initial_sl": 0.05764934,
       "initial_risk_amount": 40.490364762560034,
       "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T10:31:11+00:00"
+      "last_check_time": "2026-11-27T10:45:58+00:00"
     }
   }
 }
