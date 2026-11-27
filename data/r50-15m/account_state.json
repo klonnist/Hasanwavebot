@@ -2306,15 +2306,15 @@
       "margin": 6.236698722194257,
       "last_funding_time": "2026-11-27T08:53:31+00:00",
       "funding_paid": -0.6357685366293313,
-      "last_price": 2.567,
-      "unrealized_pnl": -56.9582,
-      "unrealized_r": -0.57,
+      "last_price": 2.554,
+      "unrealized_pnl": -59.8282,
+      "unrealized_r": -0.598,
       "initial_sl": 2.372036,
       "initial_risk_amount": 100.0,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T11:31:36+00:00"
+      "last_check_time": "2026-11-27T11:46:14+00:00"
     },
     "IRYS/USDT:USDT": {
       "symbol": "IRYS/USDT:USDT",
@@ -2335,15 +2335,15 @@
       "margin": 26.43624002961639,
       "last_funding_time": "2026-11-27T09:01:41+00:00",
       "funding_paid": -0.26436240029616387,
-      "last_price": 0.01572,
-      "unrealized_pnl": -1.6828,
-      "unrealized_r": -0.017,
+      "last_price": 0.01571,
+      "unrealized_pnl": 0.0,
+      "unrealized_r": 0.0,
       "initial_sl": 0.016304260000000004,
       "initial_risk_amount": 100.0,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T11:31:44+00:00"
+      "last_check_time": "2026-11-27T11:46:20+00:00"
     },
     "TRUMP/USDT:USDT": {
       "symbol": "TRUMP/USDT:USDT",
@@ -2364,15 +2364,15 @@
       "margin": 40.9033406737572,
       "last_funding_time": "2026-11-27T10:31:23+00:00",
       "funding_paid": -0.13879249118298317,
-      "last_price": 0.8843,
-      "unrealized_pnl": -52.9448,
-      "unrealized_r": -0.529,
+      "last_price": 0.8796,
+      "unrealized_pnl": -30.9235,
+      "unrealized_r": -0.309,
       "initial_sl": 0.894343,
       "initial_risk_amount": 100.0,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T11:31:35+00:00"
+      "last_check_time": "2026-11-27T11:46:13+00:00"
     },
     "MMT/USDT:USDT": {
       "symbol": "MMT/USDT:USDT",
@@ -2393,15 +2393,15 @@
       "margin": 5.763423847036673,
       "last_funding_time": "2026-11-27T11:16:21+00:00",
       "funding_paid": 2.7946154052175705,
-      "last_price": 0.1707,
-      "unrealized_pnl": 100.839,
-      "unrealized_r": 1.008,
+      "last_price": 0.1709,
+      "unrealized_pnl": 100.2819,
+      "unrealized_r": 1.003,
       "initial_sl": 0.24279879999999998,
       "initial_risk_amount": 100.0,
       "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T11:31:32+00:00"
+      "last_check_time": "2026-11-27T11:46:11+00:00"
     },
     "OKB/USDT:USDT": {
       "symbol": "OKB/USDT:USDT",
@@ -2422,15 +2422,15 @@
       "margin": 44.52230662244573,
       "last_funding_time": "2026-11-27T09:16:21+00:00",
       "funding_paid": -0.8314304513475784,
-      "last_price": 84.31,
-      "unrealized_pnl": 57.7725,
-      "unrealized_r": 0.578,
+      "last_price": 84.35,
+      "unrealized_pnl": 59.9123,
+      "unrealized_r": 0.599,
       "initial_sl": 81.3606,
       "initial_risk_amount": 100.0,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T11:31:41+00:00"
+      "last_check_time": "2026-11-27T11:46:18+00:00"
     },
     "FIL/USDT:USDT": {
       "symbol": "FIL/USDT:USDT",
@@ -2459,7 +2459,7 @@
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T11:31:38+00:00"
+      "last_check_time": "2026-11-27T11:46:16+00:00"
     },
     "ADA/USDT:USDT": {
       "symbol": "ADA/USDT:USDT",
@@ -2480,15 +2480,15 @@
       "margin": 29.54322681827096,
       "last_funding_time": "2026-11-27T10:16:11+00:00",
       "funding_paid": 0.2954322681827096,
-      "last_price": 0.1531,
-      "unrealized_pnl": 47.0496,
-      "unrealized_r": 0.47,
+      "last_price": 0.153,
+      "unrealized_pnl": 45.0892,
+      "unrealized_r": 0.451,
       "initial_sl": 0.145599,
       "initial_risk_amount": 100.0,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T11:31:39+00:00"
+      "last_check_time": "2026-11-27T11:46:16+00:00"
     },
     "ETH/USDT:USDT": {
       "symbol": "ETH/USDT:USDT",
@@ -2509,15 +2509,15 @@
       "margin": 26.648836193540014,
       "last_funding_time": "2026-11-27T11:31:29+00:00",
       "funding_paid": 0.2101937603762996,
-      "last_price": 1729.37,
-      "unrealized_pnl": -1.4477,
-      "unrealized_r": -0.014,
+      "last_price": 1725.12,
+      "unrealized_pnl": -7.9932,
+      "unrealized_r": -0.08,
       "initial_sl": 1665.37996,
       "initial_risk_amount": 100.0,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T11:31:31+00:00"
+      "last_check_time": "2026-11-27T11:46:10+00:00"
     },
     "INJ/USDT:USDT": {
       "symbol": "INJ/USDT:USDT",
@@ -2538,15 +2538,15 @@
       "margin": 12.321420489688757,
       "last_funding_time": "2026-11-27T09:31:32+00:00",
       "funding_paid": 0.0,
-      "last_price": 6.502,
-      "unrealized_pnl": -6.0344,
-      "unrealized_r": -0.06,
+      "last_price": 6.495,
+      "unrealized_pnl": -7.3544,
+      "unrealized_r": -0.074,
       "initial_sl": 6.003703999999999,
       "initial_risk_amount": 100.0,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T11:31:40+00:00"
+      "last_check_time": "2026-11-27T11:46:17+00:00"
     }
   }
 }
