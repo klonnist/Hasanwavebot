@@ -1,5 +1,5 @@
 {
-  "balance": 12178.655603626377,
+  "balance": 12178.7855461154,
   "starting_balance": 10000.0,
   "history": [
     {
@@ -682,15 +682,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T18:52:50+00:00",
       "funding_paid": -1.4099079491877498,
-      "last_price": 59771.6,
-      "unrealized_pnl": 16.3054,
-      "unrealized_r": 0.046,
+      "last_price": 59783.5,
+      "unrealized_pnl": 15.811,
+      "unrealized_r": 0.044,
       "initial_sl": 68780.67139999999,
       "initial_risk_amount": 358.04930689448804,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T21:31:13+00:00"
+      "last_check_time": "2026-11-27T21:45:57+00:00"
     },
     "BNB/USDT:USDT": {
       "symbol": "BNB/USDT:USDT",
@@ -709,17 +709,17 @@
       "leverage": 5.0,
       "notional": 2500.0,
       "margin": 500.0,
-      "last_funding_time": "2026-11-27T13:32:33+00:00",
-      "funding_paid": -1.90538909627275,
-      "last_price": 553.02,
-      "unrealized_pnl": -22.9475,
+      "last_funding_time": "2026-11-27T21:32:33+00:00",
+      "funding_paid": -2.035331585295,
+      "last_price": 553.0,
+      "unrealized_pnl": -22.8563,
       "unrealized_r": -0.066,
       "initial_sl": 623.94604,
       "initial_risk_amount": 346.52110439971545,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T21:31:14+00:00"
+      "last_check_time": "2026-11-27T21:45:58+00:00"
     },
     "AVAX/USDT:USDT": {
       "symbol": "AVAX/USDT:USDT",
@@ -740,15 +740,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T17:01:20+00:00",
       "funding_paid": 0.6684683275482499,
-      "last_price": 6.63,
-      "unrealized_pnl": -9.8425,
-      "unrealized_r": -0.069,
+      "last_price": 6.625,
+      "unrealized_pnl": -7.9497,
+      "unrealized_r": -0.056,
       "initial_sl": 6.979402,
       "initial_risk_amount": 142.11159903089046,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T21:31:14+00:00"
+      "last_check_time": "2026-11-27T21:45:59+00:00"
     }
   }
 }
