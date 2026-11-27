@@ -42476,15 +42476,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T05:46:06+00:00",
       "funding_paid": 0.0,
-      "last_price": 9.656,
-      "unrealized_pnl": 12.3967,
-      "unrealized_r": 0.328,
+      "last_price": 9.644,
+      "unrealized_pnl": 18.595,
+      "unrealized_r": 0.492,
       "initial_sl": 9.753131540547988,
       "initial_risk_amount": 37.774556068175954,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T06:16:07+00:00"
+      "last_check_time": "2026-11-27T06:31:21+00:00"
     },
     "AVAX/USDT:USDT": {
       "symbol": "AVAX/USDT:USDT",
@@ -42505,22 +42505,22 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T06:01:30+00:00",
       "funding_paid": 0.0,
-      "last_price": 6.774,
-      "unrealized_pnl": 5.1615,
-      "unrealized_r": 0.16,
+      "last_price": 6.782,
+      "unrealized_pnl": -0.7374,
+      "unrealized_r": -0.023,
       "initial_sl": 6.824829786958671,
       "initial_risk_amount": 32.318085060220646,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T06:16:05+00:00"
+      "last_check_time": "2026-11-27T06:31:20+00:00"
     },
     "BTC/USDT:USDT": {
       "symbol": "BTC/USDT:USDT",
       "side": "SELL",
       "entry": 61850.0,
       "tp": 59786.029049618075,
-      "sl": 62066.90366728266,
+      "sl": 61850.0,
       "risk_amount": 17.53465378194522,
       "size": 0.08084074373484236,
       "param_key": [
@@ -42534,15 +42534,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T06:16:02+00:00",
       "funding_paid": 0.0,
-      "last_price": 61850.0,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 61719.9,
+      "unrealized_pnl": 10.5174,
+      "unrealized_r": 0.6,
       "initial_sl": 62066.90366728266,
       "initial_risk_amount": 17.53465378194522,
-      "breakeven_done": false,
+      "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "last_check_time": "2026-11-27T06:31:17+00:00"
     }
   }
 }
