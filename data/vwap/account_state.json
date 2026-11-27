@@ -43520,15 +43520,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T16:01:36+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.05761,
-      "unrealized_pnl": -2.6051,
-      "unrealized_r": -0.052,
+      "last_price": 0.0575,
+      "unrealized_pnl": 6.9469,
+      "unrealized_r": 0.138,
       "initial_sl": 0.058158563271766196,
       "initial_risk_amount": 50.23995065701607,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T18:16:11+00:00"
+      "last_check_time": "2026-11-27T18:31:31+00:00"
     },
     "LINK/USDT:USDT": {
       "symbol": "LINK/USDT:USDT",
@@ -43549,15 +43549,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T16:01:36+00:00",
       "funding_paid": 0.0,
-      "last_price": 9.358,
-      "unrealized_pnl": -22.0028,
-      "unrealized_r": -0.418,
+      "last_price": 9.357,
+      "unrealized_pnl": -21.4661,
+      "unrealized_r": -0.408,
       "initial_sl": 9.415107888528668,
       "initial_risk_amount": 52.649934811993205,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T18:16:14+00:00"
+      "last_check_time": "2026-11-27T18:31:33+00:00"
     },
     "SOL/USDT:USDT": {
       "symbol": "SOL/USDT:USDT",
@@ -43578,15 +43578,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T17:31:23+00:00",
       "funding_paid": 0.0,
-      "last_price": 71.84,
-      "unrealized_pnl": -9.0643,
-      "unrealized_r": -0.213,
+      "last_price": 71.8,
+      "unrealized_pnl": -6.2753,
+      "unrealized_r": -0.147,
       "initial_sl": 72.32037630954221,
       "initial_risk_amount": 42.55866054540637,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T18:16:09+00:00"
+      "last_check_time": "2026-11-27T18:31:29+00:00"
     },
     "ETHFI/USDT:USDT": {
       "symbol": "ETHFI/USDT:USDT",
@@ -43607,15 +43607,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T17:46:14+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.4233,
-      "unrealized_pnl": 33.2937,
-      "unrealized_r": 0.451,
+      "last_price": 0.4263,
+      "unrealized_pnl": 68.9655,
+      "unrealized_r": 0.935,
       "initial_sl": 0.4142981054104848,
       "initial_risk_amount": 73.74428762800476,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T18:16:16+00:00"
+      "last_check_time": "2026-11-27T18:31:35+00:00"
     }
   }
 }
