@@ -42476,15 +42476,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T05:46:06+00:00",
       "funding_paid": 0.0,
-      "last_price": 9.589,
-      "unrealized_pnl": 47.0041,
-      "unrealized_r": 1.244,
+      "last_price": 9.587,
+      "unrealized_pnl": 48.0372,
+      "unrealized_r": 1.272,
       "initial_sl": 9.753131540547988,
       "initial_risk_amount": 37.774556068175954,
       "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T06:46:03+00:00"
+      "last_check_time": "2026-11-27T07:01:34+00:00"
     },
     "AVAX/USDT:USDT": {
       "symbol": "AVAX/USDT:USDT",
@@ -42505,15 +42505,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T06:01:30+00:00",
       "funding_paid": 0.0,
-      "last_price": 6.766,
-      "unrealized_pnl": 11.0603,
-      "unrealized_r": 0.342,
+      "last_price": 6.757,
+      "unrealized_pnl": 17.6965,
+      "unrealized_r": 0.548,
       "initial_sl": 6.824829786958671,
       "initial_risk_amount": 32.318085060220646,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T06:46:02+00:00"
+      "last_check_time": "2026-11-27T07:01:32+00:00"
     },
     "BTC/USDT:USDT": {
       "symbol": "BTC/USDT:USDT",
@@ -42534,15 +42534,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-27T06:16:02+00:00",
       "funding_paid": 0.0,
-      "last_price": 61669.2,
-      "unrealized_pnl": 14.616,
-      "unrealized_r": 0.834,
+      "last_price": 61662.5,
+      "unrealized_pnl": 15.1576,
+      "unrealized_r": 0.864,
       "initial_sl": 62066.90366728266,
       "initial_risk_amount": 17.53465378194522,
       "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-27T06:45:59+00:00"
+      "last_check_time": "2026-11-27T07:01:29+00:00"
     }
   }
 }
