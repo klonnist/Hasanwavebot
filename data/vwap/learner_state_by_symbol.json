@@ -678,9 +678,9 @@
     "breakeven": 2
   },
   "[\"LINK/USDT:USDT\", 1.5, 1.0, 0.5]": {
-    "n": 32,
-    "reward_sum": 31.592999999999996,
-    "wins": 15,
+    "n": 33,
+    "reward_sum": 33.092999999999996,
+    "wins": 16,
     "losses": 17,
     "breakeven": 0
   },
