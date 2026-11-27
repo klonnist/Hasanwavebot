@@ -49,16 +49,16 @@
     "breakeven": 26
   },
   "[2.0, 0.75, 0.5]": {
-    "n": 147,
-    "reward_sum": 33.845,
+    "n": 148,
+    "reward_sum": 32.845,
     "wins": 52,
-    "losses": 77,
+    "losses": 78,
     "breakeven": 18
   },
   "[2.5, 1.0, 0.5]": {
-    "n": 77,
-    "reward_sum": 9.864000000000004,
-    "wins": 27,
+    "n": 78,
+    "reward_sum": 11.364000000000004,
+    "wins": 28,
     "losses": 40,
     "breakeven": 10
   }
