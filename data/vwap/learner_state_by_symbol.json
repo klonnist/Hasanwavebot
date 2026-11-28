@@ -7,10 +7,10 @@
     "breakeven": 1
   },
   "[\"AVAX/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 15,
-    "reward_sum": 8.871,
+    "n": 16,
+    "reward_sum": 7.871,
     "wins": 6,
-    "losses": 8,
+    "losses": 9,
     "breakeven": 1
   },
   "[\"NEAR/USDT:USDT\", 1.5, 0.75, 0.5]": {
@@ -433,10 +433,10 @@
     "breakeven": 6
   },
   "[\"ETHFI/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 14,
-    "reward_sum": 5.268999999999999,
+    "n": 15,
+    "reward_sum": 4.268999999999999,
     "wins": 7,
-    "losses": 7,
+    "losses": 8,
     "breakeven": 0
   },
   "[\"ETH/USDT:USDT\", 2.5, 0.5, 0.5]": {
@@ -531,11 +531,11 @@
     "breakeven": 1
   },
   "[\"ADA/USDT:USDT\", 2.0, 1.0, 0.5]": {
-    "n": 29,
+    "n": 30,
     "reward_sum": 49.923,
     "wins": 20,
     "losses": 7,
-    "breakeven": 2
+    "breakeven": 3
   },
   "[\"NEAR/USDT:USDT\", 1.5, 0.5, 0.5]": {
     "n": 4,
