@@ -1,10 +1,7 @@
 {
-  "checked_at": "2026-11-27T16:14:29+00:00",
-  "ok": false,
-  "issues": [
-    "[vwap] ETH/USDT:USDT: SL olarak kapanan islemin exit fiyati (1716.040461) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-27T14:31:26+00:00 -> 2026-11-27T14:46:09+00:00)",
-    "[vwap] ADA/USDT:USDT: SL olarak kapanan islemin exit fiyati (0.151046) gercek piyasa verisinde DOGRULANAMADI -- olasi hata! (2026-11-27T14:31:30+00:00 -> 2026-11-27T14:46:11+00:00)"
-  ],
+  "checked_at": "2026-11-28T01:10:23+00:00",
+  "ok": true,
+  "issues": [],
   "profiles_checked": [
     "15m",
     "4h",
