@@ -56,9 +56,9 @@
     "losses": 3
   },
   "[\"ALL\", 1.2, 1.272, 0.382]": {
-    "n": 2,
-    "reward_sum": -0.0040000000000000036,
-    "wins": 1,
+    "n": 3,
+    "reward_sum": 0.727,
+    "wins": 2,
     "breakeven": 0,
     "losses": 1
   },
