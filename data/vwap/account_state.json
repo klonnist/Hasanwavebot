@@ -44761,7 +44761,7 @@
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-28T09:16:08+00:00"
+      "last_check_time": "2026-11-28T09:31:28+00:00"
     },
     "NEAR/USDT:USDT": {
       "symbol": "NEAR/USDT:USDT",
@@ -44782,15 +44782,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-28T08:31:24+00:00",
       "funding_paid": 0.0,
-      "last_price": 3.017,
-      "unrealized_pnl": 8.2727,
-      "unrealized_r": 0.347,
+      "last_price": 3.009,
+      "unrealized_pnl": 21.5089,
+      "unrealized_r": 0.902,
       "initial_sl": 3.036410668559547,
       "initial_risk_amount": 23.842932759012395,
       "breakeven_done": true,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-28T09:16:12+00:00"
+      "last_check_time": "2026-11-28T09:31:34+00:00"
     },
     "BTC/USDT:USDT": {
       "symbol": "BTC/USDT:USDT",
@@ -44811,15 +44811,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-28T09:01:29+00:00",
       "funding_paid": 0.0,
-      "last_price": 59585.6,
-      "unrealized_pnl": 0.94,
-      "unrealized_r": 0.109,
+      "last_price": 59635.8,
+      "unrealized_pnl": 5.1532,
+      "unrealized_r": 0.595,
       "initial_sl": 59471.23181177533,
       "initial_risk_amount": 8.658768550306029,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": "2026-11-28T09:16:06+00:00"
+      "last_check_time": "2026-11-28T09:31:26+00:00"
     },
     "AVAX/USDT:USDT": {
       "symbol": "AVAX/USDT:USDT",
@@ -44840,15 +44840,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-28T09:16:10+00:00",
       "funding_paid": 0.0,
-      "last_price": 6.528,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 6.526,
+      "unrealized_pnl": -1.5319,
+      "unrealized_r": -0.086,
       "initial_sl": 6.504610679808527,
       "initial_risk_amount": 17.914614117242902,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "last_check_time": "2026-11-28T09:31:30+00:00"
     },
     "ETHFI/USDT:USDT": {
       "symbol": "ETHFI/USDT:USDT",
@@ -44869,15 +44869,15 @@
       "margin": 500.0,
       "last_funding_time": "2026-11-28T09:16:10+00:00",
       "funding_paid": 0.0,
-      "last_price": 0.436,
-      "unrealized_pnl": 0.0,
-      "unrealized_r": 0.0,
+      "last_price": 0.4346,
+      "unrealized_pnl": -16.055,
+      "unrealized_r": -0.598,
       "initial_sl": 0.43365846456615886,
       "initial_risk_amount": 26.852470571572653,
       "breakeven_done": false,
       "partial_tp_done": false,
       "partial_pnl_realized": 0.0,
-      "last_check_time": ""
+      "last_check_time": "2026-11-28T09:31:32+00:00"
     }
   }
 }
