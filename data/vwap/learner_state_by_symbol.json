@@ -601,9 +601,9 @@
     "breakeven": 1
   },
   "[\"BNB/USDT:USDT\", 2.5, 0.75, 0.5]": {
-    "n": 66,
-    "reward_sum": 33.56,
-    "wins": 30,
+    "n": 67,
+    "reward_sum": 35.06,
+    "wins": 31,
     "losses": 31,
     "breakeven": 5
   },
